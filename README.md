@@ -34,7 +34,9 @@ cookie-versus-gummy debate; see `data/derived/README.md` for the coding rule.
    coding, and validate that attributes are 0/1 and levels lie in 0 to 1.
 2. **Main model.** Ordinary least squares of win rate on the nine attributes
    plus sugar and price level (12 parameters including the intercept).
-   Coefficients read as *points of win rate*. Inference uses HC3
+   Coefficients read as *points of win rate*. Almost every candy is chocolate
+   or fruity, so both coefficients compare with the 9 candies that are
+   neither; the bundle also gives chocolate minus fruity directly. Inference uses HC3
    heteroskedasticity-robust standard errors and t-based 95% intervals.
 3. **Diagnostics.** Variance inflation factors, leave-one-out R² (an honest
    out-of-sample fit), Holm correction across the 11 main effects, and a simple

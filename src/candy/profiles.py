@@ -147,20 +147,22 @@ def rank(profiles: pd.DataFrame, scorer: ProfileScorer) -> list[dict]:
     return [{"rank": i + 1, **row} for i, row in enumerate(rows)]
 
 
-def evidence_tiers(model: FitResult, confirmed: set[str]) -> dict[str, str]:
-    """How well the data supports each attribute's effect.
+def evidence_tiers(model: FitResult, confirmed: set[str]) -> dict[str, dict[str, str]]:
+    """How well the data supports each attribute's effect, and its direction.
 
-    ``driver``: in ``confirmed`` (significant after multiple-testing
-    correction). ``tentative``: its own CI excludes zero, but it is not
-    confirmed. ``open``: the data does not decide, so it is a free design choice.
+    ``tier`` is ``driver`` when the attribute is in ``confirmed`` (significant
+    after multiple-testing correction), ``tentative`` when its own CI excludes
+    zero but it is not confirmed, and ``open`` when the data does not decide,
+    so it is a free design choice. ``direction`` is the sign of the estimate.
     """
-    tiers = {}
+    evidence = {}
     for attribute in ATTRIBUTES:
         excludes_zero = model.ci_low[attribute] > 0 or model.ci_high[attribute] < 0
-        tiers[attribute] = (
-            DRIVER if attribute in confirmed else TENTATIVE if excludes_zero else OPEN
-        )
-    return tiers
+        evidence[attribute] = {
+            "tier": DRIVER if attribute in confirmed else TENTATIVE if excludes_zero else OPEN,
+            "direction": "positive" if model.coef[attribute] > 0 else "negative",
+        }
+    return evidence
 
 
 def mark_ties(ranked: list[dict], scorer: ProfileScorer, primary: dict[str, int]) -> list[dict]:
@@ -175,7 +177,10 @@ def mark_ties(ranked: list[dict], scorer: ProfileScorer, primary: dict[str, int]
 
 
 def recommend(
-    ranked: list[dict], scorer: ProfileScorer, candies: pd.DataFrame, tiers: dict[str, str]
+    ranked: list[dict],
+    scorer: ProfileScorer,
+    candies: pd.DataFrame,
+    evidence: dict[str, dict[str, str]],
 ) -> dict:
     """The primary profile with its benchmark candies and how far it
     extrapolates beyond real candies.
@@ -183,7 +188,9 @@ def recommend(
     The primary profile is the best supported profile that switches on nothing
     but drivers with a positive effect.
     """
-    favourable = {a for a in ATTRIBUTES if tiers[a] == DRIVER and scorer.model.coef[a] > 0}
+    favourable = {
+        a for a, e in evidence.items() if e["tier"] == DRIVER and e["direction"] == "positive"
+    }
     primary = next(
         row
         for row in ranked
@@ -204,7 +211,7 @@ def recommend(
 
     return {
         "rule": PRIMARY_RULE,
-        "attribute_evidence": tiers,
+        "attribute_evidence": evidence,
         "primary": describe(primary),
     }
 

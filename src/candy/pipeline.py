@@ -108,6 +108,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         ranked, scorer, candies, evidence_tiers(main_model, confirmed=survivors)
     )
     ranked = mark_ties(ranked, scorer, recommendation["primary"]["attributes"])
+    chocolate_vs_fruity = _chocolate_vs_fruity(candies, scorer)
     gummy_scorer = ProfileScorer(gummy_model, levels, (), extra_attributes=("gummy",))
     cookie_vs_gummy = compare_cookie_and_gummy(gummy_scorer)
     comparison = _attribute_comparison_table(candies)
@@ -121,6 +122,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         },
         "main_model": _model_section(main_model, target="win_rate"),
         "holm": {"alpha": ALPHA, "results": _records(holm_results, "term")},
+        "chocolate_vs_fruity": chocolate_vs_fruity,
         "attribute_comparison": {
             "test": "welch",
             "alpha": ALPHA,
@@ -198,7 +200,13 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
 
     figures = out_dir / FIGURES_DIR
     win_rate_distribution_chart(candies, figures / "win_rate_distribution.png")
-    coefficient_chart(main_model.table(), survivors, ALPHA, figures / "coefficients.png")
+    coefficient_chart(
+        main_model.table(),
+        survivors,
+        ALPHA,
+        _reference_group_note(chocolate_vs_fruity),
+        figures / "coefficients.png",
+    )
     attribute_comparison_chart(comparison, ALPHA, figures / "attribute_comparison.png")
     hc3 = main_model.effects_in_points()
     robustness_chart(
@@ -225,6 +233,38 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     _write_appendix(out_dir / APPENDIX_DIR, bundle, gummy_csv)
     (out_dir / BUNDLE_NAME).write_text(json.dumps(bundle, indent=2) + "\n")
     return bundle
+
+
+def _chocolate_vs_fruity(candies: pd.DataFrame, scorer: ProfileScorer) -> dict:
+    """Chocolate minus fruity, all else equal, with its CI.
+
+    Nearly every candy is chocolate or fruity, so each coefficient alone
+    compares with the few candies that are neither; this is the direct
+    comparison of the two product types.
+    """
+    neither = (candies["chocolate"] == 0) & (candies["fruity"] == 0)
+    blank = dict.fromkeys(ATTRIBUTES, 0)
+    gap = scorer.gap(blank | {"chocolate": 1}, blank | {"fruity": 1})
+    return {
+        "note": "The chocolate and fruity coefficients each compare with the "
+        f"{int(neither.sum())} candies that are neither, so a positive fruity "
+        "coefficient does not mean fruit flavour raises preference. This is the "
+        "direct comparison of the two, all else equal.",
+        "n_neither": int(neither.sum()),
+        "candies_neither": candies.loc[neither, "candy"].tolist(),
+        "estimate": gap.estimate,
+        "ci_low": gap.ci_low,
+        "ci_high": gap.ci_high,
+    }
+
+
+def _reference_group_note(contrast: dict) -> str:
+    return (
+        f"Chocolate and fruity are each measured against the {contrast['n_neither']} "
+        f"candies that are neither. Chocolate beats fruity by "
+        f"{contrast['estimate']:.0f} points (CI {contrast['ci_low']:.0f} to "
+        f"{contrast['ci_high']:.0f})."
+    )
 
 
 def _data_notes(bundle: dict) -> list[str]:

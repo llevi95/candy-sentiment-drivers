@@ -442,19 +442,33 @@ def test_attribute_evidence_follows_holm_and_the_confidence_intervals(bundle):
     for attribute in ATTRIBUTES:
         row = coefs[attribute]
         excludes_zero = row["ci_low"] > 0 or row["ci_high"] < 0
-        expected[attribute] = (
-            "driver" if holm[attribute] else "tentative" if excludes_zero else "open"
-        )
+        expected[attribute] = {
+            "tier": "driver" if holm[attribute] else "tentative" if excludes_zero else "open",
+            "direction": "positive" if row["coef"] > 0 else "negative",
+        }
 
     assert bundle["recommendation"]["attribute_evidence"] == expected
-    assert expected["chocolate"] == "driver"
-    assert expected["nougat"] == "open"
+    assert expected["chocolate"]["tier"] == "driver"
+    assert expected["nougat"]["tier"] == "open"
+    assert expected["hard"]["direction"] == "negative"
+
+
+def test_chocolate_vs_fruity_is_the_difference_of_their_coefficients(bundle):
+    coef = {r["term"]: r["coef"] for r in bundle["main_model"]["coefficients"]}
+    contrast = bundle["chocolate_vs_fruity"]
+
+    assert contrast["estimate"] == pytest.approx(coef["chocolate"] - coef["fruity"])
+    assert contrast["ci_low"] < contrast["estimate"] < contrast["ci_high"]
+    # 9 candies are neither; Tootsie Pop is the only one that is both.
+    assert contrast["n_neither"] == len(contrast["candies_neither"]) == 9
+    # Fruity's coefficient is positive, yet chocolate clearly beats fruity.
+    assert coef["fruity"] > 0 and contrast["ci_low"] > 0
 
 
 def test_primary_profile_is_the_best_profile_made_only_of_drivers(bundle):
     ranked = bundle["profiles"]["ranked"]
     rec = bundle["recommendation"]
-    drivers = {a for a, tier in rec["attribute_evidence"].items() if tier == "driver"}
+    drivers = {a for a, e in rec["attribute_evidence"].items() if e["tier"] == "driver"}
 
     def only_drivers(row):
         return all(a in drivers for a, on in row["attributes"].items() if on)

@@ -38,14 +38,15 @@ plt.rcParams.update(
 
 
 def coefficient_chart(
-    table: pd.DataFrame, survivors: set[str], alpha: float, path: Path
+    table: pd.DataFrame, survivors: set[str], alpha: float, reference_note: str, path: Path
 ) -> None:
     """Horizontal CI chart of each term's effect on win rate, intercept excluded.
 
     ``table`` has one row per term with ``coef``, ``ci_low`` and ``ci_high`` at
     level ``1 - alpha``. Terms in ``survivors`` (Holm-significant across every
     plotted term) are highlighted; terms whose raw CI excludes zero but that do
-    not survive Holm are shown as tentative.
+    not survive Holm are shown as tentative. ``reference_note`` is shown under
+    the title, to say what the effects are measured against.
     """
     rows = table.drop(index=INTERCEPT).sort_values("coef")
     excludes_zero = (rows["ci_low"] > 0) | (rows["ci_high"] < 0)
@@ -61,14 +62,15 @@ def coefficient_chart(
     ax.axvline(0, color="black", linewidth=1)
     ax.set_yticks(list(y), [LABELS.get(t, t) for t in rows.index])
     ax.set_xlabel(f"Change in win rate (percentage points), {1 - alpha:.0%} CI")
-    ax.set_title("What moves consumer preference")
+    fig.suptitle("What moves consumer preference", fontsize=20, fontweight="bold")
+    fig.text(0.5, 0.905, reference_note, ha="center", fontsize=13, color="#333333")
     _footnote(
         fig,
         f"Dark blue: significant after Holm correction across all {len(rows)} effects. "
         f"Light blue: {1 - alpha:.0%} CI excludes zero, but not after correction. "
         "Grey: neither.",
     )
-    _save(fig, path)
+    _save(fig, path, top=0.93)
 
 
 def attribute_comparison_chart(rows: pd.DataFrame, alpha: float, path: Path) -> None:
@@ -296,8 +298,8 @@ def _footnote(fig: plt.Figure, text: str) -> None:
     fig.text(0.99, 0.015, text, ha="right", fontsize=12, color="#555555")
 
 
-def _save(fig: plt.Figure, path: Path) -> None:
-    fig.tight_layout(rect=(0, 0.04, 1, 1))
+def _save(fig: plt.Figure, path: Path, top: float = 1) -> None:
+    fig.tight_layout(rect=(0, 0.04, 1, top))
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path)
     plt.close(fig)

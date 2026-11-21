@@ -210,6 +210,24 @@
       }
     ]
   },
+  "chocolate_vs_fruity": {
+    "note": "The chocolate and fruity coefficients each compare with the 9 candies that are neither, so a positive fruity coefficient does not mean fruit flavour raises preference. This is the direct comparison of the two, all else equal.",
+    "n_neither": 9,
+    "candies_neither": [
+      "Boston Baked Beans",
+      "Candy Corn",
+      "Haribo Happy Cola",
+      "Payday",
+      "Pixie Sticks",
+      "Root Beer Barrels",
+      "Sugar Babies",
+      "Sugar Daddy",
+      "Werther's Original Caramel"
+    ],
+    "estimate": 10.206069618642921,
+    "ci_low": 1.3884043076758346,
+    "ci_high": 19.023734929610008
+  },
   "attribute_comparison": {
     "test": "welch",
     "alpha": 0.05,
@@ -2833,15 +2851,42 @@
   "recommendation": {
     "rule": "The primary profile is the best supported profile made only of drivers: attributes whose positive effect survives the multiple-testing correction. Every other attribute is a design choice the data does not decide.",
     "attribute_evidence": {
-      "chocolate": "driver",
-      "fruity": "tentative",
-      "caramel": "open",
-      "peanuty_almondy": "tentative",
-      "nougat": "open",
-      "crisped_rice_wafer": "open",
-      "hard": "open",
-      "bar": "open",
-      "pluribus": "open"
+      "chocolate": {
+        "tier": "driver",
+        "direction": "positive"
+      },
+      "fruity": {
+        "tier": "tentative",
+        "direction": "positive"
+      },
+      "caramel": {
+        "tier": "open",
+        "direction": "positive"
+      },
+      "peanuty_almondy": {
+        "tier": "tentative",
+        "direction": "positive"
+      },
+      "nougat": {
+        "tier": "open",
+        "direction": "positive"
+      },
+      "crisped_rice_wafer": {
+        "tier": "open",
+        "direction": "positive"
+      },
+      "hard": {
+        "tier": "open",
+        "direction": "negative"
+      },
+      "bar": {
+        "tier": "open",
+        "direction": "positive"
+      },
+      "pluribus": {
+        "tier": "open",
+        "direction": "positive"
+      }
     },
     "primary": {
       "rank": 48,
