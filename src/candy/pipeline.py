@@ -30,11 +30,13 @@ from candy.profiles import (
     recommend,
 )
 from candy.figures import (
+    LABELS,
     attribute_comparison_chart,
     coefficient_chart,
     ranked_profiles_chart,
     recommendation_gap_chart,
     robustness_chart,
+    win_rate_distribution_chart,
 )
 
 BUNDLE_NAME = "results.json"
@@ -43,6 +45,7 @@ SEED = 20261121
 BOOTSTRAP_DRAWS = 2000
 
 FIGURES_DIR = "figures"
+APPENDIX_DIR = "appendix"
 RANKED_FIGURE_TOP = 15
 
 
@@ -161,7 +164,10 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         },
     }
 
+    bundle["data_notes"] = _data_notes(bundle)
+
     figures = out_dir / FIGURES_DIR
+    win_rate_distribution_chart(candies, figures / "win_rate_distribution.png")
     survivors = set(holm_results.index[holm_results["survives"]])
     coefficient_chart(main_model.table(), survivors, ALPHA, figures / "coefficients.png")
     attribute_comparison_chart(comparison, ALPHA, figures / "attribute_comparison.png")
@@ -187,8 +193,54 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         figures / "recommendation_gap.png",
     )
 
+    _write_appendix(out_dir / APPENDIX_DIR, bundle, gummy_csv)
     (out_dir / BUNDLE_NAME).write_text(json.dumps(bundle, indent=2) + "\n")
     return bundle
+
+
+def _data_notes(bundle: dict) -> list[str]:
+    """Plain-language notes on the data for the deck appendix."""
+    sample = bundle["sample"]
+    counts = {
+        row["attribute"]: row["n_with"] for row in bundle["attribute_comparison"]["results"]
+    }
+    gummy = bundle["robustness"]["gummy"]
+    coins = bundle["robustness"]["coins_included"]
+    return [
+        f"{sample['n_raw']} market entries in the source data; the two coins "
+        f"({' and '.join(sample['excluded'])}) are survey decoys, not candies, and are "
+        f"excluded, leaving {sample['n_candies']} candies.",
+        "Including the coins moves no attribute or level coefficient by more than "
+        f"{coins['max_abs_shift_predictors']:.1f} points of win rate.",
+        "Win rate is the share of roughly 269,000 head-to-head matchups a candy won. "
+        "It measures relative preference, not sales or satisfaction.",
+        "Sugar level and price level are percentile ranks within the dataset (0 to 1), "
+        "not grams of sugar or prices.",
+        "The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source "
+        "documentation) is analysed as the peanut/almond attribute.",
+        f"Only {counts['nougat']} candies have nougat and {counts['crisped_rice_wafer']} "
+        "have crisped rice/wafer/cookie, so those effects carry wide intervals.",
+        f"Gummy is a hand-coded attribute ({gummy['n_gummy']} of {sample['n_candies']} "
+        f"candies; {gummy['n_unclear']} judgement calls flagged) used only as a "
+        "supplementary check.",
+    ]
+
+
+def _write_appendix(folder: Path, bundle: dict, gummy_csv: Path) -> None:
+    """Appendix tables for the deck: VIFs, the gummy coding and the data notes."""
+    folder.mkdir(parents=True, exist_ok=True)
+    vif = bundle["main_model"]["vif"]
+    pd.DataFrame(
+        {
+            "predictor": list(vif),
+            "label": [LABELS.get(term, term) for term in vif],
+            "vif": list(vif.values()),
+        }
+    ).to_csv(folder / "vif.csv", index=False)
+    pd.read_csv(gummy_csv).to_csv(folder / "gummy_coding.csv", index=False)
+    (folder / "data_notes.md").write_text(
+        "\n".join(f"- {note}" for note in bundle["data_notes"]) + "\n"
+    )
 
 
 def _fit_model(

@@ -102,6 +102,7 @@ def test_every_coefficient_lies_inside_its_confidence_interval(bundle):
         "robustness.png",
         "ranked_profiles.png",
         "recommendation_gap.png",
+        "win_rate_distribution.png",
     ],
 )
 def test_figures_are_written_as_slide_ready_pngs(out_dir, name):
@@ -511,3 +512,33 @@ def test_benchmarks_are_the_nearest_candies_with_sugar_and_price_breaking_ties(b
                          raw["pricepercent"] - levels["price_level"])
         ranking = sorted(zip(attr, level, raw["competitorname"]))
         assert [m["candy"] for m in rec["benchmarks"]] == [name for *_, name in ranking[:3]]
+
+
+def test_appendix_vif_table_lists_every_predictor(out_dir, bundle):
+    vif = pd.read_csv(out_dir / "appendix" / "vif.csv")
+
+    assert list(vif.columns) == ["predictor", "label", "vif"]
+    assert list(vif["predictor"]) == MAIN_TERMS[1:]
+    assert vif.set_index("predictor")["vif"].to_dict() == pytest.approx(
+        bundle["main_model"]["vif"]
+    )
+
+
+def test_appendix_gummy_table_is_the_approved_coding(out_dir):
+    appendix = pd.read_csv(out_dir / "appendix" / "gummy_coding.csv")
+    approved = pd.read_csv(GUMMY)
+
+    assert list(appendix.columns) == ["candy", "gummy", "unclear", "note"]
+    pd.testing.assert_frame_equal(
+        appendix.sort_values("candy").reset_index(drop=True),
+        approved.sort_values("candy").reset_index(drop=True),
+    )
+
+
+def test_appendix_data_notes_state_exclusions_and_sample_size(out_dir, bundle):
+    notes = (out_dir / "appendix" / "data_notes.md").read_text()
+
+    assert notes == "\n".join(f"- {note}" for note in bundle["data_notes"]) + "\n"
+    assert "One dime" in notes and "One quarter" in notes
+    assert "83 candies" in notes
+    assert "peanutyalmondy" in notes

@@ -165,6 +165,39 @@ def robustness_chart(
     _save(fig, path)
 
 
+def win_rate_distribution_chart(candies: pd.DataFrame, path: Path) -> None:
+    """Histogram of candy win rates, stacked by chocolate-based, fruit-flavoured
+    and neither, with the 50% line where a candy wins as often as it loses."""
+    groups = [
+        ("Chocolate-based", candies["chocolate"] == 1, DRIVER),
+        ("Fruit-flavoured", (candies["fruity"] == 1) & (candies["chocolate"] == 0), ACCENT_ORANGE),
+        ("Neither", (candies["chocolate"] == 0) & (candies["fruity"] == 0), NOT_CLEAR),
+    ]
+    width = 5
+    low = np.floor(candies["win_rate"].min() / width) * width
+    high = np.ceil(candies["win_rate"].max() / width) * width
+    bins = np.arange(low, high + width, width)
+
+    fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
+    ax.hist(
+        [candies.loc[mask, "win_rate"] for _, mask, _ in groups],
+        bins=bins,
+        stacked=True,
+        color=[color for *_, color in groups],
+        label=[f"{name} (n = {int(mask.sum())})" for name, mask, _ in groups],
+        edgecolor="white",
+    )
+    ax.axvline(50, color="black", linewidth=1, linestyle="--")
+    ax.annotate("wins half its matchups", (50, ax.get_ylim()[1] * 0.95), xytext=(6, 0),
+                textcoords="offset points", fontsize=12, color="#333333")
+    ax.set_xlabel("Win rate (% of head-to-head matchups won)")
+    ax.set_ylabel("Number of candies")
+    ax.set_title(f"How the {len(candies)} candies score")
+    ax.legend(loc="upper left", frameon=False)
+    _footnote(fig, "Win rate measures relative preference in matchups, not sales or satisfaction.")
+    _save(fig, path)
+
+
 def profile_label(attributes: dict[str, int]) -> str:
     """Short name for a profile, e.g. 'Chocolate + Peanut + Bar'."""
     present = [PROFILE_LABELS[a] for a, on in attributes.items() if on]
