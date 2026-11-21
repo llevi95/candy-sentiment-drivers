@@ -31,6 +31,9 @@ def run(raw_csv: Path, out_dir: Path) -> dict:
         cov="hc3",
     )
 
+    holm_results = _holm_table(main_model, family=PREDICTORS)
+    comparison = _attribute_comparison_table(candies)
+
     bundle = {
         "sample": {
             "n_raw": data.n_raw,
@@ -38,14 +41,18 @@ def run(raw_csv: Path, out_dir: Path) -> dict:
             "excluded": data.excluded,
         },
         "main_model": _model_section(main_model, target="win_rate"),
-        "holm": _holm_section(main_model, family=PREDICTORS),
-        "attribute_comparison": _attribute_comparison_section(candies),
+        "holm": {"alpha": ALPHA, "results": _records(holm_results, "term")},
+        "attribute_comparison": {
+            "test": "welch",
+            "alpha": ALPHA,
+            "results": _records(comparison, "attribute"),
+        },
     }
+
     figures = out_dir / FIGURES_DIR
-    survivors = {row["term"] for row in bundle["holm"]["results"] if row["survives"]}
-    coefficient_chart(main_model.table(), survivors, figures / "coefficients.png")
-    comparison = pd.DataFrame(bundle["attribute_comparison"]["results"]).set_index("attribute")
-    attribute_comparison_chart(comparison, figures / "attribute_comparison.png")
+    survivors = set(holm_results.index[holm_results["survives"]])
+    coefficient_chart(main_model.table(), survivors, ALPHA, figures / "coefficients.png")
+    attribute_comparison_chart(comparison, ALPHA, figures / "attribute_comparison.png")
 
     (out_dir / BUNDLE_NAME).write_text(json.dumps(bundle, indent=2) + "\n")
     return bundle
@@ -65,44 +72,37 @@ def _model_section(result: FitResult, target: str) -> dict:
     }
 
 
-def _holm_section(result: FitResult, family: list[str]) -> dict:
+def _holm_table(result: FitResult, family: list[str]) -> pd.DataFrame:
+    """Holm-adjusted p-values for one family of model terms, indexed by term."""
     p = result.p[family]
     adjusted = holm(p)
-    return {
-        "alpha": ALPHA,
-        "results": [
-            {
-                "term": term,
-                "p": float(p[term]),
-                "p_holm": float(adjusted[term]),
-                "survives": bool(adjusted[term] < ALPHA),
-            }
-            for term in family
-        ],
-    }
+    return pd.DataFrame({"p": p, "p_holm": adjusted, "survives": adjusted < ALPHA})
 
 
-def _attribute_comparison_section(candies: pd.DataFrame) -> dict:
+def _attribute_comparison_table(candies: pd.DataFrame) -> pd.DataFrame:
     """Welch t-test of win rate, candies with vs without each attribute."""
-    results = []
+    rows = {}
     for attribute in ATTRIBUTES:
         has = candies[attribute] == 1
-        with_, without = candies.loc[has, "win_rate"], candies.loc[~has, "win_rate"]
-        test = stats.ttest_ind(with_, without, equal_var=False)
+        with_attr = candies.loc[has, "win_rate"]
+        without_attr = candies.loc[~has, "win_rate"]
+        test = stats.ttest_ind(with_attr, without_attr, equal_var=False)
         ci = test.confidence_interval(confidence_level=1 - ALPHA)
-        results.append(
-            {
-                "attribute": attribute,
-                "n_with": int(has.sum()),
-                "n_without": int((~has).sum()),
-                "mean_with": float(with_.mean()),
-                "mean_without": float(without.mean()),
-                "diff": float(with_.mean() - without.mean()),
-                "ci_low": float(ci.low),
-                "ci_high": float(ci.high),
-                "t": float(test.statistic),
-                "df": float(test.df),
-                "p": float(test.pvalue),
-            }
-        )
-    return {"test": "welch", "alpha": ALPHA, "results": results}
+        rows[attribute] = {
+            "n_with": int(has.sum()),
+            "n_without": int((~has).sum()),
+            "mean_with": with_attr.mean(),
+            "mean_without": without_attr.mean(),
+            "diff": with_attr.mean() - without_attr.mean(),
+            "ci_low": ci.low,
+            "ci_high": ci.high,
+            "t": test.statistic,
+            "df": test.df,
+            "p": test.pvalue,
+        }
+    return pd.DataFrame.from_dict(rows, orient="index")
+
+
+def _records(table: pd.DataFrame, key: str) -> list[dict]:
+    """JSON-ready rows, with the table's index as the ``key`` field."""
+    return table.reset_index(names=key).to_dict(orient="records")

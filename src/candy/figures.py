@@ -46,12 +46,15 @@ plt.rcParams.update(
 )
 
 
-def coefficient_chart(table: pd.DataFrame, survivors: set[str], path: Path) -> None:
+def coefficient_chart(
+    table: pd.DataFrame, survivors: set[str], alpha: float, path: Path
+) -> None:
     """Horizontal CI chart of each term's effect on win rate, intercept excluded.
 
-    ``table`` has one row per term with ``coef``, ``ci_low`` and ``ci_high``.
-    Terms in ``survivors`` (Holm-significant) are highlighted; terms whose raw
-    95% CI excludes zero but that do not survive Holm are shown as tentative.
+    ``table`` has one row per term with ``coef``, ``ci_low`` and ``ci_high`` at
+    level ``1 - alpha``. Terms in ``survivors`` (Holm-significant across every
+    plotted term) are highlighted; terms whose raw CI excludes zero but that do
+    not survive Holm are shown as tentative.
     """
     rows = table.drop(index=INTERCEPT).sort_values("coef")
     excludes_zero = (rows["ci_low"] > 0) | (rows["ci_high"] < 0)
@@ -66,33 +69,37 @@ def coefficient_chart(table: pd.DataFrame, survivors: set[str], path: Path) -> N
     ax.scatter(rows["coef"], y, color=colors, s=90, zorder=3)
     ax.axvline(0, color="black", linewidth=1)
     ax.set_yticks(list(y), [LABELS.get(t, t) for t in rows.index])
-    ax.set_xlabel("Change in win rate (percentage points), 95% CI")
+    ax.set_xlabel(f"Change in win rate (percentage points), {1 - alpha:.0%} CI")
     ax.set_title("What moves consumer preference")
     _footnote(
         fig,
-        "Dark blue: significant after Holm correction across all 11 effects. "
-        "Light blue: 95% CI excludes zero, but not after correction. Grey: neither.",
+        f"Dark blue: significant after Holm correction across all {len(rows)} effects. "
+        f"Light blue: {1 - alpha:.0%} CI excludes zero, but not after correction. "
+        "Grey: neither.",
     )
     _save(fig, path)
 
 
-def attribute_comparison_chart(rows: pd.DataFrame, path: Path) -> None:
+def attribute_comparison_chart(rows: pd.DataFrame, alpha: float, path: Path) -> None:
     """Average win rate of candies with vs without each attribute.
 
     ``rows`` has one row per attribute (index) with ``mean_with``,
     ``mean_without``, ``n_with``, ``n_without`` and Welch ``p``.
     """
     rows = rows.sort_values("mean_with")
-    clear = rows["p"] < 0.05
+    colors = [DRIVER if p < alpha else NOT_CLEAR for p in rows["p"]]
     y = list(range(len(rows)))
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
-    ax.hlines(y, rows["mean_without"], rows["mean_with"],
-              colors=[DRIVER if c else NOT_CLEAR for c in clear], linewidth=3)
-    ax.scatter(rows["mean_without"], y, color="white", edgecolor="#333333",
-               s=90, zorder=3, label="Without attribute")
-    ax.scatter(rows["mean_with"], y, color=[DRIVER if c else NOT_CLEAR for c in clear],
-               edgecolor="#333333", s=90, zorder=3, label="With attribute")
+    ax.hlines(y, rows["mean_without"], rows["mean_with"], colors=colors, linewidth=3)
+    ax.scatter(
+        rows["mean_without"], y, color="white", edgecolor="#333333",
+        s=90, zorder=3, label="Without attribute",
+    )
+    ax.scatter(
+        rows["mean_with"], y, color=colors, edgecolor="#333333",
+        s=90, zorder=3, label="With attribute",
+    )
     ax.set_yticks(
         y,
         [
@@ -105,7 +112,7 @@ def attribute_comparison_chart(rows: pd.DataFrame, path: Path) -> None:
     ax.legend(loc="lower right", frameon=False)
     _footnote(
         fig,
-        "Blue: difference significant (Welch t-test, p < 0.05). "
+        f"Blue: difference significant (Welch t-test, p < {alpha:g}). "
         "Simple comparison; does not control for other attributes.",
     )
     _save(fig, path)

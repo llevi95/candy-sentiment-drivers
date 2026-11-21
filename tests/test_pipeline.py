@@ -50,6 +50,17 @@ MAIN_TERMS = [
     "sugar_level",
     "price_level",
 ]
+ATTRIBUTES = [
+    "chocolate",
+    "fruity",
+    "caramel",
+    "peanuty_almondy",
+    "nougat",
+    "crisped_rice_wafer",
+    "hard",
+    "bar",
+    "pluribus",
+]
 
 
 def test_main_model_regresses_win_rate_on_attributes_and_levels_with_hc3(bundle):
@@ -101,6 +112,7 @@ def test_module_entry_point_builds_outputs(tmp_path):
 
     assert (tmp_path / "results.json").exists()
     assert (tmp_path / "figures" / "coefficients.png").exists()
+    assert (tmp_path / "figures" / "attribute_comparison.png").exists()
 
 
 def test_main_model_reports_a_vif_for_every_predictor(bundle):
@@ -117,15 +129,15 @@ def test_main_model_reports_an_out_of_sample_r_squared_below_in_sample(bundle):
 
 
 def test_holm_correction_covers_the_eleven_main_effects(bundle):
-    holm = bundle["holm"]
+    section = bundle["holm"]
     main_p = {row["term"]: row["p"] for row in bundle["main_model"]["coefficients"]}
 
-    assert holm["alpha"] == 0.05
-    assert [row["term"] for row in holm["results"]] == MAIN_TERMS[1:]
-    for row in holm["results"]:
+    assert section["alpha"] == 0.05
+    assert [row["term"] for row in section["results"]] == MAIN_TERMS[1:]
+    for row in section["results"]:
         assert row["p"] == main_p[row["term"]]
         assert row["p"] <= row["p_holm"] <= 1
-        assert row["survives"] == (row["p_holm"] < holm["alpha"])
+        assert row["survives"] == (row["p_holm"] < section["alpha"])
 
 
 def test_chocolate_survives_holm_correction(bundle):
@@ -133,9 +145,6 @@ def test_chocolate_survives_holm_correction(bundle):
     survivors = [row["term"] for row in bundle["holm"]["results"] if row["survives"]]
 
     assert "chocolate" in survivors
-
-
-ATTRIBUTES = MAIN_TERMS[1:10]
 
 
 def test_attribute_comparison_splits_all_candies_with_and_without_each_attribute(bundle):
