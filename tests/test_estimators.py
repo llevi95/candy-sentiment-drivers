@@ -1,10 +1,11 @@
 """Seam 1: the estimator interface, checked against independent known answers."""
 
 import numpy as np
+import pandas as pd
 import pytest
 from scipy import stats
 
-from candy.estimators import fit
+from candy.estimators import fit, holm
 
 
 def test_single_predictor_matches_scipy_linregress():
@@ -90,3 +91,73 @@ def test_exact_linear_data_gives_perfect_fit():
     np.testing.assert_allclose(result.coef, [2.0, 0.5], atol=1e-12)
     np.testing.assert_allclose(result.residuals, 0.0, atol=1e-12)
     assert result.r_squared == pytest.approx(1.0)
+
+
+def test_vifs_equal_one_for_orthogonal_predictors():
+    # Full 2^3 factorial in +/-1 coding, replicated: columns are mutually
+    # orthogonal and centred, so no predictor is explained by the others.
+    levels = np.array([[a, b, c] for a in (-1, 1) for b in (-1, 1) for c in (-1, 1)])
+    X = np.vstack([levels, levels]).astype(float)
+    y = np.random.default_rng(3).normal(size=len(X))
+
+    result = fit(X, y, names=["a", "b", "c"])
+
+    assert list(result.vif.index) == ["a", "b", "c"]
+    np.testing.assert_allclose(result.vif, 1.0, rtol=1e-12)
+
+
+def test_vifs_match_auxiliary_regressions_for_correlated_predictors():
+    # Definition: VIF_j = 1 / (1 - R²_j), with R²_j from regressing predictor j
+    # on all the others.
+    rng = np.random.default_rng(4)
+    a = rng.normal(size=60)
+    b = 0.8 * a + rng.normal(scale=0.5, size=60)
+    c = rng.normal(size=60) - 0.4 * b
+    X = np.column_stack([a, b, c])
+
+    result = fit(X, rng.normal(size=60), names=["a", "b", "c"])
+
+    for j, name in enumerate(["a", "b", "c"]):
+        others = np.delete(X, j, axis=1)
+        aux = fit(others, X[:, j], names=["u", "v"])
+        assert result.vif[name] == pytest.approx(1 / (1 - aux.r_squared), rel=1e-10)
+
+
+def test_loo_r_squared_matches_brute_force_leave_one_out_refits():
+    rng = np.random.default_rng(5)
+    X = rng.normal(size=(25, 3))
+    y = 1.0 + X @ [2.0, 0.0, -1.0] + rng.normal(size=25)
+    names = ["a", "b", "c"]
+
+    result = fit(X, y, names=names)
+
+    held_out_errors = []
+    for i in range(len(y)):
+        keep = np.arange(len(y)) != i
+        refit = fit(X[keep], y[keep], names)
+        prediction = refit.coef["intercept"] + X[i] @ refit.coef[names].to_numpy()
+        held_out_errors.append(y[i] - prediction)
+    press = np.sum(np.square(held_out_errors))
+    expected = 1 - press / np.sum((y - y.mean()) ** 2)
+
+    assert result.loo_r_squared == pytest.approx(expected, rel=1e-10)
+    assert result.loo_r_squared < result.r_squared
+
+
+def test_holm_adjustment_matches_hand_computed_values():
+    # Sorted p: 0.005, 0.01, 0.03, 0.04 with m = 4.
+    # Step-down multipliers 4, 3, 2, 1 give 0.02, 0.03, 0.06, 0.04; enforcing a
+    # running maximum lifts the last to 0.06. Labels keep the input order.
+    p = pd.Series({"w": 0.01, "x": 0.04, "y": 0.03, "z": 0.005})
+
+    adjusted = holm(p)
+
+    assert list(adjusted.index) == ["w", "x", "y", "z"]
+    np.testing.assert_allclose(adjusted, [0.03, 0.06, 0.06, 0.02], rtol=1e-12)
+
+
+def test_holm_adjusted_p_values_are_capped_at_one():
+    adjusted = holm(pd.Series({"a": 0.4, "b": 0.6, "c": 0.9}))
+
+    # 0.4 * 3 = 1.2 -> 1; 0.6 * 2 = 1.2 -> 1; 0.9 * 1 = 0.9 -> raised to 1.
+    np.testing.assert_allclose(adjusted, [1.0, 1.0, 1.0])

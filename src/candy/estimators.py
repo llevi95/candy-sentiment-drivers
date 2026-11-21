@@ -33,7 +33,9 @@ class FitResult:
     df_resid: int
     n_obs: int
     r_squared: float
+    loo_r_squared: float
     cov: Covariance
+    vif: pd.Series
 
     def table(self) -> pd.DataFrame:
         """Coefficient table with one row per term."""
@@ -73,6 +75,7 @@ def fit(
     beta, *_ = np.linalg.lstsq(design, y, rcond=None)
     resid = y - design @ beta
     xtx_inv = np.linalg.inv(design.T @ design)
+    leverage = np.einsum("ij,jk,ik->i", design, xtx_inv, design)
 
     if cov == "classical":
         sigma2 = resid @ resid / df_resid
@@ -80,7 +83,6 @@ def fit(
     elif cov == "hc3":
         # MacKinnon & White (1985) HC3: residuals inflated by leverage, which
         # suits small samples with heteroskedastic errors.
-        leverage = np.einsum("ij,jk,ik->i", design, xtx_inv, design)
         weights = (resid / (1 - leverage)) ** 2
         meat = (design * weights[:, None]).T @ design
         vcov = xtx_inv @ meat @ xtx_inv
@@ -92,6 +94,9 @@ def fit(
     p = 2 * stats.t.sf(np.abs(t), df_resid)
     crit = stats.t.ppf(1 - alpha / 2, df_resid)
     tss = np.sum((y - y.mean()) ** 2)
+    # Leave-one-out residuals have the closed form e_i / (1 - h_i), so PRESS
+    # needs no refitting.
+    press = np.sum((resid / (1 - leverage)) ** 2)
 
     def series(values: np.ndarray) -> pd.Series:
         return pd.Series(values, index=terms)
@@ -107,5 +112,31 @@ def fit(
         df_resid=df_resid,
         n_obs=n,
         r_squared=float(1 - resid @ resid / tss),
+        loo_r_squared=float(1 - press / tss),
         cov=cov,
+        vif=pd.Series(_vifs(X), index=names),
     )
+
+
+def _vifs(X: np.ndarray) -> np.ndarray:
+    """Variance inflation factor of each predictor: 1 / (1 - R²) from regressing
+    it on the others, read off the diagonal of the inverse correlation matrix."""
+    corr = np.atleast_2d(np.corrcoef(X, rowvar=False))
+    return np.diag(np.linalg.inv(corr))
+
+
+def holm(p: pd.Series) -> pd.Series:
+    """Holm (1979) step-down adjusted p-values for one family of tests.
+
+    The smallest of m p-values is multiplied by m, the next by m - 1, and so on;
+    a running maximum keeps the adjusted values monotone, and each is capped at 1.
+    Rejecting where the adjusted p-value is below alpha controls the family-wise
+    error rate at alpha. The result keeps the input's labels and order.
+    """
+    order = np.argsort(p.to_numpy(), kind="stable")
+    m = len(p)
+    stepped = p.to_numpy()[order] * (m - np.arange(m))
+    adjusted = np.minimum(np.maximum.accumulate(stepped), 1.0)
+    out = np.empty(m)
+    out[order] = adjusted
+    return pd.Series(out, index=p.index)
