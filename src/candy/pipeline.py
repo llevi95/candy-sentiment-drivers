@@ -173,6 +173,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
             "gummy": {
                 "n_gummy": int(candies["gummy"].sum()),
                 "n_unclear": int(candies["gummy_unclear"].sum()),
+                "n_unclear_gummy": int((candies["gummy"] * candies["gummy_unclear"]).sum()),
                 "unclear_candies": candies.loc[candies["gummy_unclear"] == 1, "candy"].tolist(),
                 **_model_section(gummy_model, target="win_rate"),
                 "loo_r_squared_change": gummy_model.loo_r_squared - main_model.loo_r_squared,
@@ -302,8 +303,10 @@ def _data_notes(bundle: dict) -> list[str]:
         f"Only {counts['nougat']} candies have nougat and {counts['crisped_rice_wafer']} "
         "have crisped rice/wafer/cookie, so those effects carry wide intervals.",
         f"Gummy is a hand-coded attribute ({gummy['n_gummy']} of {sample['n_candies']} "
-        f"candies; {gummy['n_unclear']} judgement calls flagged), used to test the "
-        "gummy effect and to compare a gummy with chocolate products.",
+        "candies), used to test the gummy effect and to compare a gummy with "
+        f"chocolate products. Judgement calls are flagged: {gummy['n_unclear_gummy']} "
+        f"of the {gummy['n_gummy']} gummies and "
+        f"{gummy['n_unclear'] - gummy['n_unclear_gummy']} of the other candies.",
         _gummy_sensitivity_note(gummy),
         _brand_note(bundle["main_model"], bundle["robustness"]["without_brand"]),
     ]

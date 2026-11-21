@@ -353,6 +353,9 @@ def test_gummy_check_lists_the_judgement_calls_for_the_appendix(bundle):
     check = bundle["robustness"]["gummy"]
 
     assert check["n_unclear"] == 11
+    # 11 gummies and 11 judgement calls is a coincidence: only 4 overlap.
+    assert check["n_unclear_gummy"] == 4
+    assert "4 of the 11 gummies and 7 of the other candies" in "\n".join(bundle["data_notes"])
     assert "Swedish Fish" in check["unclear_candies"]
     assert "Starburst" in check["unclear_candies"]
 
