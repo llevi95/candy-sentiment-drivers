@@ -51,8 +51,9 @@ class CandyData:
     with_coins: pd.DataFrame  # every raw entry, coins included, for robustness only
 
 
-def load_candies(raw_csv: Path) -> CandyData:
-    """Read the raw CSV, normalise column names, validate, and drop the coins."""
+def load_candies(raw_csv: Path, gummy_csv: Path) -> CandyData:
+    """Read the raw CSV, normalise column names, validate, drop the coins, and
+    join the hand-coded gummy attribute onto the candies."""
     raw = pd.read_csv(raw_csv).rename(columns=RENAME)
     missing = {"candy", "win_rate", *PREDICTORS} - set(raw.columns)
     if missing:
@@ -61,6 +62,7 @@ def load_candies(raw_csv: Path) -> CandyData:
 
     is_coin = raw["candy"].isin(COINS)
     candies = raw.loc[~is_coin].reset_index(drop=True)
+    candies = candies.merge(_load_gummy(gummy_csv, candies["candy"]), on="candy")
     return CandyData(
         candies=candies,
         excluded=raw.loc[is_coin, "candy"].tolist(),
@@ -78,3 +80,21 @@ def _validate(df: pd.DataFrame) -> None:
         raise ValueError(f"levels must be percentiles in [0, 1]: {bad_level}")
     if not df["win_rate"].between(0, 100).all():
         raise ValueError("win rate must lie in [0, 100]")
+
+
+def _load_gummy(gummy_csv: Path, candies: pd.Series) -> pd.DataFrame:
+    """Read the approved gummy coding and check it covers exactly the candies."""
+    gummy = pd.read_csv(gummy_csv, usecols=["candy", "gummy"])
+    missing = sorted(set(candies) - set(gummy["candy"]))
+    if missing:
+        raise ValueError(f"gummy coding is missing candies: {missing}")
+    unknown = sorted(set(gummy["candy"]) - set(candies))
+    if unknown:
+        raise ValueError(f"gummy coding names unknown candies: {unknown}")
+    not_binary = gummy.loc[~gummy["gummy"].isin([0, 1]), "candy"].tolist()
+    if not_binary:
+        raise ValueError(f"gummy values must be 0/1: {not_binary}")
+    duplicated = gummy.loc[gummy["candy"].duplicated(), "candy"].tolist()
+    if duplicated:
+        raise ValueError(f"gummy coding lists candies more than once: {duplicated}")
+    return gummy

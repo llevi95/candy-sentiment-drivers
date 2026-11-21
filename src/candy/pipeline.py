@@ -60,7 +60,7 @@ def _is_retained(ci_low: float, ci_high: float, loo_change: float) -> bool:
     return bool((ci_low > 0 or ci_high < 0) and loo_change >= 0)
 
 
-def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
+def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
     """Run the full analysis and write the results bundle into ``out_dir``.
 
     ``seed`` drives every random step (the bootstrap), so equal seeds give
@@ -69,7 +69,7 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    data = load_candies(raw_csv)
+    data = load_candies(raw_csv, gummy_csv)
     candies = data.candies
     main_model = _fit_model(candies, bootstrap_draws=BOOTSTRAP_DRAWS, seed=seed)
     coins_included = _fit_model(data.with_coins)
@@ -81,6 +81,7 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
         i for i, row in zip(INTERACTIONS, interactions, strict=True) if row["retained"]
     )
     final_model = _fit_model(candies, interactions=retained) if retained else main_model
+    gummy_model = _fit_model(candies, extra=("gummy",))
     holm_results = _holm_table(main_model, family=PREDICTORS)
     comparison = _attribute_comparison_table(candies)
 
@@ -107,6 +108,12 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
         "final_model": {
             "predictors": list(final_model.coef.index.drop(INTERCEPT)),
             **_model_section(final_model, target="win_rate"),
+        },
+        "gummy_check": {
+            "n_gummy": int(candies["gummy"].sum()),
+            **_model_section(gummy_model, target="win_rate"),
+            "gummy": _term_summary(gummy_model, "gummy"),
+            "loo_r_squared_change": gummy_model.loo_r_squared - main_model.loo_r_squared,
         },
         "robustness": {
             "bootstrap": _bootstrap_section(main_model.bootstrap),
@@ -153,13 +160,14 @@ def _fit_model(
     entries: pd.DataFrame,
     *,
     interactions: tuple[Interaction, ...] = (),
+    extra: tuple[str, ...] = (),
     target: Target = "identity",
     bootstrap_draws: int | None = None,
     seed: int | None = None,
 ) -> FitResult:
     """Win rate on the attributes plus sugar and price level, HC3: the main
-    model, optionally extended with interaction terms."""
-    design = entries[PREDICTORS].copy()
+    model, optionally extended with extra columns and interaction terms."""
+    design = entries[[*PREDICTORS, *extra]].copy()
     for interaction in interactions:
         design[interaction.term] = entries[interaction.attribute] * entries[interaction.partner]
     return fit(
@@ -211,6 +219,16 @@ def _test_interaction(
         "loo_r_squared": model.loo_r_squared,
         "loo_r_squared_change": loo_change,
         "retained": _is_retained(ci_low, ci_high, loo_change),
+    }
+
+
+def _term_summary(result: FitResult, term: str) -> dict:
+    return {
+        "coef": float(result.coef[term]),
+        "se": float(result.se[term]),
+        "ci_low": float(result.ci_low[term]),
+        "ci_high": float(result.ci_high[term]),
+        "p": float(result.p[term]),
     }
 
 
