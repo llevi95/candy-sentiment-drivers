@@ -1,0 +1,3388 @@
+{
+  "seed": 20261121,
+  "sample": {
+    "n_raw": 85,
+    "n_candies": 83,
+    "excluded": [
+      "One dime",
+      "One quarter"
+    ]
+  },
+  "main_model": {
+    "target": "win_rate",
+    "cov": "hc3",
+    "n_obs": 83,
+    "df_resid": 71,
+    "r_squared": 0.5455116138315605,
+    "loo_r_squared": 0.35099259993005194,
+    "coefficients": [
+      {
+        "term": "intercept",
+        "coef": 32.016684258950505,
+        "se": 5.365171201247386,
+        "t": 5.967504681212544,
+        "p": 8.598277991062425e-08,
+        "ci_low": 21.318836724866934,
+        "ci_high": 42.71453179303408
+      },
+      {
+        "term": "chocolate",
+        "coef": 21.214083193996778,
+        "se": 4.633479864675762,
+        "t": 4.578434311482927,
+        "p": 1.9460984474085704e-05,
+        "ci_low": 11.975186747780297,
+        "ci_high": 30.452979640213258
+      },
+      {
+        "term": "fruity",
+        "coef": 11.008013575353857,
+        "se": 4.3949377872455,
+        "t": 2.5047029351132317,
+        "p": 0.014552915574462236,
+        "ci_low": 2.2447565223815626,
+        "ci_high": 19.77127062832615
+      },
+      {
+        "term": "caramel",
+        "coef": 2.79276873659548,
+        "se": 4.739714497504291,
+        "t": 0.5892272072644923,
+        "p": 0.5575791149942353,
+        "ci_low": -6.6579535511849635,
+        "ci_high": 12.243491024375924
+      },
+      {
+        "term": "peanuty_almondy",
+        "coef": 10.69636973986797,
+        "se": 5.309718665728901,
+        "t": 2.0144889801613637,
+        "p": 0.047747173023815585,
+        "ci_low": 0.1090914212117049,
+        "ci_high": 21.283648058524236
+      },
+      {
+        "term": "nougat",
+        "coef": 0.4134014026994447,
+        "se": 7.261705920980326,
+        "t": 0.056928965066604595,
+        "p": 0.9547616911282173,
+        "ci_low": -14.066028957684587,
+        "ci_high": 14.892831763083475
+      },
+      {
+        "term": "crisped_rice_wafer",
+        "coef": 8.884557954110212,
+        "se": 7.518619936164104,
+        "t": 1.1816740345360497,
+        "p": 0.24127787739951562,
+        "ci_low": -6.107144402956102,
+        "ci_high": 23.876260311176527
+      },
+      {
+        "term": "hard",
+        "coef": -5.863602279293174,
+        "se": 3.1338510260388674,
+        "t": -1.871053292123035,
+        "p": 0.06545847042135892,
+        "ci_low": -12.112323748479582,
+        "ci_high": 0.3851191898932349
+      },
+      {
+        "term": "bar",
+        "coef": 1.6926975169345488,
+        "se": 6.31671991459833,
+        "t": 0.26797096274961,
+        "p": 0.7894986558037758,
+        "ci_low": -10.902484263317177,
+        "ci_high": 14.287879297186276
+      },
+      {
+        "term": "pluribus",
+        "coef": 0.20112386884872285,
+        "se": 3.361464184545835,
+        "t": 0.05983222126041975,
+        "p": 0.9524573561842707,
+        "ci_low": -6.5014453481770484,
+        "ci_high": 6.903693085874494
+      },
+      {
+        "term": "sugar_level",
+        "coef": 10.160925607199243,
+        "se": 4.911860369627839,
+        "t": 2.0686511510035275,
+        "p": 0.04222162038804947,
+        "ci_low": 0.3669541993960497,
+        "ci_high": 19.954897015002437
+      },
+      {
+        "term": "price_level",
+        "coef": -7.280832169210998,
+        "se": 6.423021245667684,
+        "t": -1.1335525589490936,
+        "p": 0.2607954086485167,
+        "ci_low": -20.087972783541623,
+        "ci_high": 5.526308445119628
+      }
+    ],
+    "vif": {
+      "chocolate": 3.047437433387553,
+      "fruity": 2.986602325115842,
+      "caramel": 1.3863806185577507,
+      "peanuty_almondy": 1.3565782587814132,
+      "nougat": 1.8324662030411307,
+      "crisped_rice_wafer": 1.5531479859584996,
+      "hard": 1.2929827141484673,
+      "bar": 3.6455167252519574,
+      "pluribus": 1.8431144166938418,
+      "sugar_level": 1.2271977695316552,
+      "price_level": 1.8368580087117825
+    }
+  },
+  "holm": {
+    "alpha": 0.05,
+    "results": [
+      {
+        "term": "chocolate",
+        "p": 1.9460984474085704e-05,
+        "p_holm": 0.00021407082921494274,
+        "survives": true
+      },
+      {
+        "term": "fruity",
+        "p": 0.014552915574462236,
+        "p_holm": 0.14552915574462236,
+        "survives": false
+      },
+      {
+        "term": "caramel",
+        "p": 0.5575791149942353,
+        "p_holm": 1.0,
+        "survives": false
+      },
+      {
+        "term": "peanuty_almondy",
+        "p": 0.047747173023815585,
+        "p_holm": 0.3819773841905247,
+        "survives": false
+      },
+      {
+        "term": "nougat",
+        "p": 0.9547616911282173,
+        "p_holm": 1.0,
+        "survives": false
+      },
+      {
+        "term": "crisped_rice_wafer",
+        "p": 0.24127787739951562,
+        "p_holm": 1.0,
+        "survives": false
+      },
+      {
+        "term": "hard",
+        "p": 0.06545847042135892,
+        "p_holm": 0.45820929294951246,
+        "survives": false
+      },
+      {
+        "term": "bar",
+        "p": 0.7894986558037758,
+        "p_holm": 1.0,
+        "survives": false
+      },
+      {
+        "term": "pluribus",
+        "p": 0.9524573561842707,
+        "p_holm": 1.0,
+        "survives": false
+      },
+      {
+        "term": "sugar_level",
+        "p": 0.04222162038804947,
+        "p_holm": 0.3799945834924452,
+        "survives": false
+      },
+      {
+        "term": "price_level",
+        "p": 0.2607954086485167,
+        "p_holm": 1.0,
+        "survives": false
+      }
+    ]
+  },
+  "attribute_comparison": {
+    "test": "welch",
+    "alpha": 0.05,
+    "results": [
+      {
+        "attribute": "chocolate",
+        "n_with": 37,
+        "n_without": 46,
+        "mean_with": 60.9215294054054,
+        "mean_without": 42.270668369565215,
+        "diff": 18.650861035840187,
+        "ci_low": 13.466133212662392,
+        "ci_high": 23.83558885901798,
+        "t": 7.177325757994372,
+        "df": 68.48104857300856,
+        "p": 6.570392502143753e-10
+      },
+      {
+        "attribute": "fruity",
+        "n_with": 38,
+        "n_without": 45,
+        "mean_with": 44.11974142105263,
+        "mean_without": 56.04438131111111,
+        "diff": -11.92463989005848,
+        "ci_low": -17.673619503856543,
+        "ci_high": -6.175660276260416,
+        "t": -4.130930964522442,
+        "df": 76.2662439831697,
+        "p": 9.167964130766995e-05
+      },
+      {
+        "attribute": "caramel",
+        "n_with": 14,
+        "n_without": 69,
+        "mean_with": 57.34690771428571,
+        "mean_without": 49.21290760869565,
+        "diff": 8.134000105590061,
+        "ci_low": -1.6677921627125372,
+        "ci_high": 17.93579237389266,
+        "t": 1.7486932992838347,
+        "df": 17.27667901277924,
+        "p": 0.0980882529486934
+      },
+      {
+        "attribute": "peanuty_almondy",
+        "n_with": 14,
+        "n_without": 69,
+        "mean_with": 63.69713678571429,
+        "mean_without": 47.92445533333334,
+        "diff": 15.77268145238095,
+        "ci_low": 5.937181742800355,
+        "ci_high": 25.608181161961546,
+        "t": 3.391767375166606,
+        "df": 16.466762896078684,
+        "p": 0.0036000929210666627
+      },
+      {
+        "attribute": "nougat",
+        "n_with": 7,
+        "n_without": 76,
+        "mean_with": 60.05187942857144,
+        "mean_without": 49.71294969736843,
+        "diff": 10.33892973120301,
+        "ci_low": -2.5358409475119377,
+        "ci_high": 23.213700409917955,
+        "t": 1.8836468190127744,
+        "df": 7.290599940446836,
+        "p": 0.09994511224367336
+      },
+      {
+        "attribute": "crisped_rice_wafer",
+        "n_with": 7,
+        "n_without": 76,
+        "mean_with": 66.170252,
+        "mean_without": 49.149415381578955,
+        "diff": 17.02083661842105,
+        "ci_low": 6.970555220854756,
+        "ci_high": 27.071118015987345,
+        "t": 3.8964758013823326,
+        "df": 8.106338240984806,
+        "p": 0.004451804542390131
+      },
+      {
+        "attribute": "hard",
+        "n_with": 15,
+        "n_without": 68,
+        "mean_with": 40.5089818,
+        "mean_without": 52.80753832352941,
+        "diff": -12.298556523529406,
+        "ci_low": -17.519394912300505,
+        "ci_high": -7.077718134758307,
+        "t": -4.741443647219892,
+        "df": 46.09655895367015,
+        "p": 2.0740837272894335e-05
+      },
+      {
+        "attribute": "bar",
+        "n_with": 21,
+        "n_without": 62,
+        "mean_with": 61.29541261904762,
+        "mean_without": 46.95715593548387,
+        "diff": 14.338256683563749,
+        "ci_low": 8.249843316064188,
+        "ci_high": 20.42667005106331,
+        "t": 4.748068139805508,
+        "df": 43.39705567941824,
+        "p": 2.2613957975125596e-05
+      },
+      {
+        "attribute": "pluribus",
+        "n_with": 44,
+        "n_without": 39,
+        "mean_with": 46.822780818181826,
+        "mean_without": 54.829358384615404,
+        "diff": -8.006577566433577,
+        "ci_low": -14.31592711071211,
+        "ci_high": -1.697228022155044,
+        "t": -2.5275913631374882,
+        "df": 75.71341639496926,
+        "p": 0.013569199847533818
+      }
+    ]
+  },
+  "interactions": {
+    "declared": [
+      "chocolate_x_peanuty_almondy",
+      "chocolate_x_crisped_rice_wafer",
+      "chocolate_x_bar"
+    ],
+    "declared_note": "Fixed before any model results were seen.",
+    "rule": "Retain an interaction only if its 95% CI excludes 0 and leave-one-out R\u00b2 does not worsen relative to the main model.",
+    "results": [
+      {
+        "term": "chocolate_x_peanuty_almondy",
+        "status": "estimated",
+        "n_both": 12,
+        "n_partner_without_chocolate": 2,
+        "coef": 14.417010524680189,
+        "ci_low": -19.49980619585864,
+        "ci_high": 48.33382724521901,
+        "p": 0.39945293080607874,
+        "loo_r_squared": 0.3242959930585254,
+        "loo_r_squared_change": -0.02669660687152653,
+        "retained": false
+      },
+      {
+        "term": "chocolate_x_crisped_rice_wafer",
+        "status": "not_estimable",
+        "n_both": 7,
+        "n_partner_without_chocolate": 0,
+        "reason": "design matrix is rank deficient: some terms are exact linear combinations of others and cannot be estimated separately",
+        "retained": false
+      },
+      {
+        "term": "chocolate_x_bar",
+        "status": "not_estimable",
+        "n_both": 20,
+        "n_partner_without_chocolate": 1,
+        "reason": "an observation has leverage 1 (it alone identifies a term), so its leave-one-out residual, and with it leave-one-out R\u00b2 and HC3 standard errors, is undefined",
+        "retained": false
+      }
+    ]
+  },
+  "final_model": {
+    "predictors": [
+      "chocolate",
+      "fruity",
+      "caramel",
+      "peanuty_almondy",
+      "nougat",
+      "crisped_rice_wafer",
+      "hard",
+      "bar",
+      "pluribus",
+      "sugar_level",
+      "price_level"
+    ],
+    "target": "win_rate",
+    "cov": "hc3",
+    "n_obs": 83,
+    "df_resid": 71,
+    "r_squared": 0.5455116138315605,
+    "loo_r_squared": 0.35099259993005194,
+    "coefficients": [
+      {
+        "term": "intercept",
+        "coef": 32.016684258950505,
+        "se": 5.365171201247386,
+        "t": 5.967504681212544,
+        "p": 8.598277991062425e-08,
+        "ci_low": 21.318836724866934,
+        "ci_high": 42.71453179303408
+      },
+      {
+        "term": "chocolate",
+        "coef": 21.214083193996778,
+        "se": 4.633479864675762,
+        "t": 4.578434311482927,
+        "p": 1.9460984474085704e-05,
+        "ci_low": 11.975186747780297,
+        "ci_high": 30.452979640213258
+      },
+      {
+        "term": "fruity",
+        "coef": 11.008013575353857,
+        "se": 4.3949377872455,
+        "t": 2.5047029351132317,
+        "p": 0.014552915574462236,
+        "ci_low": 2.2447565223815626,
+        "ci_high": 19.77127062832615
+      },
+      {
+        "term": "caramel",
+        "coef": 2.79276873659548,
+        "se": 4.739714497504291,
+        "t": 0.5892272072644923,
+        "p": 0.5575791149942353,
+        "ci_low": -6.6579535511849635,
+        "ci_high": 12.243491024375924
+      },
+      {
+        "term": "peanuty_almondy",
+        "coef": 10.69636973986797,
+        "se": 5.309718665728901,
+        "t": 2.0144889801613637,
+        "p": 0.047747173023815585,
+        "ci_low": 0.1090914212117049,
+        "ci_high": 21.283648058524236
+      },
+      {
+        "term": "nougat",
+        "coef": 0.4134014026994447,
+        "se": 7.261705920980326,
+        "t": 0.056928965066604595,
+        "p": 0.9547616911282173,
+        "ci_low": -14.066028957684587,
+        "ci_high": 14.892831763083475
+      },
+      {
+        "term": "crisped_rice_wafer",
+        "coef": 8.884557954110212,
+        "se": 7.518619936164104,
+        "t": 1.1816740345360497,
+        "p": 0.24127787739951562,
+        "ci_low": -6.107144402956102,
+        "ci_high": 23.876260311176527
+      },
+      {
+        "term": "hard",
+        "coef": -5.863602279293174,
+        "se": 3.1338510260388674,
+        "t": -1.871053292123035,
+        "p": 0.06545847042135892,
+        "ci_low": -12.112323748479582,
+        "ci_high": 0.3851191898932349
+      },
+      {
+        "term": "bar",
+        "coef": 1.6926975169345488,
+        "se": 6.31671991459833,
+        "t": 0.26797096274961,
+        "p": 0.7894986558037758,
+        "ci_low": -10.902484263317177,
+        "ci_high": 14.287879297186276
+      },
+      {
+        "term": "pluribus",
+        "coef": 0.20112386884872285,
+        "se": 3.361464184545835,
+        "t": 0.05983222126041975,
+        "p": 0.9524573561842707,
+        "ci_low": -6.5014453481770484,
+        "ci_high": 6.903693085874494
+      },
+      {
+        "term": "sugar_level",
+        "coef": 10.160925607199243,
+        "se": 4.911860369627839,
+        "t": 2.0686511510035275,
+        "p": 0.04222162038804947,
+        "ci_low": 0.3669541993960497,
+        "ci_high": 19.954897015002437
+      },
+      {
+        "term": "price_level",
+        "coef": -7.280832169210998,
+        "se": 6.423021245667684,
+        "t": -1.1335525589490936,
+        "p": 0.2607954086485167,
+        "ci_low": -20.087972783541623,
+        "ci_high": 5.526308445119628
+      }
+    ],
+    "vif": {
+      "chocolate": 3.047437433387553,
+      "fruity": 2.986602325115842,
+      "caramel": 1.3863806185577507,
+      "peanuty_almondy": 1.3565782587814132,
+      "nougat": 1.8324662030411307,
+      "crisped_rice_wafer": 1.5531479859584996,
+      "hard": 1.2929827141484673,
+      "bar": 3.6455167252519574,
+      "pluribus": 1.8431144166938418,
+      "sugar_level": 1.2271977695316552,
+      "price_level": 1.8368580087117825
+    }
+  },
+  "profiles": {
+    "realism_rules": [
+      "not chocolate and fruity together",
+      "hard excludes bar",
+      "bar excludes pluribus"
+    ],
+    "support_rule": "within 1 attribute of at least one real candy",
+    "levels": {
+      "sugar_level": 0.73199999,
+      "price_level": 0.465
+    },
+    "sugar_rule": "upper quartile (sugar CI above zero)",
+    "range_note": "CI and prediction interval bounds are capped to 0-100; 'capped' marks profiles where the linear model's range left that scale.",
+    "n_enumerated": 512,
+    "n_realistic": 240,
+    "n_supported": 109,
+    "ranked": [
+      {
+        "rank": 1,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 81.76277328733242,
+        "ci_low": 60.57808864630819,
+        "ci_high": 100.0,
+        "pi_low": 51.716883039568046,
+        "pi_high": 100.0,
+        "capped": true
+      },
+      {
+        "rank": 2,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 81.34937188463297,
+        "ci_low": 59.660781304142155,
+        "ci_high": 100.0,
+        "pi_low": 50.946088857808235,
+        "pi_high": 100.0,
+        "capped": true
+      },
+      {
+        "rank": 3,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 79.65667436769843,
+        "ci_low": 57.24560039792952,
+        "ci_high": 100.0,
+        "pi_low": 48.73385279657546,
+        "pi_high": 100.0,
+        "capped": true
+      },
+      {
+        "rank": 4,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 78.5566031480375,
+        "ci_low": 60.44169423472384,
+        "ci_high": 96.67151206135115,
+        "pi_low": 50.59029158611169,
+        "pi_high": 100.0,
+        "capped": true
+      },
+      {
+        "rank": 5,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 77.06502949995166,
+        "ci_low": 56.962448476730046,
+        "ci_high": 97.16761052317328,
+        "pi_low": 47.7720538703533,
+        "pi_high": 100.0,
+        "capped": true
+      },
+      {
+        "rank": 6,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 76.86390563110294,
+        "ci_low": 56.26620795187726,
+        "ci_high": 97.46160331032861,
+        "pi_low": 47.22896329733362,
+        "pi_high": 100.0,
+        "capped": true
+      },
+      {
+        "rank": 7,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 72.8782153332222,
+        "ci_low": 59.85857256502018,
+        "ci_high": 85.89785810142422,
+        "pi_low": 47.90871883744461,
+        "pi_high": 97.84771182899979,
+        "capped": false
+      },
+      {
+        "rank": 8,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 72.46481393052275,
+        "ci_low": 55.816771651516284,
+        "ci_high": 89.11285620952921,
+        "pi_low": 45.425546759154344,
+        "pi_high": 99.50408110189116,
+        "capped": false
+      },
+      {
+        "rank": 9,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 71.18551781628766,
+        "ci_low": 54.64530934864297,
+        "ci_high": 87.72572628393235,
+        "pi_low": 44.21250994556254,
+        "pi_high": 98.15852568701277,
+        "capped": false
+      },
+      {
+        "rank": 10,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 71.06640354746445,
+        "ci_low": 52.256608595449585,
+        "ci_high": 89.8761984994793,
+        "pi_low": 42.64505517026922,
+        "pi_high": 99.48775192465968,
+        "capped": false
+      },
+      {
+        "rank": 11,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 70.97324028243693,
+        "ci_low": 57.653384792880026,
+        "ci_high": 84.29309577199385,
+        "pi_low": 45.84590043708654,
+        "pi_high": 96.10058012778732,
+        "capped": false
+      },
+      {
+        "rank": 12,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 70.77211641358821,
+        "ci_low": 56.668588936582346,
+        "ci_high": 84.87564389059406,
+        "pi_low": 45.22071440243208,
+        "pi_high": 96.32351842474434,
+        "capped": false
+      },
+      {
+        "rank": 13,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 70.653002144765,
+        "ci_low": 54.84236436776415,
+        "ci_high": 86.46363992176585,
+        "pi_low": 44.12111709381958,
+        "pi_high": 97.18488719571042,
+        "capped": false
+      },
+      {
+        "rank": 14,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 70.08544659662672,
+        "ci_low": 57.35881826589506,
+        "ci_high": 82.8120749273584,
+        "pi_low": 45.267474759475405,
+        "pi_high": 94.90341843377804,
+        "capped": false
+      },
+      {
+        "rank": 15,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 69.67204519392727,
+        "ci_low": 57.57082285114431,
+        "ci_high": 81.77326753671025,
+        "pi_low": 45.168897648550086,
+        "pi_high": 94.17519273930446,
+        "capped": false
+      },
+      {
+        "rank": 16,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 69.16142849667918,
+        "ci_low": 51.62525694195642,
+        "ci_high": 86.69760005140193,
+        "pi_low": 41.5664657274033,
+        "pi_high": 96.75639126595506,
+        "capped": false
+      },
+      {
+        "rank": 17,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 68.96030462783045,
+        "ci_low": 50.88451350976095,
+        "ci_high": 87.03609574589996,
+        "pi_low": 41.01931534711359,
+        "pi_high": 96.90129390854732,
+        "capped": false
+      },
+      {
+        "rank": 18,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 68.5938729485409,
+        "ci_low": 52.015298383204815,
+        "ci_high": 85.17244751387699,
+        "pi_low": 41.59732146396305,
+        "pi_high": 95.59042443311876,
+        "capped": false
+      },
+      {
+        "rank": 19,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 68.39274907969218,
+        "ci_low": 50.21891028193232,
+        "ci_high": 86.56658787745204,
+        "pi_low": 40.38823026418642,
+        "pi_high": 96.39726789519794,
+        "capped": false
+      },
+      {
+        "rank": 20,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 68.27363481086897,
+        "ci_low": 47.90131355528629,
+        "ci_high": 88.64595606645165,
+        "pi_low": 38.794894492094826,
+        "pi_high": 97.75237512964311,
+        "capped": false
+      },
+      {
+        "rank": 21,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 68.18047154584146,
+        "ci_low": 58.43298179912631,
+        "ci_high": 77.9279612925566,
+        "pi_low": 44.750187428840846,
+        "pi_high": 91.61075566284207,
+        "capped": false
+      },
+      {
+        "rank": 22,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 67.97934767699273,
+        "ci_low": 56.47084180536143,
+        "ci_high": 79.48785354862403,
+        "pi_low": 43.763436278938215,
+        "pi_high": 92.19525907504725,
+        "capped": false
+      },
+      {
+        "rank": 23,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 67.86023340816952,
+        "ci_low": 54.14798874406568,
+        "ci_high": 81.57247807227337,
+        "pi_low": 42.52270568407421,
+        "pi_high": 93.19776113226483,
+        "capped": false
+      },
+      {
+        "rank": 24,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 66.78206116278315,
+        "ci_low": 40.60586306923753,
+        "ci_high": 92.95825925632877,
+        "pi_low": 33.030646317274886,
+        "pi_high": 100.0,
+        "capped": true
+      },
+      {
+        "rank": 25,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 66.3686597600837,
+        "ci_low": 49.22574766081829,
+        "ci_high": 83.51157185934912,
+        "pi_low": 39.02192151428564,
+        "pi_high": 93.71539800588177,
+        "capped": false
+      },
+      {
+        "rank": 26,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 66.16753589123498,
+        "ci_low": 48.028143371262644,
+        "ci_high": 84.30692841120731,
+        "pi_low": 38.185359091802766,
+        "pi_high": 94.14971269066719,
+        "capped": false
+      },
+      {
+        "rank": 27,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 62.31686926654828,
+        "ci_low": 50.78972928175752,
+        "ci_high": 73.84400925133903,
+        "pi_low": 38.09209653964708,
+        "pi_high": 86.54164199344947,
+        "capped": false
+      },
+      {
+        "rank": 28,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 62.18184559335423,
+        "ci_low": 49.880403763281755,
+        "ci_high": 74.4832874234267,
+        "pi_low": 37.57920084650412,
+        "pi_high": 86.78449034020434,
+        "capped": false
+      },
+      {
+        "rank": 29,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 62.115745397699555,
+        "ci_low": 49.615734421252256,
+        "ci_high": 74.61575637414686,
+        "pi_low": 37.41321654228969,
+        "pi_high": 86.81827425310942,
+        "capped": false
+      },
+      {
+        "rank": 30,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 61.76844419065479,
+        "ci_low": 50.21268944417351,
+        "ci_high": 73.32419893713606,
+        "pi_low": 37.53004232085573,
+        "pi_high": 86.00684606045385,
+        "capped": false
+      },
+      {
+        "rank": 31,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 60.69027194526841,
+        "ci_low": 45.01274841404429,
+        "ci_high": 76.36779547649252,
+        "pi_low": 34.237495124807005,
+        "pi_high": 87.14304876572982,
+        "capped": false
+      },
+      {
+        "rank": 32,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 60.56604679494529,
+        "ci_low": 44.02677807427003,
+        "ci_high": 77.10531551562055,
+        "pi_low": 33.59361517939084,
+        "pi_high": 87.53847841049974,
+        "capped": false
+      },
+      {
+        "rank": 33,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 60.505057480790526,
+        "ci_low": 42.495782248530354,
+        "ci_high": 78.51433271305069,
+        "pi_low": 32.60705303903244,
+        "pi_high": 88.40306192254862,
+        "capped": false
+      },
+      {
+        "rank": 34,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 60.48914807641969,
+        "ci_low": 43.160283371585095,
+        "ci_high": 77.81801278125428,
+        "pi_low": 33.025459150867164,
+        "pi_high": 87.95283700197221,
+        "capped": false
+      },
+      {
+        "rank": 35,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 60.276870542568965,
+        "ci_low": 52.29647901349761,
+        "ci_high": 68.25726207164033,
+        "pi_low": 37.52491883731238,
+        "pi_high": 83.02882224782556,
+        "capped": false
+      },
+      {
+        "rank": 36,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 60.135288690636195,
+        "ci_low": 36.35967602747537,
+        "ci_high": 83.91090135379702,
+        "pi_low": 28.209681179584702,
+        "pi_high": 92.06089620168768,
+        "capped": false
+      },
+      {
+        "rank": 37,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 60.075746673720246,
+        "ci_low": 50.06653462430535,
+        "ci_high": 70.08495872313514,
+        "pi_low": 36.535377447830726,
+        "pi_high": 83.61611589960977,
+        "capped": false
+      },
+      {
+        "rank": 38,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 59.879376977983796,
+        "ci_low": 46.18396120020567,
+        "ci_high": 73.57479275576192,
+        "pi_low": 34.55095281130362,
+        "pi_high": 85.20780114466397,
+        "capped": false
+      },
+      {
+        "rank": 39,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 59.38907685675875,
+        "ci_low": 44.419913045815065,
+        "ci_high": 74.35824066770243,
+        "pi_low": 33.3498656044969,
+        "pi_high": 85.4282881090206,
+        "capped": false
+      },
+      {
+        "rank": 40,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 58.975675454059306,
+        "ci_low": 49.859088292740125,
+        "ci_high": 68.09226261537849,
+        "pi_low": 35.80075757047267,
+        "pi_high": 82.15059333764594,
+        "capped": false
+      },
+      {
+        "rank": 41,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 58.75423500918753,
+        "ci_low": 40.35507179090125,
+        "ci_high": 77.15339822747382,
+        "pi_low": 30.602967460919068,
+        "pi_high": 86.905502557456,
+        "capped": false
+      },
+      {
+        "rank": 42,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 57.97440192719853,
+        "ci_low": 46.82224388023564,
+        "ci_high": 69.12655997416141,
+        "pi_low": 33.92579933691289,
+        "pi_high": 82.02300451748417,
+        "capped": false
+      },
+      {
+        "rank": 43,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 57.89750320867293,
+        "ci_low": 38.74423002088464,
+        "ci_high": 77.05077639646122,
+        "pi_low": 29.24767718394629,
+        "pi_high": 86.54732923339957,
+        "capped": false
+      },
+      {
+        "rank": 44,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 57.77327805834981,
+        "ci_low": 46.2373534380949,
+        "ci_high": 69.30920267860472,
+        "pi_low": 33.544324009830554,
+        "pi_high": 82.00223210686906,
+        "capped": false
+      },
+      {
+        "rank": 45,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 57.75592135674016,
+        "ci_low": 36.6028680163091,
+        "ci_high": 78.90897469717122,
+        "pi_low": 27.73232525193993,
+        "pi_high": 87.7795174615404,
+        "capped": false
+      },
+      {
+        "rank": 46,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 57.696379339824205,
+        "ci_low": 36.784806092086455,
+        "ci_high": 78.60795258756195,
+        "pi_low": 27.842425612779017,
+        "pi_high": 87.5503330668694,
+        "capped": false
+      },
+      {
+        "rank": 47,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 57.48410180597348,
+        "ci_low": 49.63705915920943,
+        "ci_high": 65.33114445273753,
+        "pi_low": 34.778579663966084,
+        "pi_high": 80.18962394798088,
+        "capped": false
+      },
+      {
+        "rank": 48,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 57.28297793712476,
+        "ci_low": 46.605198711270376,
+        "ci_high": 67.96075716297915,
+        "pi_low": 33.45065478898954,
+        "pi_high": 81.11530108525999,
+        "capped": false
+      },
+      {
+        "rank": 49,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 56.16259014144077,
+        "ci_low": 40.02587523244292,
+        "ci_high": 72.29930505043862,
+        "pi_low": 29.435109424109264,
+        "pi_high": 82.89007085877228,
+        "capped": false
+      },
+      {
+        "rank": 50,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 55.961466272592055,
+        "ci_low": 39.626642413441616,
+        "ci_high": 72.2962901317425,
+        "pi_low": 29.113912790933345,
+        "pi_high": 82.80901975425077,
+        "capped": false
+      },
+      {
+        "rank": 51,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 55.85094630595489,
+        "ci_low": 35.04069476105873,
+        "ci_high": 76.66119785085105,
+        "pi_low": 26.06787684018446,
+        "pi_high": 85.63401577172533,
+        "capped": false
+      },
+      {
+        "rank": 52,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 54.41326826327579,
+        "ci_low": 43.7457091554446,
+        "ci_high": 65.08082737110698,
+        "pi_low": 30.585522361488806,
+        "pi_high": 78.24101416506278,
+        "capped": false
+      },
+      {
+        "rank": 53,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 54.21214439442707,
+        "ci_low": 42.540055405765415,
+        "ci_high": 65.88423338308873,
+        "pi_low": 29.918064481816863,
+        "pi_high": 78.50622430703729,
+        "capped": false
+      },
+      {
+        "rank": 54,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 52.11079964790536,
+        "ci_low": 40.67903738362939,
+        "ci_high": 63.54256191218133,
+        "pi_low": 27.931266031477225,
+        "pi_high": 76.2903332643335,
+        "capped": false
+      },
+      {
+        "rank": 55,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 51.909675779056634,
+        "ci_low": 40.71435160536813,
+        "ci_high": 63.10499995274514,
+        "pi_low": 27.841025197957816,
+        "pi_high": 75.97832636015545,
+        "capped": false
+      },
+      {
+        "rank": 56,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 51.66413213922542,
+        "ci_low": 36.91326122786674,
+        "ci_high": 66.4150030505841,
+        "pi_low": 25.749795372010603,
+        "pi_high": 77.57846890644024,
+        "capped": false
+      },
+      {
+        "rank": 57,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 51.62049952668031,
+        "ci_low": 41.85732589551641,
+        "ci_high": 61.383673157844214,
+        "pi_low": 28.183686245150156,
+        "pi_high": 75.05731280821047,
+        "capped": false
+      },
+      {
+        "rank": 58,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 51.56237457201186,
+        "ci_low": 35.83292211467878,
+        "ci_high": 67.29182702934494,
+        "pi_low": 25.07878848461509,
+        "pi_high": 78.04596065940864,
+        "capped": false
+      },
+      {
+        "rank": 59,
+        "attributes": {
+          "chocolate": 1,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 51.41937565783159,
+        "ci_low": 39.85643410321436,
+        "ci_high": 62.98231721244881,
+        "pi_low": 27.177546625422586,
+        "pi_high": 75.6612046902406,
+        "capped": false
+      },
+      {
+        "rank": 60,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 50.298987862147605,
+        "ci_low": 34.19615312107568,
+        "ci_high": 66.40182260321953,
+        "pi_low": 23.59194863764114,
+        "pi_high": 77.00602708665407,
+        "capped": false
+      },
+      {
+        "rank": 61,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 50.28307845777677,
+        "ci_low": 35.02438827736218,
+        "ci_high": 65.54176863819136,
+        "pi_low": 24.07635635326826,
+        "pi_high": 76.48980056228527,
+        "capped": false
+      },
+      {
+        "rank": 62,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 50.09786399329888,
+        "ci_low": 34.233521703094866,
+        "ci_high": 65.9622062835029,
+        "pi_low": 23.533940831578025,
+        "pi_high": 76.66178715501974,
+        "capped": false
+      },
+      {
+        "rank": 63,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 50.07080092392604,
+        "ci_low": 39.915099810649224,
+        "ci_high": 60.22650203720286,
+        "pi_low": 26.467773098173133,
+        "pi_high": 73.67382874967896,
+        "capped": false
+      },
+      {
+        "rank": 64,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 49.86967705507732,
+        "ci_low": 39.338261257578885,
+        "ci_high": 60.40109285257575,
+        "pi_low": 26.102570034220662,
+        "pi_high": 73.63678407593397,
+        "capped": false
+      },
+      {
+        "rank": 65,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 49.759157088440155,
+        "ci_low": 34.37356927586565,
+        "ci_high": 65.14474490101466,
+        "pi_low": 23.478347173608846,
+        "pi_high": 76.03996700327147,
+        "capped": false
+      },
+      {
+        "rank": 66,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 49.55803321959143,
+        "ci_low": 33.93170135335055,
+        "ci_high": 65.18436508583231,
+        "pi_low": 23.13556351982737,
+        "pi_high": 75.98050291935549,
+        "capped": false
+      },
+      {
+        "rank": 67,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 49.43891895076822,
+        "ci_low": 31.851217542899143,
+        "ci_high": 67.0266203586373,
+        "pi_low": 21.81118110900104,
+        "pi_high": 77.0666567925354,
+        "capped": false
+      },
+      {
+        "rank": 68,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 48.87136340262994,
+        "ci_low": 35.16455352055294,
+        "ci_high": 62.578173284706935,
+        "pi_low": 23.536776479128346,
+        "pi_high": 74.20595032613153,
+        "capped": false
+      },
+      {
+        "rank": 69,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 48.769605835416385,
+        "ci_low": 37.679687204362764,
+        "ci_high": 59.859524466470006,
+        "pi_low": 24.749802491416162,
+        "pi_high": 72.78940917941661,
+        "capped": false
+      },
+      {
+        "rank": 70,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 48.4579619999305,
+        "ci_low": 33.38035336577482,
+        "ci_high": 63.53557063408617,
+        "pi_low": 22.356258232440148,
+        "pi_high": 74.55966576742085,
+        "capped": false
+      },
+      {
+        "rank": 71,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 47.9473453026824,
+        "ci_low": 29.972256360570977,
+        "ci_high": 65.92243424479382,
+        "pi_low": 20.071397248528786,
+        "pi_high": 75.82329335683602,
+        "capped": false
+      },
+      {
+        "rank": 72,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 47.746221433833675,
+        "ci_low": 29.627288450688585,
+        "ci_high": 65.86515441697877,
+        "pi_low": 19.777303151412436,
+        "pi_high": 75.71513971625491,
+        "capped": false
+      },
+      {
+        "rank": 73,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 47.69143359003001,
+        "ci_low": 31.75075926014225,
+        "ci_high": 63.63210791991777,
+        "pi_low": 21.081853444289326,
+        "pi_high": 74.3010137357707,
+        "capped": false
+      },
+      {
+        "rank": 74,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 47.49030972118128,
+        "ci_low": 30.290719706134325,
+        "ci_high": 64.68989973622824,
+        "pi_low": 20.10800605390819,
+        "pi_high": 74.87261338845437,
+        "capped": false
+      },
+      {
+        "rank": 75,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 47.37978975454412,
+        "ci_low": 31.348749898173423,
+        "ci_high": 63.41082961091482,
+        "pi_low": 20.715977267999737,
+        "pi_high": 74.04360224108851,
+        "capped": false
+      },
+      {
+        "rank": 76,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 47.27803218733057,
+        "ci_low": 42.07979966349562,
+        "ci_high": 52.47626471116551,
+        "pi_low": 25.346632806239775,
+        "pi_high": 69.20943156842137,
+        "capped": false
+      },
+      {
+        "rank": 77,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 47.178665885695395,
+        "ci_low": 29.904160997607494,
+        "ci_high": 64.4531707737833,
+        "pi_low": 19.749244153372512,
+        "pi_high": 74.60808761801827,
+        "capped": false
+      },
+      {
+        "rank": 78,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 47.07690831848184,
+        "ci_low": 39.954037480644175,
+        "ci_high": 54.19977915631951,
+        "pi_low": 24.61138036088484,
+        "pi_high": 69.54243627607885,
+        "capped": false
+      },
+      {
+        "rank": 79,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 46.96638835184467,
+        "ci_low": 35.47100701493687,
+        "ci_high": 58.46176968875247,
+        "pi_low": 22.756711577422788,
+        "pi_high": 71.17606512626655,
+        "capped": false
+      },
+      {
+        "rank": 80,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 46.76526448299595,
+        "ci_low": 34.293258175289985,
+        "ci_high": 59.23727079070192,
+        "pi_low": 22.0768947761783,
+        "pi_high": 71.45363418981361,
+        "capped": false
+      },
+      {
+        "rank": 81,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 46.64615021417274,
+        "ci_low": 31.63918179053944,
+        "ci_high": 61.653118637806045,
+        "pi_low": 20.585187862237593,
+        "pi_high": 72.7071125661079,
+        "capped": false
+      },
+      {
+        "rank": 82,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 45.15457656608692,
+        "ci_low": 28.204696962793612,
+        "ci_high": 62.10445616938022,
+        "pi_low": 17.928429647964393,
+        "pi_high": 72.38072348420944,
+        "capped": false
+      },
+      {
+        "rank": 83,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 44.20719864463287,
+        "ci_low": 33.175354149724036,
+        "ci_high": 55.2390431395417,
+        "pi_low": 20.214152768777414,
+        "pi_high": 68.20024452048833,
+        "capped": false
+      },
+      {
+        "rank": 84,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 44.00607477578414,
+        "ci_low": 33.262834403125446,
+        "ci_high": 54.74931514844284,
+        "pi_low": 20.144350798967672,
+        "pi_high": 67.8677987526006,
+        "capped": false
+      },
+      {
+        "rank": 85,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 43.69443094029826,
+        "ci_low": 27.01163963485552,
+        "ci_high": 60.377222245741,
+        "pi_low": 16.633754984550034,
+        "pi_high": 70.75510689604648,
+        "capped": false
+      },
+      {
+        "rank": 86,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 41.88261915454051,
+        "ci_low": 23.040587154878736,
+        "ci_high": 60.72465115420228,
+        "pi_low": 13.439925412257018,
+        "pi_high": 70.32531289682399,
+        "capped": false
+      },
+      {
+        "rank": 87,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 41.82783131073683,
+        "ci_low": 26.164926085661286,
+        "ci_high": 57.49073653581238,
+        "pi_low": 15.383715565816317,
+        "pi_high": 68.27194705565735,
+        "capped": false
+      },
+      {
+        "rank": 88,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 41.626707441888115,
+        "ci_low": 25.104281293433242,
+        "ci_high": 58.149133590342984,
+        "pi_low": 14.664600267703833,
+        "pi_high": 68.5888146160724,
+        "capped": false
+      },
+      {
+        "rank": 89,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 41.41442990803739,
+        "ci_low": 36.00903797776853,
+        "ci_high": 46.819821838306254,
+        "pi_low": 19.433007766581895,
+        "pi_high": 63.39585204949289,
+        "capped": false
+      },
+      {
+        "rank": 90,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 1,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 41.213306039188666,
+        "ci_low": 34.97831633047507,
+        "ci_high": 47.448295747902264,
+        "pi_low": 19.013311577279026,
+        "pi_high": 63.413300501098306,
+        "capped": false
+      },
+      {
+        "rank": 91,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 1,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 41.1027860725515,
+        "ci_low": 28.29781767075429,
+        "ci_high": 53.907754474348714,
+        "pi_low": 16.24455055166066,
+        "pi_high": 65.96102159344235,
+        "capped": false
+      },
+      {
+        "rank": 92,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 40.967762399357454,
+        "ci_low": 28.166639648326424,
+        "ci_high": 53.768885150388485,
+        "pi_low": 16.11150763062734,
+        "pi_high": 65.82401716808756,
+        "capped": false
+      },
+      {
+        "rank": 93,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 40.554360996658005,
+        "ci_low": 26.37466171177872,
+        "ci_high": 54.73406028153729,
+        "pi_low": 14.960835853554713,
+        "pi_high": 66.1478861397613,
+        "capped": false
+      },
+      {
+        "rank": 94,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 39.47618875127163,
+        "ci_low": 24.82820075142303,
+        "ci_high": 54.12417675112023,
+        "pi_low": 13.620276276853659,
+        "pi_high": 65.3321012256896,
+        "capped": false
+      },
+      {
+        "rank": 95,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 1,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 39.29097428679375,
+        "ci_low": 21.635521827631173,
+        "ci_high": 56.94642674595632,
+        "pi_low": 11.62005708156175,
+        "pi_high": 66.96189149202574,
+        "capped": false
+      },
+      {
+        "rank": 96,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 39.27506488242291,
+        "ci_low": 23.304987908483213,
+        "ci_high": 55.24514185636261,
+        "pi_low": 12.647860447961282,
+        "pi_high": 65.90226931688454,
+        "capped": false
+      },
+      {
+        "rank": 97,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 39.062787348572186,
+        "ci_low": 29.71128539490877,
+        "ci_high": 48.4142893022356,
+        "pi_low": 15.794455946633956,
+        "pi_high": 62.33111875051041,
+        "capped": false
+      },
+      {
+        "rank": 98,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 38.86166347972346,
+        "ci_low": 28.377233886001008,
+        "ci_high": 49.346093073445914,
+        "pi_low": 15.115339104216893,
+        "pi_high": 62.60798785523003,
+        "capped": false
+      },
+      {
+        "rank": 99,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 38.17499366276197,
+        "ci_low": 23.530827198602168,
+        "ci_high": 52.81916012692177,
+        "pi_low": 12.32124598721062,
+        "pi_high": 64.02874133831332,
+        "capped": false
+      },
+      {
+        "rank": 100,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 1,
+          "pluribus": 0
+        },
+        "estimate": 37.76159226006253,
+        "ci_low": 26.426997465295468,
+        "ci_high": 49.096187054829585,
+        "pi_low": 13.627846247422575,
+        "pi_high": 61.89533827270248,
+        "capped": false
+      },
+      {
+        "rank": 101,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 36.68342001467615,
+        "ci_low": 18.978642246499515,
+        "ci_high": 54.388197782852785,
+        "pi_low": 8.981004718143325,
+        "pi_high": 64.38583531120898,
+        "capped": false
+      },
+      {
+        "rank": 102,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 36.27001861197671,
+        "ci_low": 28.32190614579457,
+        "ci_high": 44.21813107815885,
+        "pi_low": 13.529368902345848,
+        "pi_high": 59.01066832160757,
+        "capped": false
+      },
+      {
+        "rank": 103,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 0,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 36.068894743127984,
+        "ci_low": 25.989887803230204,
+        "ci_high": 46.147901683025765,
+        "pi_low": 12.498764528477878,
+        "pi_high": 59.63902495777809,
+        "capped": false
+      },
+      {
+        "rank": 104,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 33.411462603129735,
+        "ci_low": 16.855992832196293,
+        "ci_high": 49.96693237406318,
+        "pi_low": 6.429093604516119,
+        "pi_high": 60.39383160174335,
+        "capped": false
+      },
+      {
+        "rank": 105,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 33.19918506927901,
+        "ci_low": 21.73084687341903,
+        "ci_high": 44.667523265138996,
+        "pi_low": 9.002337373439058,
+        "pi_high": 57.39603276511896,
+        "capped": false
+      },
+      {
+        "rank": 106,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 1,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 32.998061200430286,
+        "ci_low": 21.168495560126352,
+        "ci_high": 44.82762684073422,
+        "pi_low": 8.627930288198531,
+        "pi_high": 57.368192112662044,
+        "capped": false
+      },
+      {
+        "rank": 107,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 1,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 30.819817735382976,
+        "ci_low": 12.648699934149882,
+        "ci_high": 48.99093553661607,
+        "pi_low": 2.8170646638125945,
+        "pi_high": 58.82257080695336,
+        "capped": false
+      },
+      {
+        "rank": 108,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 1
+        },
+        "estimate": 30.406416332683534,
+        "ci_low": 20.87342117635138,
+        "ci_high": 39.93941148901569,
+        "pi_low": 7.064551495192369,
+        "pi_high": 53.7482811701747,
+        "capped": false
+      },
+      {
+        "rank": 109,
+        "attributes": {
+          "chocolate": 0,
+          "fruity": 0,
+          "caramel": 0,
+          "peanuty_almondy": 0,
+          "nougat": 0,
+          "crisped_rice_wafer": 0,
+          "hard": 1,
+          "bar": 0,
+          "pluribus": 0
+        },
+        "estimate": 30.20529246383481,
+        "ci_low": 19.470533364657694,
+        "ci_high": 40.94005156301192,
+        "pi_low": 6.34738580045757,
+        "pi_high": 54.063199127212044,
+        "capped": false
+      }
+    ]
+  },
+  "recommendation": {
+    "primary": {
+      "rank": 1,
+      "attributes": {
+        "chocolate": 1,
+        "fruity": 0,
+        "caramel": 1,
+        "peanuty_almondy": 1,
+        "nougat": 1,
+        "crisped_rice_wafer": 1,
+        "hard": 0,
+        "bar": 1,
+        "pluribus": 0
+      },
+      "estimate": 81.76277328733242,
+      "ci_low": 60.57808864630819,
+      "ci_high": 100.0,
+      "pi_low": 51.716883039568046,
+      "pi_high": 100.0,
+      "capped": true,
+      "benchmarks": [
+        {
+          "candy": "Snickers Crisper",
+          "attributes_differing": 1,
+          "win_rate": 59.529251
+        },
+        {
+          "candy": "Snickers",
+          "attributes_differing": 1,
+          "win_rate": 76.673782
+        },
+        {
+          "candy": "Baby Ruth",
+          "attributes_differing": 1,
+          "win_rate": 56.914547
+        }
+      ],
+      "n_attributes": 6,
+      "max_attributes_on_a_real_candy": 5,
+      "nearest_candy_distance": 1
+    },
+    "fruit_flavoured": {
+      "rank": 32,
+      "attributes": {
+        "chocolate": 0,
+        "fruity": 1,
+        "caramel": 1,
+        "peanuty_almondy": 1,
+        "nougat": 0,
+        "crisped_rice_wafer": 0,
+        "hard": 0,
+        "bar": 0,
+        "pluribus": 0
+      },
+      "estimate": 60.56604679494529,
+      "ci_low": 44.02677807427003,
+      "ci_high": 77.10531551562055,
+      "pi_low": 33.59361517939084,
+      "pi_high": 87.53847841049974,
+      "capped": false,
+      "benchmarks": [
+        {
+          "candy": "Caramel Apple Pops",
+          "attributes_differing": 1,
+          "win_rate": 34.517681
+        },
+        {
+          "candy": "Air Heads",
+          "attributes_differing": 2,
+          "win_rate": 52.341465
+        },
+        {
+          "candy": "Sugar Daddy",
+          "attributes_differing": 2,
+          "win_rate": 32.230995
+        }
+      ],
+      "n_attributes": 3,
+      "max_attributes_on_a_real_candy": 5,
+      "nearest_candy_distance": 1
+    },
+    "gap": {
+      "estimate": 21.19672649238713,
+      "ci_low": 0.25923434644316856,
+      "ci_high": 42.13421863833109
+    }
+  },
+  "robustness": {
+    "gummy": {
+      "n_gummy": 12,
+      "n_unclear": 10,
+      "unclear_candies": [
+        "Candy Corn",
+        "Dots",
+        "Fruit Chews",
+        "Mike & Ike",
+        "Red vines",
+        "Sour Patch Kids",
+        "Sour Patch Tricksters",
+        "Starburst",
+        "Swedish Fish",
+        "Twizzlers"
+      ],
+      "target": "win_rate",
+      "cov": "hc3",
+      "n_obs": 83,
+      "df_resid": 70,
+      "r_squared": 0.574251939029792,
+      "loo_r_squared": 0.3758502526882609,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "coef": 31.27867067010456,
+          "se": 5.211832288261886,
+          "t": 6.001472983033344,
+          "p": 7.787950888308286e-08,
+          "ci_low": 20.883998934067712,
+          "ci_high": 41.67334240614141
+        },
+        {
+          "term": "chocolate",
+          "coef": 22.63328605788667,
+          "se": 4.8460173935363855,
+          "t": 4.670492121649199,
+          "p": 1.4093715918845806e-05,
+          "ci_low": 12.968209123929032,
+          "ci_high": 32.298362991844314
+        },
+        {
+          "term": "fruity",
+          "coef": 8.983242128222402,
+          "se": 4.580437732804914,
+          "t": 1.9612191349933166,
+          "p": 0.05383228302862663,
+          "ci_low": -0.15215287424079094,
+          "ci_high": 18.118637130685595
+        },
+        {
+          "term": "caramel",
+          "coef": 3.1236719667230126,
+          "se": 4.620793322011214,
+          "t": 0.6760033935825169,
+          "p": 0.5012658781872421,
+          "ci_low": -6.092209720520618,
+          "ci_high": 12.339553653966643
+        },
+        {
+          "term": "peanuty_almondy",
+          "coef": 11.017447679652246,
+          "se": 5.3014556292488155,
+          "t": 2.078192943626193,
+          "p": 0.041359789024335895,
+          "ci_low": 0.44402782627014226,
+          "ci_high": 21.59086753303435
+        },
+        {
+          "term": "nougat",
+          "coef": 0.3209684273345065,
+          "se": 7.24750559658269,
+          "t": 0.04428674432288097,
+          "p": 0.9648019304669145,
+          "ci_low": -14.133725702259381,
+          "ci_high": 14.775662556928394
+        },
+        {
+          "term": "crisped_rice_wafer",
+          "coef": 8.9863623220167,
+          "se": 7.4705280229730135,
+          "t": 1.2029085888416808,
+          "p": 0.23306456015552496,
+          "ci_low": -5.913136011527307,
+          "ci_high": 23.885860655560705
+        },
+        {
+          "term": "hard",
+          "coef": -2.9040247947492266,
+          "se": 3.740889541110313,
+          "t": -0.776292580370416,
+          "p": 0.44019141080342733,
+          "ci_low": -10.364993726576317,
+          "ci_high": 4.556944137077863
+        },
+        {
+          "term": "bar",
+          "coef": 1.1855476864544836,
+          "se": 6.189811031764906,
+          "t": 0.1915321292314876,
+          "p": 0.8486632014096783,
+          "ci_low": -11.15964115014814,
+          "ci_high": 13.530736523057108
+        },
+        {
+          "term": "pluribus",
+          "coef": -0.9226944689204345,
+          "se": 3.334695417769165,
+          "t": -0.27669527597746724,
+          "p": 0.7828294825770583,
+          "ci_low": -7.573534766572577,
+          "ci_high": 5.728145828731708
+        },
+        {
+          "term": "sugar_level",
+          "coef": 10.704120053442882,
+          "se": 4.8775755938875225,
+          "t": 2.19455749017136,
+          "p": 0.03151533772027136,
+          "ci_low": 0.9761022735242229,
+          "ci_high": 20.43213783336154
+        },
+        {
+          "term": "price_level",
+          "coef": -8.141040298698448,
+          "se": 5.941643456316172,
+          "t": -1.3701664124669481,
+          "p": 0.17501351846720278,
+          "ci_low": -19.99127451288784,
+          "ci_high": 3.709193915490946
+        },
+        {
+          "term": "gummy",
+          "coef": 8.654451739081527,
+          "se": 4.035330413089913,
+          "t": 2.144669916249729,
+          "p": 0.03545214103998762,
+          "ci_low": 0.6062390049560538,
+          "ci_high": 16.702664473207
+        }
+      ],
+      "vif": {
+        "chocolate": 3.1280025017552266,
+        "fruity": 3.1513602800464797,
+        "caramel": 1.388866482792634,
+        "peanuty_almondy": 1.3589186924019592,
+        "nougat": 1.83257302579374,
+        "crisped_rice_wafer": 1.5532775673747712,
+        "hard": 1.5029530136116804,
+        "bar": 3.6533868536908547,
+        "pluribus": 1.8940484160780509,
+        "sugar_level": 1.2308059207700484,
+        "price_level": 1.8465733104599686,
+        "gummy": 1.499743478610098
+      },
+      "loo_r_squared_change": 0.024857652758208948
+    },
+    "bootstrap": {
+      "method": "case resampling, percentile intervals",
+      "seed": 20261121,
+      "draws": 2000,
+      "discarded": 3,
+      "alpha": 0.05,
+      "results": [
+        {
+          "term": "intercept",
+          "ci_low": 21.468756010440615,
+          "ci_high": 41.11286941684648
+        },
+        {
+          "term": "chocolate",
+          "ci_low": 13.123314487420094,
+          "ci_high": 30.39198044287162
+        },
+        {
+          "term": "fruity",
+          "ci_low": 3.984709583365037,
+          "ci_high": 19.706125138817384
+        },
+        {
+          "term": "caramel",
+          "ci_low": -5.493436888073332,
+          "ci_high": 11.794222468404831
+        },
+        {
+          "term": "peanuty_almondy",
+          "ci_low": 2.3603196098956682,
+          "ci_high": 20.401369234505093
+        },
+        {
+          "term": "nougat",
+          "ci_low": -12.831153202175216,
+          "ci_high": 13.407519143744079
+        },
+        {
+          "term": "crisped_rice_wafer",
+          "ci_low": -1.7118248080186964,
+          "ci_high": 23.674350621700505
+        },
+        {
+          "term": "hard",
+          "ci_low": -11.833602831885962,
+          "ci_high": -0.46481644109590065
+        },
+        {
+          "term": "bar",
+          "ci_low": -9.9378623875368,
+          "ci_high": 13.397975985794446
+        },
+        {
+          "term": "pluribus",
+          "ci_low": -5.6876054522800095,
+          "ci_high": 7.0473691526978195
+        },
+        {
+          "term": "sugar_level",
+          "ci_low": 0.8833614665933628,
+          "ci_high": 19.074023838438563
+        },
+        {
+          "term": "price_level",
+          "ci_low": -18.60966777227164,
+          "ci_high": 5.18825599571247
+        }
+      ]
+    },
+    "coins_included": {
+      "target": "win_rate",
+      "cov": "hc3",
+      "n_obs": 85,
+      "df_resid": 73,
+      "r_squared": 0.5402088191987462,
+      "loo_r_squared": 0.35155526775997115,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "coef": 34.533978414687674,
+          "se": 4.514060114616635,
+          "t": 7.650314248777021,
+          "p": 6.38073947836659e-11,
+          "ci_low": 25.537469580162693,
+          "ci_high": 43.530487249212655
+        },
+        {
+          "term": "chocolate",
+          "coef": 19.74806697729202,
+          "se": 4.460862665552169,
+          "t": 4.426961432772015,
+          "p": 3.287613465174154e-05,
+          "ci_low": 10.857580505857191,
+          "ci_high": 28.638553448726846
+        },
+        {
+          "term": "fruity",
+          "coef": 9.422322066515902,
+          "se": 4.0258871833779395,
+          "t": 2.3404337074865715,
+          "p": 0.02199702332609158,
+          "ci_low": 1.3987404808868646,
+          "ci_high": 17.44590365214494
+        },
+        {
+          "term": "caramel",
+          "coef": 2.2244813649345954,
+          "se": 4.608015855822567,
+          "t": 0.48274169068316025,
+          "p": 0.6307236906270706,
+          "ci_low": -6.95928099177466,
+          "ci_high": 11.408243721643851
+        },
+        {
+          "term": "peanuty_almondy",
+          "coef": 10.07068846664841,
+          "se": 5.217366159592429,
+          "t": 1.9302245919874468,
+          "p": 0.05746402538643894,
+          "ci_low": -0.3275072941342927,
+          "ci_high": 20.46888422743111
+        },
+        {
+          "term": "nougat",
+          "coef": 0.8043306027718172,
+          "se": 7.228573618284156,
+          "t": 0.11127099829727416,
+          "p": 0.9117068261941813,
+          "ci_low": -13.602195842751735,
+          "ci_high": 15.210857048295368
+        },
+        {
+          "term": "crisped_rice_wafer",
+          "coef": 8.91896980982712,
+          "se": 7.421454716720656,
+          "t": 1.2017818810822276,
+          "p": 0.23333229100593184,
+          "ci_low": -5.871968110518855,
+          "ci_high": 23.709907730173093
+        },
+        {
+          "term": "hard",
+          "coef": -6.165326502166483,
+          "se": 3.0173439336741783,
+          "t": -2.043295904507329,
+          "p": 0.04463311238255864,
+          "ci_low": -12.178884289800308,
+          "ci_high": -0.15176871453265672
+        },
+        {
+          "term": "bar",
+          "coef": 0.4415400942060198,
+          "se": 6.1753716723170315,
+          "t": 0.07150016511319579,
+          "p": 0.943195221261996,
+          "ci_low": -11.86595790002345,
+          "ci_high": 12.74903808843549
+        },
+        {
+          "term": "pluribus",
+          "coef": -0.8544995421467695,
+          "se": 3.2605129480224555,
+          "t": -0.26207518748393094,
+          "p": 0.7940015875924368,
+          "ci_low": -7.352692476482181,
+          "ci_high": 5.643693392188641
+        },
+        {
+          "term": "sugar_level",
+          "coef": 9.08676286151109,
+          "se": 4.859680741835984,
+          "t": 1.8698271232686199,
+          "p": 0.065517794727488,
+          "ci_low": -0.5985668897103036,
+          "ci_high": 18.772092612732486
+        },
+        {
+          "term": "price_level",
+          "coef": -5.928361425545833,
+          "se": 6.50563512176541,
+          "t": -0.9112655896903538,
+          "p": 0.36515484042386526,
+          "ci_low": -18.89407352531239,
+          "ci_high": 7.037350674220725
+        }
+      ],
+      "vif": {
+        "chocolate": 2.7724869529908407,
+        "fruity": 2.5973412430961678,
+        "caramel": 1.365539023423287,
+        "peanuty_almondy": 1.3347133110641805,
+        "nougat": 1.8324127792189986,
+        "crisped_rice_wafer": 1.5561292241850477,
+        "hard": 1.287367909411824,
+        "bar": 3.5355963160564845,
+        "pluribus": 1.7123793401037826,
+        "sugar_level": 1.2730367048573825,
+        "price_level": 1.819846890690797
+      },
+      "shift_vs_main": {
+        "intercept": 2.5172941557371686,
+        "chocolate": -1.4660162167047588,
+        "fruity": -1.5856915088379555,
+        "caramel": -0.5682873716608845,
+        "peanuty_almondy": -0.6256812732195609,
+        "nougat": 0.39092920007237253,
+        "crisped_rice_wafer": 0.034411855716907525,
+        "hard": -0.30172422287330924,
+        "bar": -1.2511574227285291,
+        "pluribus": -1.0556234109954923,
+        "sugar_level": -1.0741627456881524,
+        "price_level": 1.3524707436651653
+      },
+      "max_abs_shift_predictors": 1.5856915088379555
+    },
+    "logit": {
+      "target": "logit_win_rate",
+      "cov": "hc3",
+      "n_obs": 83,
+      "df_resid": 71,
+      "r_squared": 0.5373769445239667,
+      "loo_r_squared": 0.33479932289198344,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "coef": -0.7324527266845036,
+          "se": 0.23821925019967927,
+          "t": -3.0746999920054727,
+          "p": 0.0029899637097857705,
+          "ci_low": -1.2074484207133118,
+          "ci_high": -0.25745703265569536
+        },
+        {
+          "term": "chocolate",
+          "coef": 0.9115671506141119,
+          "se": 0.20618901228137007,
+          "t": 4.421026807045213,
+          "p": 3.460382775216532e-05,
+          "ci_low": 0.5004379370530339,
+          "ci_high": 1.3226963641751899
+        },
+        {
+          "term": "fruity",
+          "coef": 0.4594721947238679,
+          "se": 0.1932741556704381,
+          "t": 2.377307990972875,
+          "p": 0.020136619664227612,
+          "ci_low": 0.07409447384883489,
+          "ci_high": 0.8448499155989009
+        },
+        {
+          "term": "caramel",
+          "coef": 0.11659464956571108,
+          "se": 0.20901151687795744,
+          "t": 0.5578383971721095,
+          "p": 0.5787094683614923,
+          "ci_low": -0.30016247831644616,
+          "ci_high": 0.5333517774478683
+        },
+        {
+          "term": "peanuty_almondy",
+          "coef": 0.4750981411856633,
+          "se": 0.23963235293379329,
+          "t": 1.9826126788352554,
+          "p": 0.05128090667120953,
+          "ci_low": -0.0027151996679160573,
+          "ci_high": 0.9529114820392426
+        },
+        {
+          "term": "nougat",
+          "coef": 0.02634741564293405,
+          "se": 0.3132177957864129,
+          "t": 0.08411851432892618,
+          "p": 0.933198936363757,
+          "ci_low": -0.5981911309566095,
+          "ci_high": 0.6508859622424776
+        },
+        {
+          "term": "crisped_rice_wafer",
+          "coef": 0.4035974593878011,
+          "se": 0.33888684010180914,
+          "t": 1.1909505227956076,
+          "p": 0.23763937164287585,
+          "ci_low": -0.27212370788336215,
+          "ci_high": 1.0793186266589645
+        },
+        {
+          "term": "hard",
+          "coef": -0.24585451258570312,
+          "se": 0.13421805336464374,
+          "t": -1.8317544206796483,
+          "p": 0.07118263192614219,
+          "ci_low": -0.5134777099372847,
+          "ci_high": 0.02176868476587851
+        },
+        {
+          "term": "bar",
+          "coef": 0.02959508194758028,
+          "se": 0.2840582702572407,
+          "t": 0.10418665832464316,
+          "p": 0.9173149737445164,
+          "ci_low": -0.5368010221135451,
+          "ci_high": 0.5959911860087057
+        },
+        {
+          "term": "pluribus",
+          "coef": -0.020623376875203162,
+          "se": 0.15108098965967676,
+          "t": -0.1365054393783039,
+          "p": 0.8918080517579449,
+          "ci_low": -0.32187031421466916,
+          "ci_high": 0.28062356046426284
+        },
+        {
+          "term": "sugar_level",
+          "coef": 0.4394100384400143,
+          "se": 0.21400901677350098,
+          "t": 2.053231424847249,
+          "p": 0.04373549826420333,
+          "ci_low": 0.012688178785328796,
+          "ci_high": 0.8661318980946998
+        },
+        {
+          "term": "price_level",
+          "coef": -0.32733826032795893,
+          "se": 0.28186671994982904,
+          "t": -1.1613228421795365,
+          "p": 0.24940010911457622,
+          "ci_low": -0.8893645371883208,
+          "ci_high": 0.23468801653240295
+        }
+      ],
+      "vif": {
+        "chocolate": 3.047437433387553,
+        "fruity": 2.986602325115842,
+        "caramel": 1.3863806185577507,
+        "peanuty_almondy": 1.3565782587814132,
+        "nougat": 1.8324662030411307,
+        "crisped_rice_wafer": 1.5531479859584996,
+        "hard": 1.2929827141484673,
+        "bar": 3.6455167252519574,
+        "pluribus": 1.8431144166938418,
+        "sugar_level": 1.2271977695316552,
+        "price_level": 1.8368580087117825
+      },
+      "effects_in_points": [
+        {
+          "term": "chocolate",
+          "coef": 22.048928154585976,
+          "ci_low": 12.104560933857707,
+          "ci_high": 31.993295375314247
+        },
+        {
+          "term": "fruity",
+          "coef": 10.44516260927361,
+          "ci_low": 1.6843866433849486,
+          "ci_high": 19.205938575162268
+        },
+        {
+          "term": "caramel",
+          "coef": 2.7704978832270104,
+          "ci_low": -7.1323985611467515,
+          "ci_high": 12.673394327600773
+        },
+        {
+          "term": "peanuty_almondy",
+          "coef": 11.297386340230286,
+          "ci_low": -0.06456489087235841,
+          "ci_high": 22.65933757133293
+        },
+        {
+          "term": "nougat",
+          "coef": 0.6254962501566244,
+          "ci_low": -14.2012527665367,
+          "ci_high": 15.452245266849948
+        },
+        {
+          "term": "crisped_rice_wafer",
+          "coef": 9.547482730297514,
+          "ci_low": -6.437345778791228,
+          "ci_high": 25.532311239386257
+        },
+        {
+          "term": "hard",
+          "coef": -5.864356418373839,
+          "ci_low": -12.247960276559606,
+          "ci_high": 0.5192474398119307
+        },
+        {
+          "term": "bar",
+          "coef": 0.703412444317923,
+          "ci_low": -12.758623873589931,
+          "ci_high": 14.165448762225779
+        },
+        {
+          "term": "pluribus",
+          "coef": -0.48986886409965663,
+          "ci_low": -7.645413559857969,
+          "ci_high": 6.665675831658657
+        },
+        {
+          "term": "sugar_level",
+          "coef": 10.428961563752475,
+          "ci_low": 0.3011413424599715,
+          "ci_high": 20.55678178504498
+        },
+        {
+          "term": "price_level",
+          "coef": -7.769049035441909,
+          "ci_low": -21.10818543752431,
+          "ci_high": 5.57008736664049
+        }
+      ],
+      "effects_note": "Average marginal effects in win-rate points: discrete 0-to-1 change for attributes, mean derivative for sugar and price level. Intervals rescale the logit-scale intervals by a fixed factor, ignoring that factor's own uncertainty."
+    }
+  },
+  "data_notes": [
+    "85 market entries in the source data; the 2 coins (One dime and One quarter) are survey decoys, not candies, and are excluded, leaving 83 candies.",
+    "Including the coins moves no attribute or level coefficient by more than 1.6 points of win rate.",
+    "Win rate is the share of roughly 269,000 head-to-head matchups a candy won. Win rate measures relative preference, not sales or satisfaction.",
+    "Sugar level and price level are percentile ranks within the dataset (0 to 1), not grams of sugar or prices.",
+    "The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source documentation) is analysed as the peanut/almond attribute.",
+    "Only 7 candies have nougat and 7 have crisped rice/wafer/cookie, so those effects carry wide intervals.",
+    "Gummy is a hand-coded attribute (12 of 83 candies; 10 judgement calls flagged) used only as a supplementary check."
+  ]
+}

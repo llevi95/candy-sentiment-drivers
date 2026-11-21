@@ -109,7 +109,8 @@ the output folder (`--out`, default `outputs`) and the bootstrap seed
 
 ## Outputs
 
-Everything lands in `outputs/` (not committed; rebuild with `make all`):
+Everything lands in `outputs/`. The folder is committed so the results can be
+read without running anything; `make all` rebuilds it:
 
 | Path | Contents |
 | --- | --- |

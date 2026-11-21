@@ -1,0 +1,7 @@
+- 85 market entries in the source data; the 2 coins (One dime and One quarter) are survey decoys, not candies, and are excluded, leaving 83 candies.
+- Including the coins moves no attribute or level coefficient by more than 1.6 points of win rate.
+- Win rate is the share of roughly 269,000 head-to-head matchups a candy won. Win rate measures relative preference, not sales or satisfaction.
+- Sugar level and price level are percentile ranks within the dataset (0 to 1), not grams of sugar or prices.
+- The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source documentation) is analysed as the peanut/almond attribute.
+- Only 7 candies have nougat and 7 have crisped rice/wafer/cookie, so those effects carry wide intervals.
+- Gummy is a hand-coded attribute (12 of 83 candies; 10 judgement calls flagged) used only as a supplementary check.
