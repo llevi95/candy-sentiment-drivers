@@ -90,6 +90,9 @@ def load_candies(raw_csv: Path, gummy_csv: Path) -> CandyData:
 
 
 def _validate(df: pd.DataFrame) -> None:
+    duplicated = df.loc[df["candy"].duplicated(), "candy"].tolist()
+    if duplicated:
+        raise ValueError(f"raw data lists candies more than once: {duplicated}")
     bad_binary = [c for c in ATTRIBUTES if not df[c].isin([0, 1]).all()]
     if bad_binary:
         raise ValueError(f"attributes must be 0/1: {bad_binary}")

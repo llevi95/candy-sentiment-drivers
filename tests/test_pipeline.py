@@ -40,6 +40,16 @@ def test_malformed_attribute_values_are_rejected(tmp_path):
         run(raw_csv=corrupted, gummy_csv=GUMMY, out_dir=tmp_path / "out")
 
 
+def test_a_candy_listed_twice_in_the_raw_data_is_rejected(tmp_path):
+    # A repeated row would otherwise enter the regression with double weight.
+    lines = RAW.read_text().splitlines()
+    repeated = tmp_path / "repeated.csv"
+    repeated.write_text("\n".join([*lines, lines[1]]) + "\n")
+
+    with pytest.raises(ValueError, match="more than once.*100 Grand"):
+        run(raw_csv=repeated, gummy_csv=GUMMY, out_dir=tmp_path / "out")
+
+
 MAIN_TERMS = [
     "intercept",
     "chocolate",
