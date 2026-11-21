@@ -1,7 +1,7 @@
 candy,gummy,unclear,note
 100 Grand,0,0,chocolate bar with caramel and crisped rice
 3 Musketeers,0,0,chocolate-covered nougat bar
-Air Heads,0,0,taffy; chewy but not gelatin/pectin
+Air Heads,0,0,taffy texture; not a gummy chew
 Almond Joy,0,0,chocolate coconut almond bar
 Baby Ruth,0,0,chocolate peanut nougat caramel bar
 Boston Baked Beans,0,0,candy-coated peanuts
@@ -47,7 +47,7 @@ Payday,0,0,peanut caramel bar
 Peanut M&Ms,0,0,shelled chocolate with peanut
 Pixie Sticks,0,0,flavoured powder
 Pop Rocks,0,0,carbonated hard candy
-Red vines,0,1,starch-based licorice; chewy but not gelatin/pectin
+Red vines,0,1,licorice texture; dense rope chew rather than gummy
 Reese's Miniatures,0,0,chocolate peanut butter cup
 Reese's Peanut Butter cup,0,0,chocolate peanut butter cup
 Reese's pieces,0,0,shelled peanut butter candy
@@ -77,7 +77,7 @@ Tootsie Roll Midgies,0,0,chewy chocolate taffy
 Tootsie Roll Snack Bars,0,0,chewy chocolate taffy
 Trolli Sour Bites,1,0,gelatin gummy
 Twix,0,0,chocolate caramel cookie bar
-Twizzlers,0,1,starch-based licorice; chewy but not gelatin/pectin
+Twizzlers,0,1,licorice texture; dense rope chew rather than gummy
 Warheads,0,0,sour hard candy
 Welch's Fruit Snacks,1,0,pectin/gelatin fruit snack
 Werther's Original Caramel,0,0,hard caramel
