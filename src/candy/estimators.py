@@ -55,7 +55,7 @@ def fit(
 ) -> FitResult:
     """Fit y on X by ordinary least squares, with an intercept added first.
 
-    ``cov`` selects the coefficient covariance estimator: ``"classical"``.
+    ``cov`` selects the coefficient covariance estimator: ``"classical"`` or ``"hc3"``.
     Tests and intervals use the t distribution with n - k degrees of freedom.
     """
     X = np.asarray(X, dtype=float)
@@ -73,6 +73,13 @@ def fit(
     if cov == "classical":
         sigma2 = resid @ resid / df_resid
         vcov = sigma2 * xtx_inv
+    elif cov == "hc3":
+        # MacKinnon & White (1985) HC3: residuals inflated by leverage, which
+        # suits small samples with heteroskedastic errors.
+        leverage = np.einsum("ij,jk,ik->i", design, xtx_inv, design)
+        weights = (resid / (1 - leverage)) ** 2
+        meat = (design * weights[:, None]).T @ design
+        vcov = xtx_inv @ meat @ xtx_inv
     else:
         raise ValueError(f"unknown covariance estimator: {cov!r}")
 
