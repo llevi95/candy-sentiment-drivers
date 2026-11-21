@@ -212,7 +212,7 @@ def ranked_profiles_chart(
     )
     ax.set_xlabel("Predicted win rate (%)")
     fig.suptitle(
-        f"{n_tied} of {len(ranked)} supported profiles are statistically tied "
+        f"{n_tied} of the {len(ranked) - 1} other supported profiles are statistically tied "
         "with the recommended one",
         fontsize=20,
         fontweight="bold",

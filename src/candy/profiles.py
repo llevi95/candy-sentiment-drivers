@@ -151,10 +151,13 @@ def evidence_tiers(model: FitResult, confirmed: set[str]) -> dict[str, dict[str,
 
 
 def mark_ties(ranked: list[dict], scorer: ProfileScorer, primary: dict[str, int]) -> list[dict]:
-    """Flag each ranked profile whose predicted gap to the primary profile has
-    a CI that includes zero: the data cannot tell the two apart."""
+    """Flag each other ranked profile whose predicted gap to the primary
+    profile has a CI that includes zero: the data cannot tell the two apart.
+    The primary profile is not tied with itself."""
 
     def tied(attributes: dict[str, int]) -> bool:
+        if attributes == primary:
+            return False
         gap = scorer.gap(attributes, primary)
         return bool(gap.ci_low <= 0 <= gap.ci_high)
 

@@ -536,11 +536,12 @@ def test_ties_with_the_primary_profile_are_flagged_and_counted(bundle):
     primary = bundle["recommendation"]["primary"]
     by_attributes = {tuple(r["attributes"].values()): r for r in ranked}
 
-    assert by_attributes[tuple(primary["attributes"].values())]["tied_with_primary"]
+    # The primary profile's gap to itself is zero; it must not count as a tie.
+    assert not by_attributes[tuple(primary["attributes"].values())]["tied_with_primary"]
     assert bundle["profiles"]["n_tied_with_primary"] == sum(
         r["tied_with_primary"] for r in ranked
     )
-    assert 1 < bundle["profiles"]["n_tied_with_primary"] < len(ranked)
+    assert 1 < bundle["profiles"]["n_tied_with_primary"] < len(ranked) - 1
 
 
 def test_cookie_vs_gummy_compares_real_product_types(bundle):

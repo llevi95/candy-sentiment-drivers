@@ -554,7 +554,7 @@
     "n_enumerated": 512,
     "n_realistic": 240,
     "n_supported": 109,
-    "n_tied_with_primary": 89,
+    "n_tied_with_primary": 88,
     "tie_note": "A profile is tied with the primary profile when the 95% CI of the predicted gap between the two includes zero.",
     "ranked": [
       {
@@ -1563,7 +1563,7 @@
         "pi_low": 30.966370311279295,
         "pi_high": 78.17365149194434,
         "capped": false,
-        "tied_with_primary": true
+        "tied_with_primary": false
       },
       {
         "rank": 49,
