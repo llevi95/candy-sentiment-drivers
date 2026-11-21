@@ -223,3 +223,54 @@ def test_coins_included_check_states_how_far_each_coefficient_moved(bundle):
     assert coins["max_abs_shift_predictors"] == pytest.approx(
         max(abs(shifts[term]) for term in MAIN_TERMS[1:])
     )
+
+
+INTERACTIONS = [
+    "chocolate_x_peanuty_almondy",
+    "chocolate_x_crisped_rice_wafer",
+    "chocolate_x_bar",
+]
+
+
+def test_each_predeclared_interaction_is_reported_in_declared_order(bundle):
+    rows = bundle["interactions"]["results"]
+
+    assert [row["term"] for row in rows] == INTERACTIONS
+    assert all(row["status"] in {"estimated", "not_estimable"} for row in rows)
+
+
+def test_retention_rule_is_applied_consistently_with_the_reported_numbers(bundle):
+    # Spec: retain only if the CI excludes 0 and leave-one-out R² does not worsen.
+    main_loo = bundle["main_model"]["loo_r_squared"]
+
+    for row in bundle["interactions"]["results"]:
+        if row["status"] == "not_estimable":
+            assert row["retained"] is False
+            assert row["reason"]
+            continue
+        assert row["ci_low"] < row["coef"] < row["ci_high"]
+        assert row["loo_r_squared_change"] == pytest.approx(row["loo_r_squared"] - main_loo)
+        excludes_zero = row["ci_low"] > 0 or row["ci_high"] < 0
+        assert row["retained"] == (excludes_zero and row["loo_r_squared_change"] >= 0)
+
+
+def test_interactions_the_data_cannot_identify_are_reported_as_not_estimable(bundle):
+    # All 7 crisped/wafer candies are chocolate, so chocolate x crisped equals
+    # crisped; only one bar is not chocolate, so that candy alone identifies
+    # chocolate x bar. Chocolate x peanuty has two non-chocolate candies.
+    status = {row["term"]: row["status"] for row in bundle["interactions"]["results"]}
+
+    assert status == {
+        "chocolate_x_peanuty_almondy": "estimated",
+        "chocolate_x_crisped_rice_wafer": "not_estimable",
+        "chocolate_x_bar": "not_estimable",
+    }
+
+
+def test_final_model_is_the_main_model_plus_every_retained_interaction(bundle):
+    retained = [row["term"] for row in bundle["interactions"]["results"] if row["retained"]]
+    final = bundle["final_model"]
+
+    assert final["predictors"] == MAIN_TERMS[1:] + retained
+    assert [row["term"] for row in final["coefficients"]] == ["intercept", *final["predictors"]]
+    assert final["n_obs"] == 83
