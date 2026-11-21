@@ -324,6 +324,43 @@ def test_final_model_is_the_main_model_plus_every_retained_interaction(bundle):
     assert final["n_obs"] == 83
 
 
+def test_profiles_are_scored_with_a_retained_interaction():
+    # No interaction is retained on the real data, so this path needs its own
+    # check: synthetic candies where chocolate and peanut reinforce each other.
+    from candy.data import ATTRIBUTES, LEVELS, Interaction
+    from candy.estimators import fit
+    from candy.profiles import ProfileScorer
+
+    rng = np.random.default_rng(0)
+    frame = pd.DataFrame(rng.integers(0, 2, size=(300, len(ATTRIBUTES))), columns=ATTRIBUTES)
+    for level in LEVELS:
+        frame[level] = rng.uniform(0, 1, size=len(frame))
+    interaction = Interaction("chocolate", "peanuty_almondy")
+    frame[interaction.term] = interaction.values(frame)
+    win_rate = (
+        40 + 10 * frame["chocolate"] + 5 * frame["peanuty_almondy"]
+        + 8 * frame[interaction.term] + rng.normal(0, 1, size=len(frame))
+    )
+    model = fit(frame.to_numpy(), win_rate.to_numpy(), list(frame.columns), cov="hc3")
+    levels = {level: 0.5 for level in LEVELS}
+    scorer = ProfileScorer(model, levels, (interaction,))
+
+    blank = dict.fromkeys(ATTRIBUTES, 0)
+    chocolate = blank | {"chocolate": 1}
+    both = chocolate | {"peanuty_almondy": 1}
+    coef = model.coef
+
+    assert scorer.predict(both)["estimate"] == pytest.approx(
+        coef["intercept"] + coef["chocolate"] + coef["peanuty_almondy"]
+        + coef[interaction.term] + 0.5 * (coef["sugar_level"] + coef["price_level"])
+    )
+    # Adding peanut to chocolate earns the peanut effect plus the interaction.
+    assert scorer.gap(both, chocolate).estimate == pytest.approx(
+        coef["peanuty_almondy"] + coef[interaction.term]
+    )
+    assert scorer.gap(both, chocolate).estimate == pytest.approx(13, abs=1)
+
+
 def test_gummy_check_adds_the_gummy_attribute_to_the_main_model(bundle):
     check = bundle["robustness"]["gummy"]
 

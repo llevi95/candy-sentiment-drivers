@@ -115,8 +115,14 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     holm_results = _holm_table(main_model, family=PREDICTORS)
     survivors = set(holm_results.index[holm_results["survives"]])
     ranked = rank(profiles[supported], scorer)
+    # Tiers come from the model that scores the profiles, so a retained
+    # interaction cannot make the two disagree on what an attribute means.
+    confirmed = holm_results if final_model is main_model else _holm_table(final_model, PREDICTORS)
     recommendation = recommend(
-        ranked, scorer, candies, evidence_tiers(main_model, confirmed=survivors)
+        ranked,
+        scorer,
+        candies,
+        evidence_tiers(final_model, confirmed=set(confirmed.index[confirmed["survives"]])),
     )
     ranked = mark_ties(ranked, scorer, recommendation["primary"]["attributes"])
     chocolate_vs_fruity = _chocolate_vs_fruity(candies, scorer)
