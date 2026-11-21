@@ -35,3 +35,23 @@ def test_package_imports_only_approved_libraries():
     }
 
     assert {k: v for k, v in offenders.items() if v} == {}
+
+
+def test_exported_requirements_match_the_lockfile():
+    import re
+    import tomllib
+
+    root = SRC.parents[1]
+    lock = tomllib.loads((root / "uv.lock").read_text())
+    locked = {
+        (p["name"], p["version"])
+        for p in lock["package"]
+        if p.get("source", {}).get("editable") != "."
+    }
+    pinned = set()
+    for line in (root / "requirements.txt").read_text().splitlines():
+        match = re.match(r"^([A-Za-z0-9_.-]+)==([^\s;\\\\]+)", line)
+        if match:
+            pinned.add((match[1].lower().replace("_", "-"), match[2]))
+
+    assert pinned == locked

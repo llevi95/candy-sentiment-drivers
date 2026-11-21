@@ -1,4 +1,4 @@
-.PHONY: all test clean
+.PHONY: all test clean requirements
 
 OUT ?= outputs
 
@@ -10,3 +10,7 @@ test:
 
 clean:
 	rm -rf $(OUT)
+
+# Regenerate the pip requirements from the uv lockfile.
+requirements:
+	uv export --frozen --no-hashes --format requirements-txt -o requirements.txt
