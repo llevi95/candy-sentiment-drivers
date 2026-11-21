@@ -49,7 +49,8 @@ APPENDIX_DIR = "appendix"
 RANKED_FIGURE_TOP = 15
 
 
-# Declared before any results were seen; tested one at a time on the main model.
+# Chosen on product grounds (chocolate with its most common partners) and
+# tested one at a time on the main model.
 INTERACTIONS = (
     Interaction("chocolate", "peanuty_almondy"),
     Interaction("chocolate", "crisped_rice_wafer"),
@@ -116,7 +117,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         },
         "interactions": {
             "declared": [i.term for i in INTERACTIONS],
-            "declared_note": "Fixed before any model results were seen.",
+            "declared_note": "Chosen on product grounds: chocolate with its most common partners.",
             "rule": RETENTION_RULE,
             "results": interactions,
         },
@@ -228,7 +229,8 @@ def _data_notes(bundle: dict) -> list[str]:
 
 
 def _write_appendix(folder: Path, bundle: dict, gummy_csv: Path) -> None:
-    """Appendix tables for the deck: VIFs, the gummy coding and the data notes."""
+    """Appendix tables for the deck: VIFs, the candies behind each interaction,
+    the gummy coding and the data notes."""
     folder.mkdir(parents=True, exist_ok=True)
     vif = bundle["main_model"]["vif"]
     pd.DataFrame(
@@ -238,6 +240,18 @@ def _write_appendix(folder: Path, bundle: dict, gummy_csv: Path) -> None:
             "vif": list(vif.values()),
         }
     ).to_csv(folder / "vif.csv", index=False)
+    pd.DataFrame(
+        [
+            {
+                "interaction": f"{LABELS[i.attribute]} x {LABELS[i.partner]}",
+                "n_both": row["n_both"],
+                "n_partner_only": row[f"n_partner_without_{i.attribute}"],
+                "n_attribute_only": row[f"n_{i.attribute}_without_partner"],
+                "status": row["status"],
+            }
+            for i, row in zip(INTERACTIONS, bundle["interactions"]["results"], strict=True)
+        ]
+    ).to_csv(folder / "interaction_support.csv", index=False)
     pd.read_csv(gummy_csv).to_csv(folder / "gummy_coding.csv", index=False)
     (folder / "data_notes.md").write_text(
         "\n".join(f"- {note}" for note in bundle["data_notes"]) + "\n"
@@ -275,7 +289,9 @@ def _test_interaction(
     """Add one interaction to the main model and apply the retention rule.
 
     Support counts say how many candies identify the term: those with both
-    attributes, and those with the partner but not the main attribute.
+    attributes, and those with only one of the two. The term can be told
+    apart from the partner's own effect only by candies that have the partner
+    without the main attribute.
     """
     term = interaction.term
     has_attribute = candies[interaction.attribute] == 1
@@ -283,6 +299,7 @@ def _test_interaction(
     support = {
         "n_both": int((has_attribute & has_partner).sum()),
         f"n_partner_without_{interaction.attribute}": int((~has_attribute & has_partner).sum()),
+        f"n_{interaction.attribute}_without_partner": int((has_attribute & ~has_partner).sum()),
     }
     try:
         model = _fit_model(candies, interactions=(interaction,))

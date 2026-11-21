@@ -244,7 +244,7 @@ EXPECTED_INTERACTION_TERMS = [
 ]
 
 
-def test_each_predeclared_interaction_is_reported_in_declared_order(bundle):
+def test_each_chosen_interaction_is_reported_in_declared_order(bundle):
     rows = bundle["interactions"]["results"]
 
     assert [row["term"] for row in rows] == EXPECTED_INTERACTION_TERMS
@@ -522,6 +522,21 @@ def test_appendix_vif_table_lists_every_predictor(out_dir, bundle):
     assert vif.set_index("predictor")["vif"].to_dict() == pytest.approx(
         bundle["main_model"]["vif"]
     )
+
+
+def test_appendix_interaction_support_counts_the_candies_behind_each_term(out_dir):
+    # Counted by hand from the raw data: 37 chocolate candies, of which 12
+    # have peanut/almond, 7 crisped/wafer and 20 are bars.
+    support = pd.read_csv(out_dir / "appendix" / "interaction_support.csv")
+
+    assert support.to_dict(orient="records") == [
+        {"interaction": "Chocolate x Peanut / almond", "n_both": 12,
+         "n_partner_only": 2, "n_attribute_only": 25, "status": "estimated"},
+        {"interaction": "Chocolate x Crisped rice / wafer / cookie", "n_both": 7,
+         "n_partner_only": 0, "n_attribute_only": 30, "status": "not_estimable"},
+        {"interaction": "Chocolate x Bar format", "n_both": 20,
+         "n_partner_only": 1, "n_attribute_only": 17, "status": "not_estimable"},
+    ]
 
 
 def test_appendix_gummy_table_is_the_approved_coding(out_dir):

@@ -43,11 +43,12 @@ judgement calls flagged. It is used only as a supplementary check; see
    bootstrap intervals (fixed seed), the model refitted with the coins
    included (the largest shift in any coefficient is reported in
    `appendix/data_notes.md`), and a gummy check that adds the gummy attribute.
-5. **Interactions.** Three interactions were declared before any results were
-   seen: chocolate × peanuty/almondy, chocolate × crisped/wafer and
-   chocolate × bar. Each is added on its own and kept only if its 95% interval
-   excludes zero and leave-one-out R² does not get worse. Interactions the data
-   cannot identify are reported as such.
+5. **Interactions.** Three interactions were chosen on product grounds
+   (chocolate with its most common partners): chocolate × peanuty/almondy,
+   chocolate × crisped/wafer and chocolate × bar. Each is added on its own and
+   kept only if its 95% interval excludes zero and leave-one-out R² does not
+   get worse. Interactions the data cannot identify are reported as such, and
+   `appendix/interaction_support.csv` counts the candies behind each one.
 6. **Recommendation.** Every combination of attributes is enumerated and
    filtered to **supported profiles**: realistic ones (not chocolate and fruity
    together; hard excludes bar; bar excludes pluribus) that differ from at least
@@ -122,6 +123,7 @@ read without running anything; `make all` rebuilds it:
 | `figures/ranked_profiles.png` | Top supported profiles with intervals |
 | `figures/recommendation_gap.png` | Primary vs fruit-flavoured profile and the gap between them |
 | `appendix/vif.csv` | Variance inflation factor per predictor |
+| `appendix/interaction_support.csv` | How many candies have both, or only one, of each interaction's attributes |
 | `appendix/gummy_coding.csv` | The approved gummy coding with notes |
 | `appendix/data_notes.md` | Plain-language notes on exclusions and data limits |
 

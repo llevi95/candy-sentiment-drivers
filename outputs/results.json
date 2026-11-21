@@ -339,7 +339,7 @@
       "chocolate_x_crisped_rice_wafer",
       "chocolate_x_bar"
     ],
-    "declared_note": "Fixed before any model results were seen.",
+    "declared_note": "Chosen on product grounds: chocolate with its most common partners.",
     "rule": "Retain an interaction only if its 95% CI excludes 0 and leave-one-out R\u00b2 does not worsen relative to the main model.",
     "results": [
       {
@@ -347,6 +347,7 @@
         "status": "estimated",
         "n_both": 12,
         "n_partner_without_chocolate": 2,
+        "n_chocolate_without_partner": 25,
         "coef": 14.417010524680189,
         "ci_low": -19.49980619585864,
         "ci_high": 48.33382724521901,
@@ -360,6 +361,7 @@
         "status": "not_estimable",
         "n_both": 7,
         "n_partner_without_chocolate": 0,
+        "n_chocolate_without_partner": 30,
         "reason": "design matrix is rank deficient: some terms are exact linear combinations of others and cannot be estimated separately",
         "retained": false
       },
@@ -368,6 +370,7 @@
         "status": "not_estimable",
         "n_both": 20,
         "n_partner_without_chocolate": 1,
+        "n_chocolate_without_partner": 17,
         "reason": "an observation has leverage 1 (it alone identifies a term), so its leave-one-out residual, and with it leave-one-out R\u00b2 and HC3 standard errors, is undefined",
         "retained": false
       }
