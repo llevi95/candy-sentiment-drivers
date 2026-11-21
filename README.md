@@ -76,10 +76,10 @@ cookie-versus-gummy debate; see `data/derived/README.md` for the coding rule.
    driver: chocolate with peanut/almond is the one profile above, and that
    lead does not survive dropping the Reese's candies.
 
-   The primary profile comes with **benchmark candies**: the existing candies
-   closest to it. Because many candies can tie for closest, the bundle also
-   gives the count, mean and range of win rate of every candy within one
-   attribute of it, as a market check on the prediction.
+   The primary profile comes with a market check on its prediction: the
+   count, mean and range of win rate of every existing candy within one
+   attribute of it. The **benchmark candies** name three of them, those with
+   the lowest, median and highest win rate, so the examples span that range.
 7. **Cookie versus gummy.** The debate is answered with direct differences
    from the model that includes the gummy attribute: a chocolate product, and
    a chocolate product with a cookie component, each minus a fruity gummy,

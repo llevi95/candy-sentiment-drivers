@@ -683,8 +683,7 @@ def test_recommendations_name_two_or_three_real_benchmark_candies(bundle):
     marks = bundle["recommendation"]["primary"]["benchmarks"]
     assert 2 <= len(marks) <= 3
     assert {m["candy"] for m in marks} <= real
-    distances = [m["attributes_differing"] for m in marks]
-    assert distances == sorted(distances)
+    assert all(m["attributes_differing"] <= 1 for m in marks)
 
 
 def test_primary_profile_summarises_every_candy_within_one_attribute(bundle):
@@ -746,8 +745,9 @@ def test_recommendations_report_how_far_they_extrapolate(bundle):
     rec = bundle["recommendation"]["primary"]
     assert rec["n_attributes"] == sum(rec["attributes"].values())
     assert rec["max_attributes_on_a_real_candy"] == most_on_a_real_candy
-    assert rec["nearest_candy_distance"] == rec["benchmarks"][0]["attributes_differing"]
-    assert rec["nearest_candy_distance"] <= 1
+    profile = np.array([rec["attributes"][a] for a in ATTRIBUTES])
+    nearest = int((raw[raw_columns].to_numpy() != profile).sum(axis=1).min())
+    assert rec["nearest_candy_distance"] == nearest <= 1
 
 
 def test_sugar_and_price_are_fixed_at_their_medians(bundle):
@@ -761,20 +761,25 @@ def test_sugar_and_price_are_fixed_at_their_medians(bundle):
     assert levels["price_level"] == pytest.approx(candies["pricepercent"].median())
 
 
-def test_benchmarks_are_the_nearest_candies_with_sugar_and_price_breaking_ties(bundle):
+def test_benchmarks_span_the_nearby_candies_lowest_median_and_highest(bundle):
+    # Oracle: recompute from the raw CSV. Naming the three nearest by sugar
+    # and price level picked two below-50 candies out of a group averaging 56.6.
     raw = pd.read_csv(RAW)
     raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
     raw_columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
                    "crispedricewafer", "hard", "bar", "pluribus"]
-    levels = bundle["profiles"]["levels"]
 
     rec = bundle["recommendation"]["primary"]
     profile = np.array([rec["attributes"][a] for a in ATTRIBUTES])
-    attr = (raw[raw_columns].to_numpy() != profile).sum(axis=1)
-    level = np.hypot(raw["sugarpercent"] - levels["sugar_level"],
-                     raw["pricepercent"] - levels["price_level"])
-    ranking = sorted(zip(attr, level, raw["competitorname"]))
-    assert [m["candy"] for m in rec["benchmarks"]] == [name for *_, name in ranking[:3]]
+    near = raw.loc[(raw[raw_columns].to_numpy() != profile).sum(axis=1) <= 1]
+    near = near.sort_values("winpercent", kind="stable")
+    expected = near.iloc[[0, (len(near) - 1) // 2, len(near) - 1]]
+
+    marks = rec["benchmarks"]
+    assert [m["candy"] for m in marks] == expected["competitorname"].tolist()
+    assert [m["win_rate"] for m in marks] == pytest.approx(expected["winpercent"].tolist())
+    assert marks[0]["win_rate"] == rec["nearby_candies"]["min_win_rate"]
+    assert marks[-1]["win_rate"] == rec["nearby_candies"]["max_win_rate"]
 
 
 def test_appendix_vif_table_lists_every_predictor(out_dir, bundle):

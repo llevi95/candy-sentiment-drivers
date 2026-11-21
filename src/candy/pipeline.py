@@ -122,7 +122,6 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     confirmed = holm_results if final_model is main_model else _holm_table(final_model, PREDICTORS)
     recommendation = recommend(
         ranked,
-        scorer,
         candies,
         evidence_tiers(final_model, confirmed=set(confirmed.index[confirmed["survives"]])),
     )

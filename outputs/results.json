@@ -3020,19 +3020,19 @@
       "capped": false,
       "benchmarks": [
         {
-          "candy": "Tootsie Roll Juniors",
-          "attributes_differing": 0,
-          "win_rate": 43.068897
+          "candy": "Sixlets",
+          "attributes_differing": 1,
+          "win_rate": 34.722
         },
         {
-          "candy": "Tootsie Roll Snack Bars",
+          "candy": "Hershey's Kisses",
           "attributes_differing": 1,
-          "win_rate": 49.653503
+          "win_rate": 55.375454
         },
         {
-          "candy": "Junior Mints",
+          "candy": "Reese's Peanut Butter cup",
           "attributes_differing": 1,
-          "win_rate": 57.21925
+          "win_rate": 84.18029
         }
       ],
       "nearby_candies": {

@@ -37,7 +37,6 @@ REALISM_RULES = (
     RealismRule("bar excludes pluribus", lambda p: p["bar"] & p["pluribus"]),
 )
 SUPPORT_DISTANCE = 1  # max attributes a profile may differ from some real candy
-BENCHMARK_COUNT = 3
 WIN_RATE_SCALE = (0.0, 100.0)
 
 # The purchasing team's debate as model rows. Every cookie candy in the data
@@ -171,7 +170,6 @@ def mark_ties(ranked: list[dict], scorer: ProfileScorer, primary: dict[str, int]
 
 def recommend(
     ranked: list[dict],
-    scorer: ProfileScorer,
     candies: pd.DataFrame,
     evidence: dict[str, dict[str, str]],
 ) -> dict:
@@ -192,14 +190,14 @@ def recommend(
     most_on_a_real_candy = int(candies[ATTRIBUTES].sum(axis=1).max())
 
     def describe(row: dict) -> dict:
-        marks = benchmarks(row["attributes"], scorer.levels, candies)
+        distance = _attribute_distances(pd.DataFrame([row["attributes"]]), candies)[0]
         return {
             **row,
-            "benchmarks": marks,
+            "benchmarks": benchmarks(row["attributes"], candies),
             "nearby_candies": nearby_candies(row["attributes"], candies),
             "n_attributes": sum(row["attributes"].values()),
             "max_attributes_on_a_real_candy": most_on_a_real_candy,
-            "nearest_candy_distance": marks[0]["attributes_differing"],
+            "nearest_candy_distance": int(distance.min()),
         }
 
     return {
@@ -248,25 +246,25 @@ def nearby_candies(attributes: dict[str, int], candies: pd.DataFrame) -> dict:
     }
 
 
-def benchmarks(
-    attributes: dict[str, int], levels: dict[str, float], candies: pd.DataFrame
-) -> list[dict]:
-    """The BENCHMARK_COUNT candies nearest the profile: fewest differing
-    attributes, ties broken by Euclidean distance in sugar and price level."""
-    profile = pd.DataFrame([attributes])
-    attribute_distance = _attribute_distances(profile, candies)[0]
-    level_distance = np.hypot(
-        candies["sugar_level"] - levels["sugar_level"],
-        candies["price_level"] - levels["price_level"],
-    )
-    order = np.lexsort((level_distance.to_numpy(), attribute_distance))[:BENCHMARK_COUNT]
+def benchmarks(attributes: dict[str, int], candies: pd.DataFrame) -> list[dict]:
+    """Named examples spanning the nearby candies: the lowest, median and
+    highest win rate among the candies within SUPPORT_DISTANCE attributes of
+    the profile (the lower middle one when their number is even).
+
+    Many candies tie for nearest, and picking among them by sugar or price
+    level, neither a driver, named an unrepresentative few."""
+    distance = _attribute_distances(pd.DataFrame([attributes]), candies)[0]
+    near = np.flatnonzero(distance <= SUPPORT_DISTANCE)
+    by_win_rate = near[np.argsort(candies["win_rate"].to_numpy()[near], kind="stable")]
+    last = len(by_win_rate) - 1
+    picks = dict.fromkeys(by_win_rate[[0, last // 2, last]])  # fewer when under 3 nearby
     return [
         {
             "candy": candies["candy"].iloc[i],
-            "attributes_differing": int(attribute_distance[i]),
+            "attributes_differing": int(distance[i]),
             "win_rate": float(candies["win_rate"].iloc[i]),
         }
-        for i in order
+        for i in picks
     ]
 
 
