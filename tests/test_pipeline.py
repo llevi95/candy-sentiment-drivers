@@ -227,6 +227,9 @@ def test_one_alpha_drives_model_intervals_and_labels(tmp_path, monkeypatch):
 
     for row in model["coefficients"]:
         assert row["ci_high"] - row["coef"] == pytest.approx(crit * row["se"])
+    # No text in the bundle may still call these 95% intervals.
+    assert "95%" not in json.dumps(bundle)
+    assert "90% CI" in bundle["interactions"]["rule"]
 
 
 def test_two_runs_with_the_same_seed_produce_identical_bundles(tmp_path):

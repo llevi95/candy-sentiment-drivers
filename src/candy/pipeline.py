@@ -66,9 +66,14 @@ INTERACTIONS = (
 ESTIMATED = "estimated"
 NOT_ESTIMABLE = "not_estimable"
 RETENTION_RULE = (
-    "Retain an interaction only if its 95% CI excludes 0 and leave-one-out "
+    "Retain an interaction only if its {level} CI excludes 0 and leave-one-out "
     "R² does not worsen relative to the main model."
 )
+
+
+def _level() -> str:
+    """The confidence level behind every interval, e.g. '95%'."""
+    return f"{1 - ALPHA:.0%}"
 
 
 def _is_retained(ci_low: float, ci_high: float, loo_change: float) -> bool:
@@ -137,7 +142,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         "interactions": {
             "declared": [i.term for i in INTERACTIONS],
             "declared_note": "Chosen on product grounds: chocolate with its most common partners.",
-            "rule": RETENTION_RULE,
+            "rule": RETENTION_RULE.format(level=_level()),
             "results": interactions,
         },
         "final_model": {
@@ -155,7 +160,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
             "n_realistic": int(realistic.sum()),
             "n_supported": int(supported.sum()),
             "n_tied_with_primary": sum(row["tied_with_primary"] for row in ranked),
-            "tie_note": "A profile is tied with the primary profile when the 95% CI "
+            "tie_note": f"A profile is tied with the primary profile when the {_level()} CI "
             "of the predicted gap between the two includes zero.",
             "ranked": ranked,
         },
@@ -345,7 +350,7 @@ def _gummy_sensitivity_note(gummy: dict) -> str:
     clear = gummy["clear_cases_only"]
 
     def effect(row: dict) -> str:
-        return f"{row['coef']:+.1f} points (95% CI {row['ci_low']:.1f} to {row['ci_high']:.1f})"
+        return f"{row['coef']:+.1f} points ({_level()} CI {row['ci_low']:.1f} to {row['ci_high']:.1f})"
 
     verdict = (
         "its interval still excludes zero"
