@@ -111,12 +111,13 @@ def _load_gummy(gummy_csv: Path, candies: pd.Series) -> pd.DataFrame:
     unknown = sorted(set(gummy["candy"]) - set(candies))
     if unknown:
         raise ValueError(f"gummy coding names unknown candies: {unknown}")
-    blank = gummy.loc[gummy["gummy"].isna(), "candy"].tolist()
-    if blank:
-        raise ValueError(f"gummy coding has a missing value for: {blank}")
-    not_binary = gummy.loc[~gummy["gummy"].isin([0, 1]), "candy"].tolist()
-    if not_binary:
-        raise ValueError(f"gummy values must be 0/1: {not_binary}")
+    for column in ("gummy", "gummy_unclear"):
+        blank = gummy.loc[gummy[column].isna(), "candy"].tolist()
+        if blank:
+            raise ValueError(f"gummy coding has a missing value for: {blank}")
+        not_binary = gummy.loc[~gummy[column].isin([0, 1]), "candy"].tolist()
+        if not_binary:
+            raise ValueError(f"gummy values must be 0/1: {not_binary}")
     duplicated = gummy.loc[gummy["candy"].duplicated(), "candy"].tolist()
     if duplicated:
         raise ValueError(f"gummy coding lists candies more than once: {duplicated}")

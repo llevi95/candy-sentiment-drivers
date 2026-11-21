@@ -465,8 +465,11 @@ def _corrupt_gummy(tmp_path: Path, edit) -> Path:
         (lambda lines: [l.replace("Twix,0,", "Twix,2,") for l in lines], "0/1.*Twix"),
         (lambda lines: [l.replace("Twix,0,", "Twix,,") for l in lines], "missing value.*Twix"),
         (lambda lines: [*lines, "Twix,0,0,again"], "more than once.*Twix"),
+        (lambda lines: [l.replace("Twix,0,0,", "Twix,0,2,") for l in lines], "0/1.*Twix"),
+        (lambda lines: [l.replace("Twix,0,0,", "Twix,0,,") for l in lines], "missing value.*Twix"),
     ],
-    ids=["missing candy", "unknown candy", "non-binary value", "blank value", "duplicate row"],
+    ids=["missing candy", "unknown candy", "non-binary value", "blank value", "duplicate row",
+         "non-binary unclear flag", "blank unclear flag"],
 )
 def test_gummy_table_problems_fail_loudly_naming_the_candy(tmp_path, edit, message):
     gummy = _corrupt_gummy(tmp_path, edit)
