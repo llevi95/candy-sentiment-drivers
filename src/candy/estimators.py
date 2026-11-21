@@ -15,6 +15,8 @@ import pandas as pd
 from scipy import special, stats
 
 INTERCEPT = "intercept"
+# Leverage this close to 1 means one observation alone pins down a term.
+LEVERAGE_LIMIT = 1 - 1e-8
 
 Covariance = Literal["classical", "hc3"]
 Target = Literal["identity", "logit"]
@@ -158,10 +160,11 @@ def fit(
     resid = y - linear_fit
     xtx_inv = np.linalg.inv(design.T @ design)
     leverage = np.einsum("ij,jk,ik->i", design, xtx_inv, design)
-    if np.any(leverage > 1 - 1e-8):
+    if np.any(leverage > LEVERAGE_LIMIT):
         raise EstimationError(
             "an observation has leverage 1 (it alone identifies a term), so "
-            "leave-one-out residuals and HC3 standard errors are undefined"
+            "its leave-one-out residual, and with it leave-one-out R² and HC3 "
+            "standard errors, is undefined"
         )
 
     if cov == "classical":

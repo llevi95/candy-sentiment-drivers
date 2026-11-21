@@ -225,7 +225,7 @@ def test_coins_included_check_states_how_far_each_coefficient_moved(bundle):
     )
 
 
-INTERACTIONS = [
+EXPECTED_INTERACTION_TERMS = [
     "chocolate_x_peanuty_almondy",
     "chocolate_x_crisped_rice_wafer",
     "chocolate_x_bar",
@@ -235,7 +235,8 @@ INTERACTIONS = [
 def test_each_predeclared_interaction_is_reported_in_declared_order(bundle):
     rows = bundle["interactions"]["results"]
 
-    assert [row["term"] for row in rows] == INTERACTIONS
+    assert [row["term"] for row in rows] == EXPECTED_INTERACTION_TERMS
+    assert bundle["interactions"]["declared"] == EXPECTED_INTERACTION_TERMS
     assert all(row["status"] in {"estimated", "not_estimable"} for row in rows)
 
 
@@ -258,13 +259,29 @@ def test_interactions_the_data_cannot_identify_are_reported_as_not_estimable(bun
     # All 7 crisped/wafer candies are chocolate, so chocolate x crisped equals
     # crisped; only one bar is not chocolate, so that candy alone identifies
     # chocolate x bar. Chocolate x peanuty has two non-chocolate candies.
-    status = {row["term"]: row["status"] for row in bundle["interactions"]["results"]}
+    rows = {row["term"]: row for row in bundle["interactions"]["results"]}
 
-    assert status == {
+    assert {term: row["status"] for term, row in rows.items()} == {
         "chocolate_x_peanuty_almondy": "estimated",
         "chocolate_x_crisped_rice_wafer": "not_estimable",
         "chocolate_x_bar": "not_estimable",
     }
+    support = {
+        term: (row["n_both"], row["n_partner_without_chocolate"]) for term, row in rows.items()
+    }
+    assert support == {
+        "chocolate_x_peanuty_almondy": (12, 2),
+        "chocolate_x_crisped_rice_wafer": (7, 0),
+        "chocolate_x_bar": (20, 1),
+    }
+
+
+def test_no_interaction_is_retained_on_this_data(bundle):
+    # Chocolate x peanuty: CI about [-19.5, 48.3] spans zero and leave-one-out
+    # R² falls (0.351 -> 0.324); the other two cannot be estimated.
+    retained = {row["term"]: row["retained"] for row in bundle["interactions"]["results"]}
+
+    assert retained == dict.fromkeys(EXPECTED_INTERACTION_TERMS, False)
 
 
 def test_final_model_is_the_main_model_plus_every_retained_interaction(bundle):

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
@@ -25,17 +26,38 @@ ALPHA = 0.05
 SEED = 20261121
 BOOTSTRAP_DRAWS = 2000
 
+FIGURES_DIR = "figures"
+
+
+@dataclass(frozen=True)
+class Interaction:
+    """Product of two attributes, added to the main model as one extra term."""
+
+    attribute: str
+    partner: str
+
+    @property
+    def term(self) -> str:
+        return f"{self.attribute}_x_{self.partner}"
+
+
 # Declared before any results were seen; tested one at a time on the main model.
 INTERACTIONS = (
-    ("chocolate", "peanuty_almondy"),
-    ("chocolate", "crisped_rice_wafer"),
-    ("chocolate", "bar"),
+    Interaction("chocolate", "peanuty_almondy"),
+    Interaction("chocolate", "crisped_rice_wafer"),
+    Interaction("chocolate", "bar"),
 )
+ESTIMATED = "estimated"
+NOT_ESTIMABLE = "not_estimable"
 RETENTION_RULE = (
     "Retain an interaction only if its 95% CI excludes 0 and leave-one-out "
     "R² does not worsen relative to the main model."
 )
-FIGURES_DIR = "figures"
+
+
+def _is_retained(ci_low: float, ci_high: float, loo_change: float) -> bool:
+    """RETENTION_RULE, as code."""
+    return bool((ci_low > 0 or ci_high < 0) and loo_change >= 0)
 
 
 def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
@@ -49,16 +71,16 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
 
     data = load_candies(raw_csv)
     candies = data.candies
-    main_model = _fit_main(candies, bootstrap_draws=BOOTSTRAP_DRAWS, seed=seed)
-    coins_included = _fit_main(data.with_coins)
-    logit_model = _fit_main(candies, target="logit")
+    main_model = _fit_model(candies, bootstrap_draws=BOOTSTRAP_DRAWS, seed=seed)
+    coins_included = _fit_model(data.with_coins)
+    logit_model = _fit_model(candies, target="logit")
     coin_shift = coins_included.coef - main_model.coef
 
-    interactions = [_test_interaction(candies, pair, main_model) for pair in INTERACTIONS]
+    interactions = [_test_interaction(candies, i, main_model) for i in INTERACTIONS]
     retained = tuple(
-        pair for pair, row in zip(INTERACTIONS, interactions, strict=True) if row["retained"]
+        i for i, row in zip(INTERACTIONS, interactions, strict=True) if row["retained"]
     )
-    final_model = _fit_main(candies, interactions=retained) if retained else main_model
+    final_model = _fit_model(candies, interactions=retained) if retained else main_model
     holm_results = _holm_table(main_model, family=PREDICTORS)
     comparison = _attribute_comparison_table(candies)
 
@@ -76,7 +98,12 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
             "alpha": ALPHA,
             "results": _records(comparison, "attribute"),
         },
-        "interactions": {"rule": RETENTION_RULE, "results": interactions},
+        "interactions": {
+            "declared": [i.term for i in INTERACTIONS],
+            "declared_note": "Fixed before any model results were seen.",
+            "rule": RETENTION_RULE,
+            "results": interactions,
+        },
         "final_model": {
             "predictors": list(final_model.coef.index.drop(INTERCEPT)),
             **_model_section(final_model, target="win_rate"),
@@ -122,19 +149,19 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
     return bundle
 
 
-def _fit_main(
+def _fit_model(
     entries: pd.DataFrame,
     *,
-    interactions: tuple[tuple[str, str], ...] = (),
+    interactions: tuple[Interaction, ...] = (),
     target: Target = "identity",
     bootstrap_draws: int | None = None,
     seed: int | None = None,
 ) -> FitResult:
-    """Main model: win rate on the attributes plus sugar and price level, HC3,
-    optionally extended with products of attribute pairs."""
+    """Win rate on the attributes plus sugar and price level, HC3: the main
+    model, optionally extended with interaction terms."""
     design = entries[PREDICTORS].copy()
-    for pair in interactions:
-        design[_interaction_term(pair)] = entries[pair[0]] * entries[pair[1]]
+    for interaction in interactions:
+        design[interaction.term] = entries[interaction.attribute] * entries[interaction.partner]
     return fit(
         design.to_numpy(),
         entries["win_rate"].to_numpy(),
@@ -146,32 +173,44 @@ def _fit_main(
     )
 
 
-def _interaction_term(pair: tuple[str, str]) -> str:
-    return f"{pair[0]}_x_{pair[1]}"
-
-
 def _test_interaction(
-    candies: pd.DataFrame, pair: tuple[str, str], main_model: FitResult
+    candies: pd.DataFrame, interaction: Interaction, main_model: FitResult
 ) -> dict:
-    """Add one interaction to the main model and apply the retention rule."""
-    term = _interaction_term(pair)
+    """Add one interaction to the main model and apply the retention rule.
+
+    Support counts say how many candies identify the term: those with both
+    attributes, and those with the partner but not the main attribute.
+    """
+    term = interaction.term
+    has_attribute = candies[interaction.attribute] == 1
+    has_partner = candies[interaction.partner] == 1
+    support = {
+        "n_both": int((has_attribute & has_partner).sum()),
+        f"n_partner_without_{interaction.attribute}": int((~has_attribute & has_partner).sum()),
+    }
     try:
-        model = _fit_main(candies, interactions=(pair,))
+        model = _fit_model(candies, interactions=(interaction,))
     except EstimationError as error:
-        return {"term": term, "status": "not_estimable", "reason": str(error), "retained": False}
+        return {
+            "term": term,
+            "status": NOT_ESTIMABLE,
+            **support,
+            "reason": str(error),
+            "retained": False,
+        }
     ci_low, ci_high = model.ci_low[term], model.ci_high[term]
     loo_change = model.loo_r_squared - main_model.loo_r_squared
-    excludes_zero = ci_low > 0 or ci_high < 0
     return {
         "term": term,
-        "status": "estimated",
+        "status": ESTIMATED,
+        **support,
         "coef": float(model.coef[term]),
         "ci_low": float(ci_low),
         "ci_high": float(ci_high),
         "p": float(model.p[term]),
         "loo_r_squared": model.loo_r_squared,
         "loo_r_squared_change": loo_change,
-        "retained": bool(excludes_zero and loo_change >= 0),
+        "retained": _is_retained(ci_low, ci_high, loo_change),
     }
 
 
