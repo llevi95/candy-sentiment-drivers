@@ -5,11 +5,15 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from candy.data import PREDICTORS, load_candies
-from candy.estimators import FitResult, fit
-from candy.figures import coefficient_chart
+import pandas as pd
+from scipy import stats
+
+from candy.data import ATTRIBUTES, PREDICTORS, load_candies
+from candy.estimators import FitResult, fit, holm
+from candy.figures import attribute_comparison_chart, coefficient_chart
 
 BUNDLE_NAME = "results.json"
+ALPHA = 0.05
 FIGURES_DIR = "figures"
 
 
@@ -34,8 +38,14 @@ def run(raw_csv: Path, out_dir: Path) -> dict:
             "excluded": data.excluded,
         },
         "main_model": _model_section(main_model, target="win_rate"),
+        "holm": _holm_section(main_model, family=PREDICTORS),
+        "attribute_comparison": _attribute_comparison_section(candies),
     }
-    coefficient_chart(main_model.table(), out_dir / FIGURES_DIR / "coefficients.png")
+    figures = out_dir / FIGURES_DIR
+    survivors = {row["term"] for row in bundle["holm"]["results"] if row["survives"]}
+    coefficient_chart(main_model.table(), survivors, figures / "coefficients.png")
+    comparison = pd.DataFrame(bundle["attribute_comparison"]["results"]).set_index("attribute")
+    attribute_comparison_chart(comparison, figures / "attribute_comparison.png")
 
     (out_dir / BUNDLE_NAME).write_text(json.dumps(bundle, indent=2) + "\n")
     return bundle
@@ -49,5 +59,50 @@ def _model_section(result: FitResult, target: str) -> dict:
         "n_obs": result.n_obs,
         "df_resid": result.df_resid,
         "r_squared": result.r_squared,
+        "loo_r_squared": result.loo_r_squared,
         "coefficients": table.to_dict(orient="records"),
+        "vif": result.vif.to_dict(),
     }
+
+
+def _holm_section(result: FitResult, family: list[str]) -> dict:
+    p = result.p[family]
+    adjusted = holm(p)
+    return {
+        "alpha": ALPHA,
+        "results": [
+            {
+                "term": term,
+                "p": float(p[term]),
+                "p_holm": float(adjusted[term]),
+                "survives": bool(adjusted[term] < ALPHA),
+            }
+            for term in family
+        ],
+    }
+
+
+def _attribute_comparison_section(candies: pd.DataFrame) -> dict:
+    """Welch t-test of win rate, candies with vs without each attribute."""
+    results = []
+    for attribute in ATTRIBUTES:
+        has = candies[attribute] == 1
+        with_, without = candies.loc[has, "win_rate"], candies.loc[~has, "win_rate"]
+        test = stats.ttest_ind(with_, without, equal_var=False)
+        ci = test.confidence_interval(confidence_level=1 - ALPHA)
+        results.append(
+            {
+                "attribute": attribute,
+                "n_with": int(has.sum()),
+                "n_without": int((~has).sum()),
+                "mean_with": float(with_.mean()),
+                "mean_without": float(without.mean()),
+                "diff": float(with_.mean() - without.mean()),
+                "ci_low": float(ci.low),
+                "ci_high": float(ci.high),
+                "t": float(test.statistic),
+                "df": float(test.df),
+                "p": float(test.pvalue),
+            }
+        )
+    return {"test": "welch", "alpha": ALPHA, "results": results}

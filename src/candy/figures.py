@@ -31,6 +31,7 @@ LABELS = {
 }
 
 DRIVER = "#1f6f8b"
+TENTATIVE = "#8cc3d6"
 NOT_CLEAR = "#a3a3a3"
 
 plt.rcParams.update(
@@ -45,14 +46,19 @@ plt.rcParams.update(
 )
 
 
-def coefficient_chart(table: pd.DataFrame, path: Path) -> None:
+def coefficient_chart(table: pd.DataFrame, survivors: set[str], path: Path) -> None:
     """Horizontal CI chart of each term's effect on win rate, intercept excluded.
 
     ``table`` has one row per term with ``coef``, ``ci_low`` and ``ci_high``.
+    Terms in ``survivors`` (Holm-significant) are highlighted; terms whose raw
+    95% CI excludes zero but that do not survive Holm are shown as tentative.
     """
     rows = table.drop(index=INTERCEPT).sort_values("coef")
     excludes_zero = (rows["ci_low"] > 0) | (rows["ci_high"] < 0)
-    colors = [DRIVER if c else NOT_CLEAR for c in excludes_zero]
+    colors = [
+        DRIVER if term in survivors else TENTATIVE if clear else NOT_CLEAR
+        for term, clear in excludes_zero.items()
+    ]
     y = range(len(rows))
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
@@ -62,14 +68,54 @@ def coefficient_chart(table: pd.DataFrame, path: Path) -> None:
     ax.set_yticks(list(y), [LABELS.get(t, t) for t in rows.index])
     ax.set_xlabel("Change in win rate (percentage points), 95% CI")
     ax.set_title("What moves consumer preference")
-    fig.text(
-        0.99,
-        0.015,
-        "Blue: interval excludes zero. Grey: effect not distinguishable from zero.",
-        ha="right",
-        fontsize=12,
-        color="#555555",
+    _footnote(
+        fig,
+        "Dark blue: significant after Holm correction across all 11 effects. "
+        "Light blue: 95% CI excludes zero, but not after correction. Grey: neither.",
     )
+    _save(fig, path)
+
+
+def attribute_comparison_chart(rows: pd.DataFrame, path: Path) -> None:
+    """Average win rate of candies with vs without each attribute.
+
+    ``rows`` has one row per attribute (index) with ``mean_with``,
+    ``mean_without``, ``n_with``, ``n_without`` and Welch ``p``.
+    """
+    rows = rows.sort_values("mean_with")
+    clear = rows["p"] < 0.05
+    y = list(range(len(rows)))
+
+    fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
+    ax.hlines(y, rows["mean_without"], rows["mean_with"],
+              colors=[DRIVER if c else NOT_CLEAR for c in clear], linewidth=3)
+    ax.scatter(rows["mean_without"], y, color="white", edgecolor="#333333",
+               s=90, zorder=3, label="Without attribute")
+    ax.scatter(rows["mean_with"], y, color=[DRIVER if c else NOT_CLEAR for c in clear],
+               edgecolor="#333333", s=90, zorder=3, label="With attribute")
+    ax.set_yticks(
+        y,
+        [
+            f"{LABELS.get(a, a)}  (n = {n_with} vs {n_without})"
+            for a, n_with, n_without in zip(rows.index, rows["n_with"], rows["n_without"])
+        ],
+    )
+    ax.set_xlabel("Average win rate (%)")
+    ax.set_title("Candies with vs without each attribute")
+    ax.legend(loc="lower right", frameon=False)
+    _footnote(
+        fig,
+        "Blue: difference significant (Welch t-test, p < 0.05). "
+        "Simple comparison; does not control for other attributes.",
+    )
+    _save(fig, path)
+
+
+def _footnote(fig: plt.Figure, text: str) -> None:
+    fig.text(0.99, 0.015, text, ha="right", fontsize=12, color="#555555")
+
+
+def _save(fig: plt.Figure, path: Path) -> None:
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path)

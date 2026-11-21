@@ -79,10 +79,10 @@ def test_every_coefficient_lies_inside_its_confidence_interval(bundle):
         assert row["ci_low"] < row["coef"] < row["ci_high"]
 
 
-def test_coefficient_chart_is_written_as_slide_ready_png(out_dir):
-    chart = out_dir / "figures" / "coefficients.png"
+@pytest.mark.parametrize("name", ["coefficients.png", "attribute_comparison.png"])
+def test_figures_are_written_as_slide_ready_pngs(out_dir, name):
+    header = (out_dir / "figures" / name).read_bytes()[:24]
 
-    header = chart.read_bytes()[:24]
     assert header[:8] == b"\x89PNG\r\n\x1a\n"
     width = int.from_bytes(header[16:20], "big")
     height = int.from_bytes(header[20:24], "big")
@@ -101,3 +101,60 @@ def test_module_entry_point_builds_outputs(tmp_path):
 
     assert (tmp_path / "results.json").exists()
     assert (tmp_path / "figures" / "coefficients.png").exists()
+
+
+def test_main_model_reports_a_vif_for_every_predictor(bundle):
+    vif = bundle["main_model"]["vif"]
+
+    assert list(vif) == MAIN_TERMS[1:]
+    assert all(value >= 1 for value in vif.values())
+
+
+def test_main_model_reports_an_out_of_sample_r_squared_below_in_sample(bundle):
+    main = bundle["main_model"]
+
+    assert 0 < main["loo_r_squared"] < main["r_squared"]
+
+
+def test_holm_correction_covers_the_eleven_main_effects(bundle):
+    holm = bundle["holm"]
+    main_p = {row["term"]: row["p"] for row in bundle["main_model"]["coefficients"]}
+
+    assert holm["alpha"] == 0.05
+    assert [row["term"] for row in holm["results"]] == MAIN_TERMS[1:]
+    for row in holm["results"]:
+        assert row["p"] == main_p[row["term"]]
+        assert row["p"] <= row["p_holm"] <= 1
+        assert row["survives"] == (row["p_holm"] < holm["alpha"])
+
+
+def test_chocolate_survives_holm_correction(bundle):
+    # Chocolate's HC3 p-value is about 2e-5, far below 0.05 / 11.
+    survivors = [row["term"] for row in bundle["holm"]["results"] if row["survives"]]
+
+    assert "chocolate" in survivors
+
+
+ATTRIBUTES = MAIN_TERMS[1:10]
+
+
+def test_attribute_comparison_splits_all_candies_with_and_without_each_attribute(bundle):
+    rows = bundle["attribute_comparison"]["results"]
+
+    assert bundle["attribute_comparison"]["test"] == "welch"
+    assert [row["attribute"] for row in rows] == ATTRIBUTES
+    for row in rows:
+        assert row["n_with"] + row["n_without"] == 83
+        assert row["diff"] == pytest.approx(row["mean_with"] - row["mean_without"])
+        assert row["ci_low"] < row["diff"] < row["ci_high"]
+        assert 0 <= row["p"] <= 1
+
+
+def test_attribute_comparison_counts_match_the_data(bundle):
+    # Counts in the source data (coins carry no attributes, so none are lost).
+    counts = {row["attribute"]: row["n_with"] for row in bundle["attribute_comparison"]["results"]}
+
+    assert counts["chocolate"] == 37
+    assert counts["fruity"] == 38
+    assert counts["nougat"] == 7
+    assert counts["crisped_rice_wafer"] == 7
