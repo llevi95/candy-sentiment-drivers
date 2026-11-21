@@ -116,25 +116,10 @@ def is_supported(profiles: pd.DataFrame, candies: pd.DataFrame) -> pd.Series:
     return pd.Series(distance.min(axis=1) <= SUPPORT_DISTANCE, index=profiles.index)
 
 
-def choose_levels(candies: pd.DataFrame, model: FitResult) -> tuple[dict[str, float], str]:
-    """Sugar and price level at which every profile is predicted.
-
-    Price is a control, fixed at the median. Sugar sits at the median unless
-    its CI excludes zero, in which case it moves to the favourable quartile.
-    """
-    sugar = candies["sugar_level"]
-    low, high = model.ci_low["sugar_level"], model.ci_high["sugar_level"]
-    if low > 0:
-        sugar_value, rule = sugar.quantile(0.75), "upper quartile (sugar CI above zero)"
-    elif high < 0:
-        sugar_value, rule = sugar.quantile(0.25), "lower quartile (sugar CI below zero)"
-    else:
-        sugar_value, rule = sugar.median(), "median (sugar CI includes zero)"
-    levels = {
-        "sugar_level": float(sugar_value),
-        "price_level": float(candies["price_level"].median()),
-    }
-    return levels, rule
+def choose_levels(candies: pd.DataFrame) -> dict[str, float]:
+    """Sugar and price level at which every profile is predicted: the median
+    of each. Neither is a confirmed driver, so neither is used as a lever."""
+    return {level: float(candies[level].median()) for level in ("sugar_level", "price_level")}
 
 
 def rank(profiles: pd.DataFrame, scorer: ProfileScorer) -> list[dict]:

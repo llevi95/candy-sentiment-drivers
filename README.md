@@ -58,8 +58,8 @@ cookie-versus-gummy debate; see `data/derived/README.md` for the coding rule.
    filtered to **supported profiles**: realistic ones (not chocolate and fruity
    together; hard excludes bar; bar excludes pluribus) that differ from at least
    one real candy in at most one attribute. Each is predicted with the final
-   model at a fixed sugar level (the median, or the favourable quartile if
-   sugar's interval excludes zero) and the median price level, with a 95%
+   model at the median sugar and price level (neither is a confirmed driver,
+   so neither is used as a lever), with a 95%
    interval for the average and a 95% prediction interval for a single launch,
    capped to the 0 to 100 scale.
 

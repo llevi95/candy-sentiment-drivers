@@ -652,22 +652,15 @@ def test_recommendations_report_how_far_they_extrapolate(bundle):
     assert rec["nearest_candy_distance"] <= 1
 
 
-def test_sugar_is_fixed_by_the_sign_of_its_confidence_interval(bundle):
-    # Spec: median unless the sugar CI excludes 0, then the favourable quartile.
+def test_sugar_and_price_are_fixed_at_their_medians(bundle):
+    # Sugar fails the Holm correction, so it is not used as a lever even
+    # though its own CI excludes zero.
     raw = pd.read_csv(RAW)
-    sugar = raw.loc[~raw["competitorname"].isin(["One dime", "One quarter"]), "sugarpercent"]
-    price = raw.loc[~raw["competitorname"].isin(["One dime", "One quarter"]), "pricepercent"]
-    row = next(r for r in bundle["final_model"]["coefficients"] if r["term"] == "sugar_level")
-    if row["ci_low"] > 0:
-        expected = sugar.quantile(0.75)
-    elif row["ci_high"] < 0:
-        expected = sugar.quantile(0.25)
-    else:
-        expected = sugar.median()
-
+    candies = raw.loc[~raw["competitorname"].isin(["One dime", "One quarter"])]
     levels = bundle["profiles"]["levels"]
-    assert levels["sugar_level"] == pytest.approx(expected)
-    assert levels["price_level"] == pytest.approx(price.median())
+
+    assert levels["sugar_level"] == pytest.approx(candies["sugarpercent"].median())
+    assert levels["price_level"] == pytest.approx(candies["pricepercent"].median())
 
 
 def test_benchmarks_are_the_nearest_candies_with_sugar_and_price_breaking_ties(bundle):

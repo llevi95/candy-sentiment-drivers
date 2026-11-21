@@ -102,7 +102,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     without_brand = _fit_model(candies.loc[~brand])
     clear_gummies = candies.assign(gummy=candies["gummy"] * (1 - candies["gummy_unclear"]))
     clear_gummy_model = _fit_model(clear_gummies, extra_attributes=("gummy",))
-    levels, sugar_rule = choose_levels(candies, final_model)
+    levels = choose_levels(candies)
     scorer = ProfileScorer(final_model, levels, retained)
     profiles = all_profiles()
     realistic = is_realistic(profiles)
@@ -148,7 +148,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
             "realism_rules": [rule.label for rule in REALISM_RULES],
             "support_rule": f"within {SUPPORT_DISTANCE} attribute of at least one real candy",
             "levels": levels,
-            "sugar_rule": sugar_rule,
+            "levels_rule": "Sugar and price level fixed at their medians.",
             "range_note": "CI and prediction interval bounds are capped to 0-100; "
             "'capped' marks profiles where the linear model's range left that scale.",
             "n_enumerated": len(profiles),
