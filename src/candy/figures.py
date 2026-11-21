@@ -24,6 +24,7 @@ ACCENT_ORANGE = "#e07b39"
 ACCENT_PURPLE = "#6a4c93"
 ANALYSIS_COLORS = (DRIVER, ACCENT_ORANGE, ACCENT_PURPLE)
 NOT_CLEAR = "#a3a3a3"
+DESCRIPTIVE = "#555555"  # charts that make no significance claim
 
 plt.rcParams.update(
     {
@@ -73,14 +74,16 @@ def coefficient_chart(
     _save(fig, path, top=0.93)
 
 
-def attribute_comparison_chart(rows: pd.DataFrame, alpha: float, path: Path) -> None:
+def attribute_comparison_chart(rows: pd.DataFrame, path: Path) -> None:
     """Average win rate of candies with vs without each attribute.
 
     ``rows`` has one row per attribute (index) with ``mean_with``,
-    ``mean_without``, ``n_with``, ``n_without`` and Welch ``p``.
+    ``mean_without``, ``n_with`` and ``n_without``. Descriptive only: no
+    significance colouring, so it cannot contradict the coefficient chart,
+    where blue means a driver after controlling for the other attributes.
     """
     rows = rows.sort_values("mean_with")
-    colors = [DRIVER if p < alpha else NOT_CLEAR for p in rows["p"]]
+    colors = DESCRIPTIVE
     y = list(range(len(rows)))
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
@@ -105,8 +108,8 @@ def attribute_comparison_chart(rows: pd.DataFrame, alpha: float, path: Path) -> 
     ax.legend(loc="lower right", frameon=False)
     _footnote(
         fig,
-        f"Blue: difference significant (Welch t-test, p < {alpha:g}). "
-        "Simple comparison; does not control for other attributes.",
+        "Simple comparison; does not control for other attributes, so a gap here "
+        "is not evidence that the attribute drives preference.",
     )
     _save(fig, path)
 

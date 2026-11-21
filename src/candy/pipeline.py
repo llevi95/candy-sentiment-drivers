@@ -238,7 +238,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         _reference_group_note(chocolate_vs_fruity),
         figures / "coefficients.png",
     )
-    attribute_comparison_chart(comparison, ALPHA, figures / "attribute_comparison.png")
+    attribute_comparison_chart(comparison, figures / "attribute_comparison.png")
     hc3 = main_model.effects_in_points()
     robustness_chart(
         {
