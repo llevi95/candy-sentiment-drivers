@@ -6,3 +6,4 @@
 - Only 7 candies have nougat and 7 have crisped rice/wafer/cookie, so those effects carry wide intervals.
 - Gummy is a hand-coded attribute (11 of 83 candies; 11 judgement calls flagged), used to test the gummy effect and to compare a gummy with chocolate products.
 - Gummy effect with all 11 gummies: +9.4 points (95% CI 1.5 to 17.4); with only the 7 clear cases: +5.6 points (95% CI -1.7 to 12.8), and its interval then includes zero, so the gummy effect depends on the judgement calls.
+- Without the 4 Reese's candies, these effects stay clear: chocolate +18.0 (CI 9.8 to 26.1), fruit-flavoured +11.5 (CI 3.5 to 19.4). These no longer are: peanut / almond +4.3 (CI -6.8 to 15.3), sugar level +9.7 (CI -0.7 to 20.1).

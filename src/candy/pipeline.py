@@ -51,6 +51,10 @@ FIGURES_DIR = "figures"
 APPENDIX_DIR = "appendix"
 RANKED_FIGURE_TOP = 15
 
+# The largest brand family among the top candies. Its candies share brand
+# equity the attributes cannot see, so the model is refitted without them.
+BRAND_CHECK = "Reese's"
+
 
 # Chosen on product grounds (chocolate with its most common partners) and
 # tested one at a time on the main model.
@@ -94,6 +98,8 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     )
     final_model = _fit_model(candies, interactions=retained) if retained else main_model
     gummy_model = _fit_model(candies, extra_attributes=("gummy",))
+    brand = candies["candy"].str.startswith(BRAND_CHECK)
+    without_brand = _fit_model(candies.loc[~brand])
     clear_gummies = candies.assign(gummy=candies["gummy"] * (1 - candies["gummy_unclear"]))
     clear_gummy_model = _fit_model(clear_gummies, extra_attributes=("gummy",))
     levels, sugar_rule = choose_levels(candies, final_model)
@@ -176,6 +182,11 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
                     "n_gummy": int(clear_gummies["gummy"].sum()),
                     **_term_row(clear_gummy_model, "gummy"),
                 },
+            },
+            "without_brand": {
+                "brand": BRAND_CHECK,
+                "excluded": candies.loc[brand, "candy"].tolist(),
+                **_model_section(without_brand, target="win_rate"),
             },
             "bootstrap": _bootstrap_section(main_model.bootstrap),
             "coins_included": {
@@ -294,7 +305,35 @@ def _data_notes(bundle: dict) -> list[str]:
         f"candies; {gummy['n_unclear']} judgement calls flagged), used to test the "
         "gummy effect and to compare a gummy with chocolate products.",
         _gummy_sensitivity_note(gummy),
+        _brand_note(bundle["main_model"], bundle["robustness"]["without_brand"]),
     ]
+
+
+def _brand_note(main: dict, check: dict) -> str:
+    """Which effects with a CI excluding zero keep it without the brand family."""
+    before = {row["term"]: row for row in main["coefficients"]}
+    after = {row["term"]: row for row in check["coefficients"]}
+
+    def clear(row: dict) -> bool:
+        return row["ci_low"] > 0 or row["ci_high"] < 0
+
+    def effect(term: str) -> str:
+        row = after[term]
+        return (
+            f"{LABELS[term].split(' (')[0].lower()} {row['coef']:+.1f} "
+            f"(CI {row['ci_low']:.1f} to {row['ci_high']:.1f})"
+        )
+
+    tested = [term for term in PREDICTORS if clear(before[term])]
+    kept = [effect(t) for t in tested if clear(after[t])]
+    lost = [effect(t) for t in tested if not clear(after[t])]
+    note = (
+        f"Without the {len(check['excluded'])} {check['brand']} candies, these effects "
+        f"stay clear: {', '.join(kept) or 'none'}."
+    )
+    if lost:
+        note += f" These no longer are: {', '.join(lost)}."
+    return note
 
 
 def _gummy_sensitivity_note(gummy: dict) -> str:

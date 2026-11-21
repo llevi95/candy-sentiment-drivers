@@ -365,6 +365,32 @@ def test_gummy_check_reports_the_effect_on_clear_cases_only(bundle):
     assert "depends on the judgement calls" in "\n".join(bundle["data_notes"])
 
 
+def test_brand_check_refits_the_main_model_without_reeses(bundle):
+    # Oracle: drop the Reese's candies by hand and solve OLS directly.
+    raw = pd.read_csv(RAW)
+    raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
+    reeses = raw["competitorname"].str.startswith("Reese's")
+    kept = raw.loc[~reeses]
+    columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
+               "crispedricewafer", "hard", "bar", "pluribus", "sugarpercent", "pricepercent"]
+    design = np.column_stack([np.ones(len(kept)), kept[columns].to_numpy()])
+    beta, *_ = np.linalg.lstsq(design, kept["winpercent"].to_numpy(), rcond=None)
+
+    check = bundle["robustness"]["without_brand"]
+    assert sorted(check["excluded"]) == sorted(raw.loc[reeses, "competitorname"])
+    assert check["n_obs"] == 79
+    assert [row["coef"] for row in check["coefficients"]] == pytest.approx(beta, rel=1e-10)
+
+
+def test_brand_check_shows_peanut_rests_on_reeses(bundle):
+    rows = {r["term"]: r for r in bundle["robustness"]["without_brand"]["coefficients"]}
+    note = next(n for n in bundle["data_notes"] if "Reese's" in n)
+
+    assert rows["chocolate"]["ci_low"] > 0
+    assert rows["peanuty_almondy"]["ci_low"] < 0 < rows["peanuty_almondy"]["ci_high"]
+    assert "no longer" in note and "peanut" in note
+
+
 def _corrupt_gummy(tmp_path: Path, edit) -> Path:
     lines = GUMMY.read_text().splitlines()
     path = tmp_path / "gummy.csv"

@@ -3157,6 +3157,144 @@
         "ci_high": 12.799110534553488
       }
     },
+    "without_brand": {
+      "brand": "Reese's",
+      "excluded": [
+        "Reese's Miniatures",
+        "Reese's Peanut Butter cup",
+        "Reese's pieces",
+        "Reese's stuffed with pieces"
+      ],
+      "target": "win_rate",
+      "cov": "hc3",
+      "n_obs": 79,
+      "df_resid": 67,
+      "r_squared": 0.5421015156342557,
+      "loo_r_squared": 0.3430247831744313,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "coef": 28.551788446154806,
+          "se": 4.709774923891678,
+          "t": 6.062240533261517,
+          "p": 6.912309035717356e-08,
+          "ci_low": 19.15103835248816,
+          "ci_high": 37.95253853982145
+        },
+        {
+          "term": "chocolate",
+          "coef": 17.952516766425322,
+          "se": 4.106532127568564,
+          "t": 4.3716976292244,
+          "p": 4.3978130953477186e-05,
+          "ci_low": 9.755844333725195,
+          "ci_high": 26.149189199125452
+        },
+        {
+          "term": "fruity",
+          "coef": 11.4804911751126,
+          "se": 3.9879358403435656,
+          "t": 2.878805385726452,
+          "p": 0.005353043659122649,
+          "ci_low": 3.520537922469953,
+          "ci_high": 19.44044442775525
+        },
+        {
+          "term": "caramel",
+          "coef": 4.550017774374646,
+          "se": 4.4255312716594455,
+          "t": 1.02812916575969,
+          "p": 0.30758655452891165,
+          "ci_low": -4.283379614857801,
+          "ci_high": 13.383415163607093
+        },
+        {
+          "term": "peanuty_almondy",
+          "coef": 4.262306553271693,
+          "se": 5.554123098628167,
+          "t": 0.7674130510943223,
+          "p": 0.4455320031978892,
+          "ci_low": -6.823769550874993,
+          "ci_high": 15.34838265741838
+        },
+        {
+          "term": "nougat",
+          "coef": 0.07905213137911041,
+          "se": 6.867924184693961,
+          "t": 0.011510338386566366,
+          "p": 0.9908504870024966,
+          "ci_low": -13.629381916082409,
+          "ci_high": 13.78748617884063
+        },
+        {
+          "term": "crisped_rice_wafer",
+          "coef": 7.9831807954093215,
+          "se": 6.251745733754962,
+          "t": 1.2769522522814463,
+          "p": 0.2060269516266273,
+          "ci_low": -4.49535591640759,
+          "ci_high": 20.461717507226233
+        },
+        {
+          "term": "hard",
+          "coef": -4.698708800360356,
+          "se": 3.087870955977358,
+          "t": -1.5216661794965274,
+          "p": 0.13279861539087306,
+          "ci_low": -10.862125024643241,
+          "ci_high": 1.4647074239225288
+        },
+        {
+          "term": "bar",
+          "coef": 10.128935755337757,
+          "se": 5.80535787429534,
+          "t": 1.7447564774923057,
+          "p": 0.08561265911261484,
+          "ci_low": -1.4586070598622776,
+          "ci_high": 21.71647857053779
+        },
+        {
+          "term": "pluribus",
+          "coef": 4.221519568743233,
+          "se": 3.0459340508245134,
+          "t": 1.3859523871176713,
+          "p": 0.17035719069084673,
+          "ci_low": -1.8581902425126078,
+          "ci_high": 10.301229379999073
+        },
+        {
+          "term": "sugar_level",
+          "coef": 9.684177079312402,
+          "se": 5.210369721254893,
+          "t": 1.8586352979534844,
+          "p": 0.06747188006361485,
+          "ci_low": -0.7157644118728204,
+          "ci_high": 20.084118570497623
+        },
+        {
+          "term": "price_level",
+          "coef": -6.962982217198216,
+          "se": 6.142967333592037,
+          "t": -1.1334884004871768,
+          "p": 0.2610488815502565,
+          "ci_low": -19.224396333552423,
+          "ci_high": 5.29843189915599
+        }
+      ],
+      "vif": {
+        "chocolate": 3.015340441123032,
+        "fruity": 2.86666979477423,
+        "caramel": 1.4160670373129811,
+        "peanuty_almondy": 1.2991559866991738,
+        "nougat": 1.824494633462605,
+        "crisped_rice_wafer": 1.549769730339288,
+        "hard": 1.303231617974106,
+        "bar": 4.4754168513937875,
+        "pluribus": 2.113236692028323,
+        "sugar_level": 1.2356875577838444,
+        "price_level": 1.8132670968267826
+      }
+    },
     "bootstrap": {
       "method": "case resampling, percentile intervals",
       "seed": 20261121,
@@ -3581,6 +3719,7 @@
     "The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source documentation) is analysed as the peanut/almond attribute.",
     "Only 7 candies have nougat and 7 have crisped rice/wafer/cookie, so those effects carry wide intervals.",
     "Gummy is a hand-coded attribute (11 of 83 candies; 11 judgement calls flagged), used to test the gummy effect and to compare a gummy with chocolate products.",
-    "Gummy effect with all 11 gummies: +9.4 points (95% CI 1.5 to 17.4); with only the 7 clear cases: +5.6 points (95% CI -1.7 to 12.8), and its interval then includes zero, so the gummy effect depends on the judgement calls."
+    "Gummy effect with all 11 gummies: +9.4 points (95% CI 1.5 to 17.4); with only the 7 clear cases: +5.6 points (95% CI -1.7 to 12.8), and its interval then includes zero, so the gummy effect depends on the judgement calls.",
+    "Without the 4 Reese's candies, these effects stay clear: chocolate +18.0 (CI 9.8 to 26.1), fruit-flavoured +11.5 (CI 3.5 to 19.4). These no longer are: peanut / almond +4.3 (CI -6.8 to 15.3), sugar level +9.7 (CI -0.7 to 20.1)."
   ]
 }
