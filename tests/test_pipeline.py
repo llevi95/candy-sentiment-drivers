@@ -341,6 +341,30 @@ def test_gummy_check_lists_the_judgement_calls_for_the_appendix(bundle):
     assert "Starburst" in check["unclear_candies"]
 
 
+def test_gummy_check_reports_the_effect_on_clear_cases_only(bundle):
+    # Oracle: recode judgement calls as not gummy and solve OLS directly.
+    raw = pd.read_csv(RAW)
+    raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
+    coding = pd.read_csv(GUMMY).set_index("candy")
+    clear = (coding["gummy"] * (1 - coding["unclear"]))
+    columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
+               "crispedricewafer", "hard", "bar", "pluribus", "sugarpercent", "pricepercent"]
+    design = np.column_stack([
+        np.ones(len(raw)),
+        raw[columns].to_numpy(),
+        raw["competitorname"].map(clear).to_numpy(),
+    ])
+    beta, *_ = np.linalg.lstsq(design, raw["winpercent"].to_numpy(), rcond=None)
+
+    check = bundle["robustness"]["gummy"]["clear_cases_only"]
+    assert check["n_gummy"] == 7
+    assert check["coef"] == pytest.approx(beta[-1], rel=1e-10)
+    assert check["ci_low"] < check["coef"] < check["ci_high"]
+    # On this data the effect is no longer clear without the judgement calls.
+    assert check["ci_low"] < 0 < check["ci_high"]
+    assert "depends on the judgement calls" in "\n".join(bundle["data_notes"])
+
+
 def _corrupt_gummy(tmp_path: Path, edit) -> Path:
     lines = GUMMY.read_text().splitlines()
     path = tmp_path / "gummy.csv"

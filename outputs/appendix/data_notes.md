@@ -5,3 +5,4 @@
 - The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source documentation) is analysed as the peanut/almond attribute.
 - Only 7 candies have nougat and 7 have crisped rice/wafer/cookie, so those effects carry wide intervals.
 - Gummy is a hand-coded attribute (11 of 83 candies; 11 judgement calls flagged), used to test the gummy effect and to compare a gummy with chocolate products.
+- Gummy effect with all 11 gummies: +9.4 points (95% CI 1.5 to 17.4); with only the 7 clear cases: +5.6 points (95% CI -1.7 to 12.8), and its interval then includes zero, so the gummy effect depends on the judgement calls.

@@ -3101,7 +3101,16 @@
         "price_level": 1.8570545127125089,
         "gummy": 1.441746360448503
       },
-      "loo_r_squared_change": 0.030265923480308987
+      "loo_r_squared_change": 0.030265923480308987,
+      "clear_cases_only": {
+        "note": "Gummy judgement calls recoded as not gummy; every other input unchanged.",
+        "n_gummy": 7,
+        "coef": 5.55782947464324,
+        "se": 3.6307392282123816,
+        "p": 0.1303330230850388,
+        "ci_low": -1.6834515852670071,
+        "ci_high": 12.799110534553488
+      }
     },
     "bootstrap": {
       "method": "case resampling, percentile intervals",
@@ -3526,6 +3535,7 @@
     "Sugar level and price level are percentile ranks within the dataset (0 to 1), not grams of sugar or prices.",
     "The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source documentation) is analysed as the peanut/almond attribute.",
     "Only 7 candies have nougat and 7 have crisped rice/wafer/cookie, so those effects carry wide intervals.",
-    "Gummy is a hand-coded attribute (11 of 83 candies; 11 judgement calls flagged), used to test the gummy effect and to compare a gummy with chocolate products."
+    "Gummy is a hand-coded attribute (11 of 83 candies; 11 judgement calls flagged), used to test the gummy effect and to compare a gummy with chocolate products.",
+    "Gummy effect with all 11 gummies: +9.4 points (95% CI 1.5 to 17.4); with only the 7 clear cases: +5.6 points (95% CI -1.7 to 12.8), and its interval then includes zero, so the gummy effect depends on the judgement calls."
   ]
 }

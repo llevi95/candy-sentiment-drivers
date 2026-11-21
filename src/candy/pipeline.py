@@ -94,6 +94,8 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     )
     final_model = _fit_model(candies, interactions=retained) if retained else main_model
     gummy_model = _fit_model(candies, extra_attributes=("gummy",))
+    clear_gummies = candies.assign(gummy=candies["gummy"] * (1 - candies["gummy_unclear"]))
+    clear_gummy_model = _fit_model(clear_gummies, extra_attributes=("gummy",))
     levels, sugar_rule = choose_levels(candies, final_model)
     scorer = ProfileScorer(final_model, levels, retained)
     profiles = all_profiles()
@@ -166,6 +168,12 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
                 "unclear_candies": candies.loc[candies["gummy_unclear"] == 1, "candy"].tolist(),
                 **_model_section(gummy_model, target="win_rate"),
                 "loo_r_squared_change": gummy_model.loo_r_squared - main_model.loo_r_squared,
+                "clear_cases_only": {
+                    "note": "Gummy judgement calls recoded as not gummy; "
+                    "every other input unchanged.",
+                    "n_gummy": int(clear_gummies["gummy"].sum()),
+                    **_term_row(clear_gummy_model, "gummy"),
+                },
             },
             "bootstrap": _bootstrap_section(main_model.bootstrap),
             "coins_included": {
@@ -245,7 +253,28 @@ def _data_notes(bundle: dict) -> list[str]:
         f"Gummy is a hand-coded attribute ({gummy['n_gummy']} of {sample['n_candies']} "
         f"candies; {gummy['n_unclear']} judgement calls flagged), used to test the "
         "gummy effect and to compare a gummy with chocolate products.",
+        _gummy_sensitivity_note(gummy),
     ]
+
+
+def _gummy_sensitivity_note(gummy: dict) -> str:
+    """One sentence on how the gummy effect moves without the judgement calls."""
+    full = next(row for row in gummy["coefficients"] if row["term"] == "gummy")
+    clear = gummy["clear_cases_only"]
+
+    def effect(row: dict) -> str:
+        return f"{row['coef']:+.1f} points (95% CI {row['ci_low']:.1f} to {row['ci_high']:.1f})"
+
+    verdict = (
+        "its interval still excludes zero"
+        if clear["ci_low"] > 0 or clear["ci_high"] < 0
+        else "its interval then includes zero, so the gummy effect depends on "
+        "the judgement calls"
+    )
+    return (
+        f"Gummy effect with all {gummy['n_gummy']} gummies: {effect(full)}; with "
+        f"only the {clear['n_gummy']} clear cases: {effect(clear)}, and {verdict}."
+    )
 
 
 def _write_appendix(folder: Path, bundle: dict, gummy_csv: Path) -> None:
@@ -345,6 +374,12 @@ def _test_interaction(
         "loo_r_squared_change": loo_change,
         "retained": _is_retained(ci_low, ci_high, loo_change),
     }
+
+
+def _term_row(result: FitResult, term: str) -> dict:
+    """One term's estimate, standard error, p-value and CI."""
+    row = result.table().loc[term]
+    return {key: float(row[key]) for key in ("coef", "se", "p", "ci_low", "ci_high")}
 
 
 def _model_section(result: FitResult, target: str) -> dict:

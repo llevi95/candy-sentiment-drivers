@@ -42,7 +42,8 @@ cookie-versus-gummy debate; see `data/derived/README.md` for the coding rule.
 4. **Robustness.** The same model on logit-transformed win rate, case-resampling
    bootstrap intervals (fixed seed), the model refitted with the coins
    included (the largest shift in any coefficient is reported in
-   `appendix/data_notes.md`), and a gummy check that adds the gummy attribute.
+   `appendix/data_notes.md`), and a gummy check that adds the gummy attribute,
+   refitted once more with the gummy judgement calls recoded as not gummy.
 5. **Interactions.** Three interactions were chosen on product grounds
    (chocolate with its most common partners): chocolate × peanuty/almondy,
    chocolate × crisped/wafer and chocolate × bar. Each is added on its own and
