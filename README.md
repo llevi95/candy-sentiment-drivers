@@ -71,7 +71,10 @@ cookie-versus-gummy debate; see `data/derived/README.md` for the coding rule.
    not decide; a free design choice). The **primary profile** is the best
    supported profile made only of drivers. Every profile whose predicted gap
    to the primary profile has an interval that includes zero is flagged as
-   tied with it, and the ties are counted.
+   tied with it, and the ties are counted; the rest are marked above or below
+   it. These intervals are uncorrected, so "above" is weaker evidence than a
+   driver: chocolate with peanut/almond is the one profile above, and that
+   lead does not survive dropping the Reese's candies.
 
    The primary profile comes with **benchmark candies**: the existing candies
    closest to it. Because many candies can tie for closest, the bundle also

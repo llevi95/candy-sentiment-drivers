@@ -555,7 +555,9 @@
     "n_realistic": 240,
     "n_supported": 109,
     "n_tied_with_primary": 88,
-    "tie_note": "A profile is tied with the primary profile when the 95% CI of the predicted gap between the two includes zero.",
+    "n_above_primary": 1,
+    "n_below_primary": 19,
+    "tie_note": "A profile is tied with the primary profile when the 95% CI of the predicted gap between the two includes zero; otherwise it is above or below it. The intervals are not corrected for multiple testing, and a gap made of more attributes has a wider interval, so a profile can be above the primary one while higher-ranked profiles are tied with it. Above is therefore weaker evidence than a driver.",
     "ranked": [
       {
         "rank": 1,
@@ -576,6 +578,7 @@
         "pi_low": 49.116625531442125,
         "pi_high": 100.0,
         "capped": true,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -597,6 +600,7 @@
         "pi_low": 48.27296118744046,
         "pi_high": 100.0,
         "capped": true,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -618,6 +622,7 @@
         "pi_low": 46.03700409113759,
         "pi_high": 100.0,
         "capped": true,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -639,6 +644,7 @@
         "pi_low": 48.12628448038548,
         "pi_high": 100.0,
         "capped": true,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -660,6 +666,7 @@
         "pi_low": 45.212035827786764,
         "pi_high": 100.0,
         "capped": true,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -681,6 +688,7 @@
         "pi_low": 44.72660979490732,
         "pi_high": 100.0,
         "capped": true,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -702,6 +710,7 @@
         "pi_low": 45.15523996558693,
         "pi_high": 95.17525662983161,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -723,6 +732,7 @@
         "pi_low": 42.59515277342108,
         "pi_high": 96.90854101659856,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -744,6 +754,7 @@
         "pi_low": 41.43568272550077,
         "pi_high": 95.50941883604865,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -765,6 +776,7 @@
         "pi_low": 40.17864705737964,
         "pi_high": 96.5282259665234,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -786,6 +798,7 @@
         "pi_low": 42.90927708937173,
         "pi_high": 93.61126940447625,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -807,6 +820,7 @@
         "pi_low": 42.355792976458794,
         "pi_high": 93.76250577969174,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -828,6 +842,7 @@
         "pi_low": 41.58996971053154,
         "pi_high": 94.2901005079726,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -849,6 +864,7 @@
         "pi_low": 42.74496660174303,
         "pi_high": 91.99999252048453,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -870,6 +886,7 @@
         "pi_low": 42.55977052451675,
         "pi_high": 91.35838579231194,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -891,6 +908,7 @@
         "pi_low": 38.938595514099276,
         "pi_high": 93.95832740823319,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -912,6 +930,7 @@
         "pi_low": 38.453305440265225,
         "pi_high": 94.04136974436979,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -933,6 +952,7 @@
         "pi_low": 38.96767138907292,
         "pi_high": 92.794140436983,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -954,6 +974,7 @@
         "pi_low": 37.818338045953524,
         "pi_high": 93.54122604240494,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -975,6 +996,7 @@
         "pi_low": 36.515879000991795,
         "pi_high": 94.60545654972026,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -996,6 +1018,7 @@
         "pi_low": 42.04047057058221,
         "pi_high": 88.8945384500748,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1017,6 +1040,7 @@
         "pi_low": 41.126027343622084,
         "pi_high": 89.40673393933749,
         "capped": false,
+        "vs_primary": "above",
         "tied_with_primary": false
       },
       {
@@ -1038,6 +1062,7 @@
         "pi_low": 40.22873430787146,
         "pi_high": 90.06579843744171,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1059,6 +1084,7 @@
         "pi_low": 30.622310122422824,
         "pi_high": 97.51587813211759,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1080,6 +1106,7 @@
         "pi_low": 36.60550319092376,
         "pi_high": 90.70588225821774,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1101,6 +1128,7 @@
         "pi_low": 35.82542723581241,
         "pi_high": 91.08371047563165,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1122,6 +1150,7 @@
         "pi_low": 35.339031900153934,
         "pi_high": 83.86877256191673,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1143,6 +1172,7 @@
         "pi_low": 34.97151502554706,
         "pi_high": 83.96624209013552,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1164,6 +1194,7 @@
         "pi_low": 34.73178654075514,
         "pi_high": 84.07377018361808,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1185,6 +1216,7 @@
         "pi_low": 34.834203001533446,
         "pi_high": 83.27675130875025,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1206,6 +1238,7 @@
         "pi_low": 31.529132476968872,
         "pi_high": 84.42547734254205,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1227,6 +1260,7 @@
         "pi_low": 30.593650068745063,
         "pi_high": 85.11250945011962,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1248,6 +1282,7 @@
         "pi_low": 30.14676668070208,
         "pi_high": 85.43741420985307,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1269,6 +1304,7 @@
         "pi_low": 30.380757700189818,
         "pi_high": 85.17160438162367,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1290,6 +1326,7 @@
         "pi_low": 34.722120852273754,
         "pi_high": 80.40568616183828,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1311,6 +1348,7 @@
         "pi_low": 25.380121322788746,
         "pi_high": 89.46452198745774,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1332,6 +1370,7 @@
         "pi_low": 33.809790468305756,
         "pi_high": 80.91576880810885,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1353,6 +1392,7 @@
         "pi_low": 31.87040643490937,
         "pi_high": 82.46241345003234,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1374,6 +1414,7 @@
         "pi_low": 30.957845473359768,
         "pi_high": 82.39437416913185,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1395,6 +1436,7 @@
         "pi_low": 33.35409164957663,
         "pi_high": 79.1713251875161,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1416,6 +1458,7 @@
         "pi_low": 27.89736525760957,
         "pi_high": 84.1851706897396,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1437,6 +1480,7 @@
         "pi_low": 31.054843925812172,
         "pi_high": 79.46802585755898,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1458,6 +1502,7 @@
         "pi_low": 26.739380843956123,
         "pi_high": 83.62969150236384,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1479,6 +1524,7 @@
         "pi_low": 30.746435128089487,
         "pi_high": 79.37418691758424,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1500,6 +1546,7 @@
         "pi_low": 25.15829082542435,
         "pi_high": 84.92761781703008,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1521,6 +1568,7 @@
         "pi_low": 25.38490776965115,
         "pi_high": 84.58191683897137,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1542,6 +1590,7 @@
         "pi_low": 32.22796793158605,
         "pi_high": 77.31430160933502,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1563,6 +1612,7 @@
         "pi_low": 30.966370311279295,
         "pi_high": 78.17365149194434,
         "capped": false,
+        "vs_primary": null,
         "tied_with_primary": false
       },
       {
@@ -1584,6 +1634,7 @@
         "pi_low": 26.878907254631773,
         "pi_high": 80.02033895722388,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1605,6 +1656,7 @@
         "pi_low": 26.62267661313336,
         "pi_high": 79.87432186102485,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1626,6 +1678,7 @@
         "pi_low": 23.339102564223307,
         "pi_high": 82.93685597666058,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1647,6 +1700,7 @@
         "pi_low": 27.74296798084388,
         "pi_high": 75.6576344746818,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1668,6 +1722,7 @@
         "pi_low": 27.149778034897892,
         "pi_high": 75.84857668293036,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1689,6 +1744,7 @@
         "pi_low": 25.018123454049125,
         "pi_high": 73.7775417707357,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1710,6 +1766,7 @@
         "pi_low": 24.999210926026134,
         "pi_high": 73.39420656106124,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1731,6 +1788,7 @@
         "pi_low": 22.808160176853526,
         "pi_high": 75.09417003057143,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1752,6 +1810,7 @@
         "pi_low": 25.582986080330794,
         "pi_high": 72.23207890200393,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1773,6 +1832,7 @@
         "pi_low": 22.235005745290234,
         "pi_high": 75.46380932770761,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1794,6 +1854,7 @@
         "pi_low": 24.645753801412006,
         "pi_high": 72.76706344322528,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1815,6 +1876,7 @@
         "pi_low": 20.996412469456228,
         "pi_high": 74.17562918381309,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1836,6 +1898,7 @@
         "pi_low": 21.28659285428147,
         "pi_high": 73.85362999024618,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1857,6 +1920,7 @@
         "pi_low": 21.005322865565933,
         "pi_high": 73.76447105000594,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1878,6 +1942,7 @@
         "pi_low": 23.50464321659296,
         "pi_high": 71.21102456023323,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1899,6 +1964,7 @@
         "pi_low": 23.21415907109391,
         "pi_high": 71.09926096803483,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1920,6 +1986,7 @@
         "pi_low": 20.365675379162735,
         "pi_high": 73.72670472669168,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1941,6 +2008,7 @@
         "pi_low": 20.090358456115457,
         "pi_high": 73.59977391204151,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1962,6 +2030,7 @@
         "pi_low": 19.0934345595265,
         "pi_high": 74.35846927098406,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -1983,6 +2052,7 @@
         "pi_low": 20.814697780687943,
         "pi_high": 71.50209495354605,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2004,6 +2074,7 @@
         "pi_low": 22.13060882679802,
         "pi_high": 69.98266877300887,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2025,6 +2096,7 @@
         "pi_low": 19.551484165942306,
         "pi_high": 71.93850576289282,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2046,6 +2118,7 @@
         "pi_low": 17.26549682534713,
         "pi_high": 73.20325970899178,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2067,6 +2140,7 @@
         "pi_low": 17.034168231556126,
         "pi_high": 73.03234056508533,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2088,6 +2162,7 @@
         "pi_low": 18.442450647433642,
         "pi_high": 71.51448246160048,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2109,6 +2184,7 @@
         "pi_low": 17.530700215238078,
         "pi_high": 72.0239851560986,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2130,6 +2206,7 @@
         "pi_low": 17.902174546478772,
         "pi_high": 71.43147089158357,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2151,6 +2228,7 @@
         "pi_low": 22.623871737830115,
         "pi_high": 66.50625856580513,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2172,6 +2250,7 @@
         "pi_low": 17.001917989768334,
         "pi_high": 71.92947971059657,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2193,6 +2272,7 @@
         "pi_low": 21.966882924180332,
         "pi_high": 66.76099964175745,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2214,6 +2294,7 @@
         "pi_low": 19.84368453090926,
         "pi_high": 68.66315810175419,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2235,6 +2316,7 @@
         "pi_low": 19.23816868404574,
         "pi_high": 68.86642621092028,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2256,6 +2338,7 @@
         "pi_low": 18.087568796247112,
         "pi_high": 69.7787975610725,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2277,6 +2360,7 @@
         "pi_low": 15.330526333287413,
         "pi_high": 69.55269272786053,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2298,6 +2382,7 @@
         "pi_low": 17.211837860198383,
         "pi_high": 65.77662535804146,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2319,6 +2404,7 @@
         "pi_low": 17.213056784784282,
         "pi_high": 65.37315869575811,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2340,6 +2426,7 @@
         "pi_low": 13.558038209777703,
         "pi_high": 68.40488959979292,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2361,6 +2448,7 @@
         "pi_low": 10.660497857697703,
         "pi_high": 67.67880638035741,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2382,6 +2470,7 @@
         "pi_low": 12.705050657688467,
         "pi_high": 65.52467789275931,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2403,6 +2492,7 @@
         "pi_low": 12.050367421012464,
         "pi_high": 65.77711339173787,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2424,6 +2514,7 @@
         "pi_low": 16.662651151567534,
         "pi_high": 60.74027459348136,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2445,6 +2536,7 @@
         "pi_low": 16.322317362509317,
         "pi_high": 60.67836064484212,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2466,6 +2558,7 @@
         "pi_low": 13.29489351976471,
         "pi_high": 63.4847445543124,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2487,6 +2580,7 @@
         "pi_low": 13.30397999394815,
         "pi_high": 63.20561073374088,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2508,6 +2602,7 @@
         "pi_low": 12.071690418534992,
         "pi_high": 63.61109750375514,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2529,6 +2624,7 @@
         "pi_low": 10.721644797165496,
         "pi_high": 62.80479863435187,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2550,6 +2646,7 @@
         "pi_low": 8.982282433917817,
         "pi_high": 64.17373206864379,
         "capped": false,
+        "vs_primary": "tied",
         "tied_with_primary": true
       },
       {
@@ -2571,6 +2668,7 @@
         "pi_low": 9.81995654122607,
         "pi_high": 63.30423915259386,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2592,6 +2690,7 @@
         "pi_low": 12.783105020482314,
         "pi_high": 59.91653560563617,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2613,6 +2712,7 @@
         "pi_low": 12.182859678221295,
         "pi_high": 60.11453321019974,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2634,6 +2734,7 @@
         "pi_low": 9.738808276897274,
         "pi_high": 61.18524497760079,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2655,6 +2756,7 @@
         "pi_low": 10.96450815623831,
         "pi_high": 59.13274229286087,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2676,6 +2778,7 @@
         "pi_low": 6.300663700638211,
         "pi_high": 61.6402422576882,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2697,6 +2800,7 @@
         "pi_low": 10.760782592236396,
         "pi_high": 56.35332056069113,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2718,6 +2822,7 @@
         "pi_low": 9.806355401159383,
         "pi_high": 56.9055000140707,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2739,6 +2844,7 @@
         "pi_low": 3.5640349042884054,
         "pi_high": 57.83295623094517,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2760,6 +2866,7 @@
         "pi_low": 5.959520845590728,
         "pi_high": 55.0129152219414,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2781,6 +2888,7 @@
         "pi_low": 5.658415454210225,
         "pi_high": 54.911772875624465,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2802,6 +2910,7 @@
         "pi_low": 0.09891935645297067,
         "pi_high": 56.11478204328709,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2823,6 +2932,7 @@
         "pi_low": 4.252630250673143,
         "pi_high": 51.13426834366803,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       },
       {
@@ -2844,6 +2954,7 @@
         "pi_low": 3.610791957171813,
         "pi_high": 51.37385889947191,
         "capped": false,
+        "vs_primary": "below",
         "tied_with_primary": false
       }
     ]

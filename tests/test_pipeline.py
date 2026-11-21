@@ -600,6 +600,31 @@ def test_ties_with_the_primary_profile_are_flagged_and_counted(bundle):
     assert 1 < bundle["profiles"]["n_tied_with_primary"] < len(ranked) - 1
 
 
+def test_profiles_not_tied_with_the_primary_say_whether_they_are_above_or_below(bundle):
+    profiles = bundle["profiles"]
+    ranked = profiles["ranked"]
+    primary = bundle["recommendation"]["primary"]
+    placed = {r["rank"]: r["vs_primary"] for r in ranked}
+
+    assert placed.pop(primary["rank"]) is None
+    assert all((r["vs_primary"] == "tied") == r["tied_with_primary"] for r in ranked)
+    assert all(
+        side == ("above" if rank < primary["rank"] else "below")
+        for rank, side in placed.items()
+        if side != "tied"
+    )
+    assert profiles["n_above_primary"] == list(placed.values()).count("above")
+    assert profiles["n_below_primary"] == list(placed.values()).count("below")
+    # Chocolate + peanut/almond differs from the primary profile by one
+    # coefficient whose own CI excludes zero, so it alone is above, while
+    # every profile ranked higher has a wider gap CI and is tied.
+    above = [r for r in ranked if r["vs_primary"] == "above"]
+    assert [[a for a, on in r["attributes"].items() if on] for r in above] == [
+        ["chocolate", "peanuty_almondy"]
+    ]
+    assert all(r["vs_primary"] == "tied" for r in ranked[: above[0]["rank"] - 1])
+
+
 def test_cookie_vs_gummy_compares_real_product_types(bundle):
     products = bundle["cookie_vs_gummy"]["products"]
 

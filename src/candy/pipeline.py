@@ -20,6 +20,8 @@ from candy.estimators import (
     holm,
 )
 from candy.profiles import (
+    ABOVE,
+    BELOW,
     REALISM_RULES,
     SUPPORT_DISTANCE,
     ProfileScorer,
@@ -166,8 +168,14 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
             "n_realistic": int(realistic.sum()),
             "n_supported": int(supported.sum()),
             "n_tied_with_primary": sum(row["tied_with_primary"] for row in ranked),
+            "n_above_primary": sum(row["vs_primary"] == ABOVE for row in ranked),
+            "n_below_primary": sum(row["vs_primary"] == BELOW for row in ranked),
             "tie_note": f"A profile is tied with the primary profile when the {_level()} CI "
-            "of the predicted gap between the two includes zero.",
+            "of the predicted gap between the two includes zero; otherwise it is above "
+            "or below it. The intervals are not corrected for multiple testing, and a "
+            "gap made of more attributes has a wider interval, so a profile can be "
+            "above the primary one while higher-ranked profiles are tied with it. "
+            "Above is therefore weaker evidence than a driver.",
             "ranked": ranked,
         },
         "recommendation": recommendation,

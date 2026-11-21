@@ -50,6 +50,7 @@ DEBATE_PRODUCTS = {
 DEBATE_RIVAL = "gummy"
 
 DRIVER, TENTATIVE, OPEN = "driver", "tentative", "open"
+ABOVE, TIED, BELOW = "above", "tied", "below"
 PRIMARY_RULE = (
     "The primary profile is the best supported profile made only of drivers: "
     "attributes whose positive effect survives the multiple-testing correction. "
@@ -151,17 +152,21 @@ def evidence_tiers(model: FitResult, confirmed: set[str]) -> dict[str, dict[str,
 
 
 def mark_ties(ranked: list[dict], scorer: ProfileScorer, primary: dict[str, int]) -> list[dict]:
-    """Flag each other ranked profile whose predicted gap to the primary
-    profile has a CI that includes zero: the data cannot tell the two apart.
-    The primary profile is not tied with itself."""
+    """Place each other ranked profile against the primary one by the CI of
+    their predicted gap: ``tied`` when it includes zero (the data cannot tell
+    the two apart), else ``above`` or ``below``. A lower-ranked profile can be
+    above while higher-ranked ones are tied, because a gap made of more
+    attributes has a wider CI. The primary profile itself gets ``None`` and
+    is not tied with itself."""
 
-    def tied(attributes: dict[str, int]) -> bool:
+    def versus(attributes: dict[str, int]) -> str | None:
         if attributes == primary:
-            return False
+            return None
         gap = scorer.gap(attributes, primary)
-        return bool(gap.ci_low <= 0 <= gap.ci_high)
+        return ABOVE if gap.ci_low > 0 else BELOW if gap.ci_high < 0 else TIED
 
-    return [{**row, "tied_with_primary": tied(row["attributes"])} for row in ranked]
+    placed = [{**row, "vs_primary": versus(row["attributes"])} for row in ranked]
+    return [{**row, "tied_with_primary": row["vs_primary"] == TIED} for row in placed]
 
 
 def recommend(
