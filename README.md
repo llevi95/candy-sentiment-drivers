@@ -41,7 +41,8 @@ judgement calls flagged. It is used only as a supplementary check; see
    with/without comparison per attribute (Welch t-test).
 4. **Robustness.** The same model on logit-transformed win rate, case-resampling
    bootstrap intervals (fixed seed), the model refitted with the coins
-   included, and a gummy check that adds the gummy attribute.
+   included (the largest shift in any coefficient is reported in
+   `appendix/data_notes.md`), and a gummy check that adds the gummy attribute.
 5. **Interactions.** Three interactions were declared before any results were
    seen: chocolate × peanuty/almondy, chocolate × crisped/wafer and
    chocolate × bar. Each is added on its own and kept only if its 95% interval
@@ -135,6 +136,7 @@ src/candy/
   estimators.py      hand-written OLS and inference (NumPy/SciPy only)
   profiles.py        profile enumeration, support, ranking, benchmarks
   figures.py         slide-ready figures
+  labels.py          business-facing names and wording
   pipeline.py        end-to-end run: data in, bundle, figures, appendix out
   __main__.py        command-line entry point (python -m candy)
 tests/

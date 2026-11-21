@@ -8,7 +8,8 @@ from pathlib import Path
 import pandas as pd
 from scipy import stats
 
-from candy.data import ATTRIBUTES, PREDICTORS, Interaction, load_candies
+from candy.data import ATTRIBUTES, MATCHUPS, PREDICTORS, Interaction, load_candies
+from candy.labels import LABELS, WIN_RATE_MEANING
 from candy.estimators import (
     INTERCEPT,
     Bootstrap,
@@ -30,7 +31,6 @@ from candy.profiles import (
     recommend,
 )
 from candy.figures import (
-    LABELS,
     attribute_comparison_chart,
     coefficient_chart,
     ranked_profiles_chart,
@@ -207,13 +207,14 @@ def _data_notes(bundle: dict) -> list[str]:
     gummy = bundle["robustness"]["gummy"]
     coins = bundle["robustness"]["coins_included"]
     return [
-        f"{sample['n_raw']} market entries in the source data; the two coins "
+        f"{sample['n_raw']} market entries in the source data; the "
+        f"{len(sample['excluded'])} coins "
         f"({' and '.join(sample['excluded'])}) are survey decoys, not candies, and are "
         f"excluded, leaving {sample['n_candies']} candies.",
         "Including the coins moves no attribute or level coefficient by more than "
         f"{coins['max_abs_shift_predictors']:.1f} points of win rate.",
-        "Win rate is the share of roughly 269,000 head-to-head matchups a candy won. "
-        "It measures relative preference, not sales or satisfaction.",
+        f"Win rate is the share of {MATCHUPS} head-to-head matchups a candy won. "
+        f"{WIN_RATE_MEANING}",
         "Sugar level and price level are percentile ranks within the dataset (0 to 1), "
         "not grams of sugar or prices.",
         "The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source "

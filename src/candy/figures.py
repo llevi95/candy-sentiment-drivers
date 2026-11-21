@@ -13,36 +13,10 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from candy.estimators import INTERCEPT  # noqa: E402
+from candy.labels import LABELS, PROFILE_LABELS, WIN_RATE_MEANING  # noqa: E402
 
 FIGSIZE = (12.8, 7.2)  # inches; 16:9
 DPI = 150  # 1920 x 1080 px
-
-LABELS = {
-    "chocolate": "Chocolate",
-    "fruity": "Fruit-flavoured",
-    "caramel": "Caramel",
-    "peanuty_almondy": "Peanut / almond",
-    "nougat": "Nougat",
-    "crisped_rice_wafer": "Crisped rice / wafer / cookie",
-    "hard": "Hard candy",
-    "bar": "Bar format",
-    "pluribus": "Many per pack",
-    "sugar_level": "Sugar level (lowest → highest)",
-    "price_level": "Price level (cheapest → priciest)",
-}
-
-# Compact attribute names used to spell out a profile in one line.
-PROFILE_LABELS = {
-    "chocolate": "Chocolate",
-    "fruity": "Fruity",
-    "caramel": "Caramel",
-    "peanuty_almondy": "Peanut",
-    "nougat": "Nougat",
-    "crisped_rice_wafer": "Crisped/wafer",
-    "hard": "Hard",
-    "bar": "Bar",
-    "pluribus": "Multi-pack",
-}
 
 DRIVER = "#1f6f8b"
 TENTATIVE = "#8cc3d6"
@@ -170,6 +144,7 @@ def win_rate_distribution_chart(candies: pd.DataFrame, path: Path) -> None:
     and neither, with the 50% line where a candy wins as often as it loses."""
     groups = [
         ("Chocolate-based", candies["chocolate"] == 1, DRIVER),
+        # Tootsie Pop is both chocolate and fruity; count it once, as chocolate.
         ("Fruit-flavoured", (candies["fruity"] == 1) & (candies["chocolate"] == 0), ACCENT_ORANGE),
         ("Neither", (candies["chocolate"] == 0) & (candies["fruity"] == 0), NOT_CLEAR),
     ]
@@ -194,7 +169,7 @@ def win_rate_distribution_chart(candies: pd.DataFrame, path: Path) -> None:
     ax.set_ylabel("Number of candies")
     ax.set_title(f"How the {len(candies)} candies score")
     ax.legend(loc="upper left", frameon=False)
-    _footnote(fig, "Win rate measures relative preference in matchups, not sales or satisfaction.")
+    _footnote(fig, WIN_RATE_MEANING)
     _save(fig, path)
 
 

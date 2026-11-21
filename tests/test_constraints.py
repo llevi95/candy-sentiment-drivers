@@ -1,7 +1,9 @@
 """Guards for constraints in the project brief."""
 
 import ast
+import re
 import sys
+import tomllib
 from pathlib import Path
 
 SRC = Path(__file__).resolve().parents[1] / "src" / "candy"
@@ -38,9 +40,6 @@ def test_package_imports_only_approved_libraries():
 
 
 def test_exported_requirements_match_the_lockfile():
-    import re
-    import tomllib
-
     root = SRC.parents[1]
     lock = tomllib.loads((root / "uv.lock").read_text())
     locked = {

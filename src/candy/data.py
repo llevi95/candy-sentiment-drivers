@@ -7,6 +7,9 @@ from pathlib import Path
 
 import pandas as pd
 
+# Size of the survey behind win rate, as stated in data/raw/README.md.
+MATCHUPS = "roughly 269,000"
+
 # Survey decoys included as jokes in the original matchups; not products.
 COINS = ("One dime", "One quarter")
 
