@@ -95,7 +95,14 @@ def test_every_coefficient_lies_inside_its_confidence_interval(bundle):
 
 
 @pytest.mark.parametrize(
-    "name", ["coefficients.png", "attribute_comparison.png", "robustness.png"]
+    "name",
+    [
+        "coefficients.png",
+        "attribute_comparison.png",
+        "robustness.png",
+        "ranked_profiles.png",
+        "recommendation_gap.png",
+    ],
 )
 def test_figures_are_written_as_slide_ready_pngs(out_dir, name):
     header = (out_dir / "figures" / name).read_bytes()[:24]
@@ -356,3 +363,86 @@ def test_gummy_table_problems_fail_loudly_naming_the_candy(tmp_path, edit, messa
 
     with pytest.raises(ValueError, match=message):
         run(raw_csv=RAW, gummy_csv=gummy, out_dir=tmp_path / "out")
+
+
+def _real_attribute_vectors() -> set[tuple[int, ...]]:
+    raw = pd.read_csv(RAW)
+    raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
+    raw_columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
+                   "crispedricewafer", "hard", "bar", "pluribus"]
+    return {tuple(int(v) for v in row) for row in raw[raw_columns].to_numpy()}
+
+
+def _is_realistic(p: dict) -> bool:
+    # Spec realism rules.
+    return (
+        not (p["chocolate"] and p["fruity"])
+        and not (p["hard"] and p["bar"])
+        and not (p["bar"] and p["pluribus"])
+    )
+
+
+def test_ranked_profiles_are_exactly_the_realistic_supported_profiles(bundle):
+    import itertools
+
+    real = _real_attribute_vectors()
+    expected = set()
+    for bits in itertools.product([0, 1], repeat=len(ATTRIBUTES)):
+        profile = dict(zip(ATTRIBUTES, bits))
+        supported = any(sum(a != b for a, b in zip(bits, r)) <= 1 for r in real)
+        if _is_realistic(profile) and supported:
+            expected.add(bits)
+
+    ranked = bundle["profiles"]["ranked"]
+    got = {tuple(row["attributes"][a] for a in ATTRIBUTES) for row in ranked}
+    assert got == expected
+    assert len(ranked) == len(expected) == bundle["profiles"]["n_supported"]
+    assert bundle["profiles"]["n_enumerated"] == 2 ** len(ATTRIBUTES)
+
+
+def test_primary_profile_is_the_top_ranked_and_has_the_highest_prediction(bundle):
+    ranked = bundle["profiles"]["ranked"]
+    primary = bundle["recommendation"]["primary"]
+
+    assert primary["attributes"] == ranked[0]["attributes"]
+    assert primary["estimate"] == max(row["estimate"] for row in ranked)
+    assert [row["estimate"] for row in ranked] == sorted(
+        (row["estimate"] for row in ranked), reverse=True
+    )
+
+
+def test_fruit_flavoured_profile_is_the_best_fruity_profile(bundle):
+    ranked = bundle["profiles"]["ranked"]
+    fruit = bundle["recommendation"]["fruit_flavoured"]
+
+    assert fruit["attributes"]["fruity"] == 1
+    assert fruit["estimate"] == max(r["estimate"] for r in ranked if r["attributes"]["fruity"])
+
+
+def test_gap_is_the_difference_of_the_two_predictions(bundle):
+    rec = bundle["recommendation"]
+    gap = rec["gap"]
+
+    assert gap["estimate"] == pytest.approx(
+        rec["primary"]["estimate"] - rec["fruit_flavoured"]["estimate"]
+    )
+    assert gap["ci_low"] < gap["estimate"] < gap["ci_high"]
+
+
+def test_recommendations_name_two_or_three_real_benchmark_candies(bundle):
+    real = set(pd.read_csv(RAW)["competitorname"]) - {"One dime", "One quarter"}
+
+    for key in ("primary", "fruit_flavoured"):
+        marks = bundle["recommendation"][key]["benchmarks"]
+        assert 2 <= len(marks) <= 3
+        assert {m["candy"] for m in marks} <= real
+        distances = [m["attributes_differing"] for m in marks]
+        assert distances == sorted(distances)
+
+
+def test_prediction_intervals_contain_and_are_wider_than_mean_cis(bundle):
+    rec = bundle["recommendation"]
+    rows = [*bundle["profiles"]["ranked"], rec["primary"], rec["fruit_flavoured"]]
+
+    for row in rows:
+        assert row["pi_low"] < row["ci_low"] < row["estimate"] < row["ci_high"] < row["pi_high"]

@@ -19,7 +19,21 @@ from candy.estimators import (
     fit,
     holm,
 )
-from candy.figures import attribute_comparison_chart, coefficient_chart, robustness_chart
+from candy.profiles import (
+    REALISM_RULES,
+    SUPPORT_DISTANCE,
+    all_profiles,
+    benchmarks,
+    is_realistic,
+    is_supported,
+)
+from candy.figures import (
+    attribute_comparison_chart,
+    coefficient_chart,
+    ranked_profiles_chart,
+    recommendation_gap_chart,
+    robustness_chart,
+)
 
 BUNDLE_NAME = "results.json"
 ALPHA = 0.05
@@ -27,6 +41,7 @@ SEED = 20261121
 BOOTSTRAP_DRAWS = 2000
 
 FIGURES_DIR = "figures"
+RANKED_FIGURE_TOP = 15
 
 
 @dataclass(frozen=True)
@@ -82,6 +97,12 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     )
     final_model = _fit_model(candies, interactions=retained) if retained else main_model
     gummy_model = _fit_model(candies, extra_attributes=("gummy",))
+    levels, sugar_rule = _profile_levels(candies, final_model)
+    profiles = all_profiles()
+    realistic = is_realistic(profiles)
+    supported = realistic & is_supported(profiles, candies)
+    ranked = _rank_profiles(profiles[supported], levels, retained, final_model)
+    recommendation = _recommend(ranked, levels, retained, final_model, candies)
     holm_results = _holm_table(main_model, family=PREDICTORS)
     comparison = _attribute_comparison_table(candies)
 
@@ -109,6 +130,17 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
             "predictors": list(final_model.coef.index.drop(INTERCEPT)),
             **_model_section(final_model, target="win_rate"),
         },
+        "profiles": {
+            "realism_rules": list(REALISM_RULES),
+            "support_rule": f"within {SUPPORT_DISTANCE} attribute of at least one real candy",
+            "levels": levels,
+            "sugar_rule": sugar_rule,
+            "n_enumerated": len(profiles),
+            "n_realistic": int(realistic.sum()),
+            "n_supported": int(supported.sum()),
+            "ranked": ranked,
+        },
+        "recommendation": recommendation,
         "robustness": {
             "gummy": {
                 "n_gummy": int(candies["gummy"].sum()),
@@ -153,8 +185,97 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         figures / "robustness.png",
     )
 
+    ranked_profiles_chart(ranked, RANKED_FIGURE_TOP, ALPHA, figures / "ranked_profiles.png")
+    recommendation_gap_chart(
+        recommendation["primary"],
+        recommendation["fruit_flavoured"],
+        recommendation["gap"],
+        ALPHA,
+        figures / "recommendation_gap.png",
+    )
+
     (out_dir / BUNDLE_NAME).write_text(json.dumps(bundle, indent=2) + "\n")
     return bundle
+
+
+def _profile_levels(candies: pd.DataFrame, model: FitResult) -> tuple[dict, str]:
+    """Sugar and price level at which every profile is predicted.
+
+    Price is a control, fixed at the median. Sugar sits at the median unless
+    its CI excludes zero, in which case it moves to the favourable quartile.
+    """
+    sugar = candies["sugar_level"]
+    low, high = model.ci_low["sugar_level"], model.ci_high["sugar_level"]
+    if low > 0:
+        sugar_value, rule = sugar.quantile(0.75), "upper quartile (sugar CI above zero)"
+    elif high < 0:
+        sugar_value, rule = sugar.quantile(0.25), "lower quartile (sugar CI below zero)"
+    else:
+        sugar_value, rule = sugar.median(), "median (sugar CI includes zero)"
+    levels = {
+        "sugar_level": float(sugar_value),
+        "price_level": float(candies["price_level"].median()),
+    }
+    return levels, rule
+
+
+def _profile_row(
+    profile: pd.Series, levels: dict, interactions: tuple[Interaction, ...]
+) -> dict[str, float]:
+    row = {attribute: int(profile[attribute]) for attribute in ATTRIBUTES} | levels
+    for interaction in interactions:
+        row[interaction.term] = row[interaction.attribute] * row[interaction.partner]
+    return row
+
+
+def _rank_profiles(
+    profiles: pd.DataFrame,
+    levels: dict,
+    interactions: tuple[Interaction, ...],
+    model: FitResult,
+) -> list[dict]:
+    """Predict every profile with the final model, best first."""
+    rows = []
+    for _, profile in profiles.iterrows():
+        prediction = model.predict(_profile_row(profile, levels, interactions))
+        rows.append(
+            {
+                "attributes": {a: int(profile[a]) for a in ATTRIBUTES},
+                "estimate": prediction.estimate,
+                "ci_low": prediction.ci_low,
+                "ci_high": prediction.ci_high,
+                "pi_low": prediction.pi_low,
+                "pi_high": prediction.pi_high,
+            }
+        )
+    rows.sort(key=lambda row: row["estimate"], reverse=True)
+    return [{"rank": i + 1, **row} for i, row in enumerate(rows)]
+
+
+def _recommend(
+    ranked: list[dict],
+    levels: dict,
+    interactions: tuple[Interaction, ...],
+    model: FitResult,
+    candies: pd.DataFrame,
+) -> dict:
+    """Primary and fruit-flavoured profiles, their gap, and benchmark candies."""
+    primary = ranked[0]
+    fruit = next(row for row in ranked if row["attributes"]["fruity"] == 1)
+
+    def with_benchmarks(row: dict) -> dict:
+        profile = pd.Series(row["attributes"])
+        return {**row, "benchmarks": benchmarks(profile, levels, candies)}
+
+    def design(row: dict) -> dict[str, float]:
+        return _profile_row(pd.Series(row["attributes"]), levels, interactions)
+
+    gap = model.predict_difference(design(primary), design(fruit))
+    return {
+        "primary": with_benchmarks(primary),
+        "fruit_flavoured": with_benchmarks(fruit),
+        "gap": {"estimate": gap.estimate, "ci_low": gap.ci_low, "ci_high": gap.ci_high},
+    }
 
 
 def _fit_model(
