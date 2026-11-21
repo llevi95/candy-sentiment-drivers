@@ -7,8 +7,10 @@ from pathlib import Path
 
 from candy.data import PREDICTORS, load_candies
 from candy.estimators import FitResult, fit
+from candy.figures import coefficient_chart
 
 BUNDLE_NAME = "results.json"
+FIGURES_DIR = "figures"
 
 
 def run(raw_csv: Path, out_dir: Path) -> dict:
@@ -33,6 +35,8 @@ def run(raw_csv: Path, out_dir: Path) -> dict:
         },
         "main_model": _model_section(main, target="win_rate"),
     }
+    coefficient_chart(main.table(), out_dir / FIGURES_DIR / "coefficients.png")
+
     (out_dir / BUNDLE_NAME).write_text(json.dumps(bundle, indent=2) + "\n")
     return bundle
 

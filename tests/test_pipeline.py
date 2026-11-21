@@ -76,3 +76,27 @@ def test_main_model_matches_reference_estimates(bundle):
 def test_every_coefficient_lies_inside_its_confidence_interval(bundle):
     for row in bundle["main_model"]["coefficients"]:
         assert row["ci_low"] < row["coef"] < row["ci_high"]
+
+
+def test_coefficient_chart_is_written_as_slide_ready_png(out_dir):
+    chart = out_dir / "figures" / "coefficients.png"
+
+    header = chart.read_bytes()[:24]
+    assert header[:8] == b"\x89PNG\r\n\x1a\n"
+    width = int.from_bytes(header[16:20], "big")
+    height = int.from_bytes(header[20:24], "big")
+    assert width >= 1600
+    assert width / height == pytest.approx(16 / 9, rel=0.05)
+
+
+def test_module_entry_point_builds_outputs(tmp_path):
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "-m", "candy", "--raw", str(RAW), "--out", str(tmp_path)],
+        check=True,
+    )
+
+    assert (tmp_path / "results.json").exists()
+    assert (tmp_path / "figures" / "coefficients.png").exists()
