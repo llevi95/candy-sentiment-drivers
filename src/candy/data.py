@@ -48,6 +48,7 @@ class CandyData:
     candies: pd.DataFrame
     excluded: list[str]
     n_raw: int
+    with_coins: pd.DataFrame  # every raw entry, coins included, for robustness only
 
 
 def load_candies(raw_csv: Path) -> CandyData:
@@ -64,6 +65,7 @@ def load_candies(raw_csv: Path) -> CandyData:
         candies=candies,
         excluded=raw.loc[is_coin, "candy"].tolist(),
         n_raw=len(raw),
+        with_coins=raw,
     )
 
 

@@ -90,7 +90,9 @@ def test_every_coefficient_lies_inside_its_confidence_interval(bundle):
         assert row["ci_low"] < row["coef"] < row["ci_high"]
 
 
-@pytest.mark.parametrize("name", ["coefficients.png", "attribute_comparison.png"])
+@pytest.mark.parametrize(
+    "name", ["coefficients.png", "attribute_comparison.png", "robustness.png"]
+)
 def test_figures_are_written_as_slide_ready_pngs(out_dir, name):
     header = (out_dir / "figures" / name).read_bytes()[:24]
 
@@ -167,3 +169,43 @@ def test_attribute_comparison_counts_match_the_data(bundle):
     assert counts["fruity"] == 38
     assert counts["nougat"] == 7
     assert counts["crisped_rice_wafer"] == 7
+
+
+def test_coins_included_model_refits_the_main_model_on_all_85_entries(bundle):
+    coins = bundle["robustness"]["coins_included"]
+
+    assert coins["n_obs"] == 85
+    assert coins["cov"] == "hc3"
+    assert [row["term"] for row in coins["coefficients"]] == MAIN_TERMS
+
+
+def test_logit_check_reports_effects_back_in_win_rate_points(bundle):
+    logit = bundle["robustness"]["logit"]
+    effects = logit["effects_in_points"]
+
+    assert logit["target"] == "logit_win_rate"
+    assert logit["n_obs"] == 83
+    assert [row["term"] for row in effects] == MAIN_TERMS[1:]
+    for row in effects:
+        assert row["ci_low"] < row["coef"] < row["ci_high"]
+
+
+def test_bootstrap_check_records_its_seed_and_draws(bundle):
+    boot = bundle["robustness"]["bootstrap"]
+
+    assert boot["seed"] == bundle["seed"]
+    assert boot["draws"] == 2000
+    assert boot["discarded"] >= 0
+    assert [row["term"] for row in boot["results"]] == MAIN_TERMS
+    for row in boot["results"]:
+        assert row["ci_low"] < row["ci_high"]
+
+
+def test_two_runs_with_the_same_seed_produce_identical_bundles(tmp_path):
+    run(raw_csv=RAW, out_dir=tmp_path / "first", seed=7)
+    run(raw_csv=RAW, out_dir=tmp_path / "second", seed=7)
+    run(raw_csv=RAW, out_dir=tmp_path / "other", seed=8)
+
+    first = (tmp_path / "first" / "results.json").read_bytes()
+    assert (tmp_path / "second" / "results.json").read_bytes() == first
+    assert (tmp_path / "other" / "results.json").read_bytes() != first

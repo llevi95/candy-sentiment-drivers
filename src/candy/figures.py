@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from candy.estimators import INTERCEPT  # noqa: E402
@@ -115,6 +116,33 @@ def attribute_comparison_chart(rows: pd.DataFrame, alpha: float, path: Path) -> 
         f"Blue: difference significant (Welch t-test, p < {alpha:g}). "
         "Simple comparison; does not control for other attributes.",
     )
+    _save(fig, path)
+
+
+def robustness_chart(intervals: dict[str, pd.DataFrame], alpha: float, path: Path) -> None:
+    """Side-by-side intervals for each predictor under several analyses.
+
+    ``intervals`` maps an analysis label to a frame indexed by predictor with
+    ``coef``, ``ci_low`` and ``ci_high`` in points of win rate. Predictors are
+    ordered by the first analysis's estimate.
+    """
+    labels = list(intervals)
+    order = intervals[labels[0]].sort_values("coef").index
+    palette = [DRIVER, "#e07b39", "#6a4c93"]
+    offsets = np.linspace(0.25, -0.25, len(labels))  # first label on top, as in legend
+
+    fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
+    for label, offset, color in zip(labels, offsets, palette):
+        rows = intervals[label].loc[order]
+        y = np.arange(len(order)) + offset
+        ax.hlines(y, rows["ci_low"], rows["ci_high"], colors=color, linewidth=3)
+        ax.scatter(rows["coef"], y, color=color, s=50, zorder=3, label=label)
+    ax.axvline(0, color="black", linewidth=1)
+    ax.set_yticks(range(len(order)), [LABELS.get(t, t) for t in order])
+    ax.set_xlabel(f"Change in win rate (percentage points), {1 - alpha:.0%} interval")
+    ax.set_title("Drivers hold up under alternative analyses")
+    ax.legend(loc="lower right", frameon=False)
+    _footnote(fig, "Logit effects are average marginal effects, converted back to win-rate points.")
     _save(fig, path)
 
 
