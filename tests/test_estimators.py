@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from scipy import stats
 
-from candy.estimators import fit, holm
+from candy.estimators import EstimationError, fit, holm
 
 
 def test_single_predictor_matches_scipy_linregress():
@@ -306,3 +306,27 @@ def test_logit_effects_in_points_use_the_discrete_change_for_binary_predictors()
     effects = result.effects_in_points()
     assert effects.loc["dummy", "coef"] == pytest.approx(discrete, rel=1e-10)
     assert effects.loc["dummy", "ci_low"] < discrete < effects.loc["dummy", "ci_high"]
+
+
+def test_rank_deficient_design_is_rejected_with_a_clear_error():
+    # The third column duplicates the second, so their coefficients are not
+    # separately identifiable.
+    rng = np.random.default_rng(13)
+    a = rng.normal(size=20)
+    b = (rng.uniform(size=20) < 0.5).astype(float)
+    X = np.column_stack([a, b, b])
+
+    with pytest.raises(EstimationError, match="rank deficient"):
+        fit(X, rng.normal(size=20), names=["a", "b", "b_copy"])
+
+
+def test_an_observation_with_leverage_one_is_rejected_with_a_clear_error():
+    # A dummy that is 1 for a single row fits that row exactly (leverage 1), so
+    # its leave-one-out residual and HC3 weight are undefined.
+    rng = np.random.default_rng(14)
+    lone = np.zeros(20)
+    lone[7] = 1
+    X = np.column_stack([rng.normal(size=20), lone])
+
+    with pytest.raises(EstimationError, match="leverage"):
+        fit(X, rng.normal(size=20), names=["x", "lone"], cov="hc3")

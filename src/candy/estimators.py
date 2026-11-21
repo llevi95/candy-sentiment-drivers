@@ -20,6 +20,10 @@ Covariance = Literal["classical", "hc3"]
 Target = Literal["identity", "logit"]
 
 
+class EstimationError(ValueError):
+    """The model cannot be estimated on this design (e.g. aliased columns)."""
+
+
 @dataclass(frozen=True)
 class Bootstrap:
     """Case-resampling percentile intervals for the coefficients, indexed by term.
@@ -143,11 +147,22 @@ def fit(
     k = design.shape[1]
     df_resid = n - k
 
+    if np.linalg.matrix_rank(design) < k:
+        raise EstimationError(
+            "design matrix is rank deficient: some terms are exact linear "
+            "combinations of others and cannot be estimated separately"
+        )
+
     beta, *_ = np.linalg.lstsq(design, y, rcond=None)
     linear_fit = design @ beta
     resid = y - linear_fit
     xtx_inv = np.linalg.inv(design.T @ design)
     leverage = np.einsum("ij,jk,ik->i", design, xtx_inv, design)
+    if np.any(leverage > 1 - 1e-8):
+        raise EstimationError(
+            "an observation has leverage 1 (it alone identifies a term), so "
+            "leave-one-out residuals and HC3 standard errors are undefined"
+        )
 
     if cov == "classical":
         sigma2 = resid @ resid / df_resid
