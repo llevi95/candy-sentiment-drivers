@@ -153,7 +153,10 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         "cookie_vs_gummy": {
             "note": "Predicted with the model that includes the gummy attribute, at "
             "the same sugar and price level as the profiles. Every cookie candy in "
-            "the data is chocolate, so a non-chocolate cookie cannot be assessed.",
+            "the data is chocolate, so a non-chocolate cookie cannot be assessed. "
+            "These scores come from the gummy model, so the chocolate score differs "
+            "slightly from the primary profile's, which uses the main model; compare "
+            "products within this section only.",
             **cookie_vs_gummy,
         },
         "robustness": {

@@ -497,6 +497,16 @@ def test_cookie_vs_gummy_differences_come_from_the_gummy_model(bundle):
         assert gap["decided"] == (gap["ci_low"] > 0 or gap["ci_high"] < 0)
 
 
+def test_cookie_vs_gummy_note_explains_why_chocolate_scores_differ(bundle):
+    # Same product, two models: the note must say so, or the deck shows two
+    # different scores for chocolate without explanation.
+    debate = bundle["cookie_vs_gummy"]
+    primary = bundle["recommendation"]["primary"]
+
+    assert debate["products"]["chocolate"]["estimate"] != primary["estimate"]
+    assert "gummy model" in debate["note"] and "main model" in debate["note"]
+
+
 def test_neither_chocolate_product_clearly_beats_a_gummy_on_this_data(bundle):
     # Chocolate leads a gummy by about 4 points, CI about [-5, 13].
     differences = bundle["cookie_vs_gummy"]["differences"]

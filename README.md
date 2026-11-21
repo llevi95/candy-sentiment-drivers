@@ -74,7 +74,9 @@ cookie-versus-gummy debate; see `data/derived/README.md` for the coding rule.
    from the model that includes the gummy attribute: a chocolate product, and
    a chocolate product with a cookie component, each minus a fruity gummy,
    with a 95% interval. Every cookie candy in the data is chocolate, so a
-   non-chocolate cookie cannot be assessed.
+   non-chocolate cookie cannot be assessed. Because these scores come from the
+   gummy model, chocolate scores slightly differently here than as the primary
+   profile; compare products within the section only.
 
 ### Modelling uses only NumPy and SciPy
 
