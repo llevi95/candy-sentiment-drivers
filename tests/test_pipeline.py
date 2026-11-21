@@ -3,6 +3,8 @@
 import json
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import pytest
 
 from candy.pipeline import run
@@ -296,14 +298,39 @@ def test_final_model_is_the_main_model_plus_every_retained_interaction(bundle):
 
 
 def test_gummy_check_adds_the_gummy_attribute_to_the_main_model(bundle):
-    check = bundle["gummy_check"]
+    check = bundle["robustness"]["gummy"]
 
     assert check["n_gummy"] == 12  # approved coding: 12 of 83 candies
     assert check["n_obs"] == 83
     assert [row["term"] for row in check["coefficients"]] == [*MAIN_TERMS, "gummy"]
-    gummy = check["gummy"]
-    assert gummy["ci_low"] < gummy["coef"] < gummy["ci_high"]
-    assert 0 <= gummy["p"] <= 1
+
+
+def test_gummy_coefficient_matches_an_independent_least_squares_fit(bundle):
+    # Oracle: join the two CSVs by hand and solve the normal equations with
+    # NumPy, bypassing the project's loader and estimator.
+    raw = pd.read_csv(RAW)
+    raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
+    gummy = pd.read_csv(GUMMY).set_index("candy")["gummy"]
+    columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
+               "crispedricewafer", "hard", "bar", "pluribus", "sugarpercent", "pricepercent"]
+    design = np.column_stack([
+        np.ones(len(raw)),
+        raw[columns].to_numpy(),
+        raw["competitorname"].map(gummy).to_numpy(),
+    ])
+    beta, *_ = np.linalg.lstsq(design, raw["winpercent"].to_numpy(), rcond=None)
+
+    rows = {row["term"]: row for row in bundle["robustness"]["gummy"]["coefficients"]}
+    assert rows["gummy"]["coef"] == pytest.approx(beta[-1], rel=1e-10)
+    assert rows["gummy"]["ci_low"] < rows["gummy"]["coef"] < rows["gummy"]["ci_high"]
+
+
+def test_gummy_check_lists_the_judgement_calls_for_the_appendix(bundle):
+    check = bundle["robustness"]["gummy"]
+
+    assert check["n_unclear"] == 10
+    assert "Swedish Fish" in check["unclear_candies"]
+    assert "Starburst" in check["unclear_candies"]
 
 
 def _corrupt_gummy(tmp_path: Path, edit) -> Path:
@@ -319,8 +346,10 @@ def _corrupt_gummy(tmp_path: Path, edit) -> Path:
         (lambda lines: [l for l in lines if not l.startswith("Twix,")], "missing.*Twix"),
         (lambda lines: [*lines, "Twixx,0,0,typo"], "unknown.*Twixx"),
         (lambda lines: [l.replace("Twix,0,", "Twix,2,") for l in lines], "0/1.*Twix"),
+        (lambda lines: [l.replace("Twix,0,", "Twix,,") for l in lines], "missing value.*Twix"),
+        (lambda lines: [*lines, "Twix,0,0,again"], "more than once.*Twix"),
     ],
-    ids=["missing candy", "unknown candy", "non-binary value"],
+    ids=["missing candy", "unknown candy", "non-binary value", "blank value", "duplicate row"],
 )
 def test_gummy_table_problems_fail_loudly_naming_the_candy(tmp_path, edit, message):
     gummy = _corrupt_gummy(tmp_path, edit)

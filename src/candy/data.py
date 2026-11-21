@@ -84,17 +84,22 @@ def _validate(df: pd.DataFrame) -> None:
 
 def _load_gummy(gummy_csv: Path, candies: pd.Series) -> pd.DataFrame:
     """Read the approved gummy coding and check it covers exactly the candies."""
-    gummy = pd.read_csv(gummy_csv, usecols=["candy", "gummy"])
+    gummy = pd.read_csv(gummy_csv, usecols=["candy", "gummy", "unclear"]).rename(
+        columns={"unclear": "gummy_unclear"}
+    )
     missing = sorted(set(candies) - set(gummy["candy"]))
     if missing:
         raise ValueError(f"gummy coding is missing candies: {missing}")
     unknown = sorted(set(gummy["candy"]) - set(candies))
     if unknown:
         raise ValueError(f"gummy coding names unknown candies: {unknown}")
+    blank = gummy.loc[gummy["gummy"].isna(), "candy"].tolist()
+    if blank:
+        raise ValueError(f"gummy coding has a missing value for: {blank}")
     not_binary = gummy.loc[~gummy["gummy"].isin([0, 1]), "candy"].tolist()
     if not_binary:
         raise ValueError(f"gummy values must be 0/1: {not_binary}")
     duplicated = gummy.loc[gummy["candy"].duplicated(), "candy"].tolist()
     if duplicated:
         raise ValueError(f"gummy coding lists candies more than once: {duplicated}")
-    return gummy
+    return gummy.astype({"gummy": int, "gummy_unclear": int})
