@@ -161,3 +161,124 @@ def test_holm_adjusted_p_values_are_capped_at_one():
 
     # 0.4 * 3 = 1.2 -> 1; 0.6 * 2 = 1.2 -> 1; 0.9 * 1 = 0.9 -> raised to 1.
     np.testing.assert_allclose(adjusted, [1.0, 1.0, 1.0])
+
+
+def test_logit_target_recovers_an_exact_logistic_curve_on_the_win_rate_scale():
+    # Win rates generated exactly as 100 / (1 + exp(-(-1 + 0.5 x))): on the
+    # logit scale the fit is exact, so the true coefficients come back and the
+    # back-transformed fitted values reproduce the win rates.
+    x = np.linspace(-6, 8, 15)
+    win_rate = 100 / (1 + np.exp(-(-1.0 + 0.5 * x)))
+
+    result = fit(x[:, None], win_rate, names=["x"], target="logit")
+
+    np.testing.assert_allclose(result.coef, [-1.0, 0.5], atol=1e-10)
+    np.testing.assert_allclose(result.fitted, win_rate, rtol=1e-10)
+    assert result.target == "logit"
+
+
+def test_logit_fitted_values_stay_within_0_to_100():
+    rng = np.random.default_rng(6)
+    X = rng.normal(size=(200, 2))
+    win_rate = np.clip(50 + 30 * X[:, 0] + rng.normal(scale=10, size=200), 1, 99)
+
+    result = fit(X, win_rate, names=["a", "b"], target="logit")
+
+    assert np.all((result.fitted > 0) & (result.fitted < 100))
+    # An unbounded linear fit on the same data overshoots the scale.
+    linear = fit(X, win_rate, names=["a", "b"])
+    assert np.any((linear.fitted < 0) | (linear.fitted > 100))
+
+
+def test_logit_target_rejects_win_rates_outside_the_open_interval():
+    with pytest.raises(ValueError, match="strictly between 0 and 100"):
+        fit(np.arange(4.0)[:, None], np.array([0.0, 20, 50, 80]), names=["x"], target="logit")
+
+
+def test_logit_effects_in_points_match_numerical_average_marginal_effects():
+    # Oracle: nudge each predictor by a tiny step for every observation and
+    # average the change in back-transformed predicted win rate.
+    rng = np.random.default_rng(7)
+    X = rng.normal(size=(80, 2))
+    win_rate = 100 / (1 + np.exp(-(0.3 + 0.8 * X[:, 0] - 0.4 * X[:, 1]))) + rng.normal(size=80)
+    names = ["a", "b"]
+    result = fit(X, win_rate, names=names, target="logit")
+
+    def predict(design: np.ndarray) -> np.ndarray:
+        z = result.coef["intercept"] + design @ result.coef[names].to_numpy()
+        return 100 / (1 + np.exp(-z))
+
+    step = 1e-6
+    effects = result.effects_in_points()
+    for j, name in enumerate(names):
+        nudged = X.copy()
+        nudged[:, j] += step
+        numerical = np.mean((predict(nudged) - predict(X)) / step)
+        assert effects.loc[name, "coef"] == pytest.approx(numerical, rel=1e-5)
+        assert effects.loc[name, "ci_low"] < effects.loc[name, "coef"] < effects.loc[name, "ci_high"]
+    assert list(effects.index) == names
+
+
+def test_effects_in_points_are_the_coefficients_for_an_identity_target():
+    result = fit(HC3_X, HC3_Y, names=["a", "b"], cov="hc3")
+
+    effects = result.effects_in_points()
+
+    np.testing.assert_allclose(effects["coef"], [2.0225, 0.2025], rtol=1e-9)
+    np.testing.assert_allclose(effects["ci_low"], [1.883113339895, -0.42771794246], rtol=1e-9)
+
+
+def _noisy_data(seed: int, n: int = 60):
+    rng = np.random.default_rng(seed)
+    X = rng.normal(size=(n, 2))
+    y = 1.0 + X @ [2.0, -1.0] + rng.normal(scale=1 + np.abs(X[:, 0]), size=n)
+    return X, y
+
+
+def test_bootstrap_with_a_fixed_seed_is_deterministic():
+    X, y = _noisy_data(8)
+
+    first = fit(X, y, names=["a", "b"], bootstrap_draws=200, seed=42).bootstrap
+    second = fit(X, y, names=["a", "b"], bootstrap_draws=200, seed=42).bootstrap
+    other = fit(X, y, names=["a", "b"], bootstrap_draws=200, seed=43).bootstrap
+
+    pd.testing.assert_series_equal(first.ci_low, second.ci_low)
+    pd.testing.assert_series_equal(first.ci_high, second.ci_high)
+    assert not np.allclose(first.ci_low, other.ci_low)
+    assert (first.seed, first.draws) == (42, 200)
+
+
+def test_bootstrap_is_off_unless_draws_are_requested():
+    X, y = _noisy_data(9)
+
+    assert fit(X, y, names=["a", "b"]).bootstrap is None
+    with pytest.raises(ValueError, match="seed"):
+        fit(X, y, names=["a", "b"], bootstrap_draws=100)
+
+
+def test_bootstrap_intervals_agree_with_hc3_intervals_on_a_large_sample():
+    # Case resampling and HC3 both target the heteroskedasticity-robust
+    # sampling variance, so with n large their 95% intervals nearly coincide.
+    X, y = _noisy_data(10, n=2000)
+
+    result = fit(X, y, names=["a", "b"], cov="hc3", bootstrap_draws=1000, seed=1)
+
+    hc3_width = result.ci_high - result.ci_low
+    boot_width = result.bootstrap.ci_high - result.bootstrap.ci_low
+    np.testing.assert_allclose(boot_width, hc3_width, rtol=0.1)
+    assert np.all(np.abs(result.bootstrap.ci_low - result.ci_low) < 0.1 * hc3_width)
+
+
+def test_bootstrap_redraws_resamples_that_lose_a_rare_attribute():
+    # Two of 20 rows carry the attribute: about 12% of resamples miss both,
+    # leaving a column of zeros and an unidentifiable coefficient.
+    rng = np.random.default_rng(11)
+    rare = np.zeros(20)
+    rare[[3, 15]] = 1
+    X = np.column_stack([rng.normal(size=20), rare])
+    y = X @ [1.0, 5.0] + rng.normal(size=20)
+
+    boot = fit(X, y, names=["x", "rare"], bootstrap_draws=300, seed=3).bootstrap
+
+    assert boot.discarded > 0
+    assert np.all(np.isfinite(boot.ci_low)) and np.all(np.isfinite(boot.ci_high))
