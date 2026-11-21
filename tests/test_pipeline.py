@@ -63,7 +63,8 @@ def test_main_model_regresses_win_rate_on_attributes_and_levels_with_hc3(bundle)
 
 
 def test_main_model_matches_reference_estimates(bundle):
-    # Literals from an external reference OLS implementation on the same data.
+    # Computed once, outside this project, with statsmodels 0.15.0 on the same
+    # 83 candies: sm.OLS(win, sm.add_constant(X)).fit(cov_type="HC3", use_t=True)
     rows = {row["term"]: row for row in bundle["main_model"]["coefficients"]}
 
     assert rows["chocolate"]["coef"] == pytest.approx(21.214083194, rel=1e-8)

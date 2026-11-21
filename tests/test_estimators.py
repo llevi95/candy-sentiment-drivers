@@ -22,8 +22,10 @@ def test_single_predictor_matches_scipy_linregress():
     assert result.p["x"] == pytest.approx(ref.pvalue)
 
 
-# Small fixed dataset with HC3 results computed once by an external reference
-# implementation (t-based inference, 5 residual degrees of freedom).
+# Small fixed dataset. Expected HC3 values were computed once, outside this
+# project, with statsmodels 0.15.0:
+#   sm.OLS(HC3_Y, sm.add_constant(HC3_X)).fit(cov_type="HC3", use_t=True)
+# statsmodels is not a project dependency; only its outputs are pinned here.
 HC3_X = np.array([[1, 0.0], [2, 1], [3, 0], [4, 1], [5, 0], [6, 1], [7, 0], [8, 1]])
 HC3_Y = np.array([2.1, 3.9, 6.2, 8.1, 9.8, 12.5, 13.9, 16.4])
 
@@ -86,4 +88,5 @@ def test_exact_linear_data_gives_perfect_fit():
     result = fit(X, y, names=["x"])
 
     np.testing.assert_allclose(result.coef, [2.0, 0.5], atol=1e-12)
+    np.testing.assert_allclose(result.residuals, 0.0, atol=1e-12)
     assert result.r_squared == pytest.approx(1.0)

@@ -8,12 +8,15 @@ statistics library.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 import pandas as pd
 from scipy import stats
 
 INTERCEPT = "intercept"
+
+Covariance = Literal["classical", "hc3"]
 
 
 @dataclass(frozen=True)
@@ -26,10 +29,11 @@ class FitResult:
     p: pd.Series
     ci_low: pd.Series
     ci_high: pd.Series
+    residuals: np.ndarray
     df_resid: int
     n_obs: int
     r_squared: float
-    cov: str
+    cov: Covariance
 
     def table(self) -> pd.DataFrame:
         """Coefficient table with one row per term."""
@@ -50,7 +54,7 @@ def fit(
     y: np.ndarray,
     names: list[str],
     *,
-    cov: str = "classical",
+    cov: Covariance = "classical",
     alpha: float = 0.05,
 ) -> FitResult:
     """Fit y on X by ordinary least squares, with an intercept added first.
@@ -99,6 +103,7 @@ def fit(
         p=series(p),
         ci_low=series(beta - crit * se),
         ci_high=series(beta + crit * se),
+        residuals=resid,
         df_resid=df_resid,
         n_obs=n,
         r_squared=float(1 - resid @ resid / tss),
