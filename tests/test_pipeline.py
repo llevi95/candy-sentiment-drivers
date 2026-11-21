@@ -213,6 +213,22 @@ def test_bootstrap_check_records_its_seed_and_draws(bundle):
         assert row["ci_low"] < row["ci_high"]
 
 
+def test_one_alpha_drives_model_intervals_and_labels(tmp_path, monkeypatch):
+    # Changing the pipeline's ALPHA must change the model CIs too, or charts
+    # labelled "90% CI" would show 95% intervals.
+    import candy.pipeline as pipeline
+    from scipy import stats
+
+    monkeypatch.setattr(pipeline, "ALPHA", 0.10)
+    monkeypatch.setattr(pipeline, "BOOTSTRAP_DRAWS", 50)
+    bundle = pipeline.run(raw_csv=RAW, gummy_csv=GUMMY, out_dir=tmp_path)
+    model = bundle["main_model"]
+    crit = stats.t.ppf(0.95, model["df_resid"])
+
+    for row in model["coefficients"]:
+        assert row["ci_high"] - row["coef"] == pytest.approx(crit * row["se"])
+
+
 def test_two_runs_with_the_same_seed_produce_identical_bundles(tmp_path):
     run(raw_csv=RAW, gummy_csv=GUMMY, out_dir=tmp_path / "first", seed=7)
     run(raw_csv=RAW, gummy_csv=GUMMY, out_dir=tmp_path / "second", seed=7)

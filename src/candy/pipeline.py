@@ -405,6 +405,7 @@ def _fit_model(
         entries["win_rate"].to_numpy(),
         list(design.columns),
         cov="hc3",
+        alpha=ALPHA,
         target=target,
         bootstrap_draws=bootstrap_draws,
         seed=seed,
