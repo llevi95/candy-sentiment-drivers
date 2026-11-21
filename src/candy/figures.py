@@ -11,6 +11,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
 
+from candy.estimators import INTERCEPT  # noqa: E402
+
 FIGSIZE = (12.8, 7.2)  # inches; 16:9
 DPI = 150  # 1920 x 1080 px
 
@@ -48,9 +50,9 @@ def coefficient_chart(table: pd.DataFrame, path: Path) -> None:
 
     ``table`` has one row per term with ``coef``, ``ci_low`` and ``ci_high``.
     """
-    rows = table.drop(index="intercept").sort_values("coef")
-    clear = (rows["ci_low"] > 0) | (rows["ci_high"] < 0)
-    colors = [DRIVER if c else NOT_CLEAR for c in clear]
+    rows = table.drop(index=INTERCEPT).sort_values("coef")
+    excludes_zero = (rows["ci_low"] > 0) | (rows["ci_high"] < 0)
+    colors = [DRIVER if c else NOT_CLEAR for c in excludes_zero]
     y = range(len(rows))
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)

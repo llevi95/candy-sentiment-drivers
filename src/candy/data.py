@@ -10,15 +10,14 @@ import pandas as pd
 # Survey decoys included as jokes in the original matchups; not products.
 COINS = ("One dime", "One quarter")
 
-# Raw column -> analysis name. The raw file spells "peanutyalmondy" while its
-# README says "peanutalmondy"; both normalise to one name here.
+# Raw column -> analysis name. The raw file's "peanutyalmondy" (its README
+# spells it "peanutalmondy") becomes "peanuty_almondy".
 RENAME = {
     "competitorname": "candy",
     "chocolate": "chocolate",
     "fruity": "fruity",
     "caramel": "caramel",
     "peanutyalmondy": "peanuty_almondy",
-    "peanutalmondy": "peanuty_almondy",
     "nougat": "nougat",
     "crispedricewafer": "crisped_rice_wafer",
     "hard": "hard",

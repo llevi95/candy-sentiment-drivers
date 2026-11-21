@@ -20,7 +20,7 @@ def run(raw_csv: Path, out_dir: Path) -> dict:
 
     data = load_candies(raw_csv)
     candies = data.candies
-    main = fit(
+    main_model = fit(
         candies[PREDICTORS].to_numpy(),
         candies["win_rate"].to_numpy(),
         PREDICTORS,
@@ -33,9 +33,9 @@ def run(raw_csv: Path, out_dir: Path) -> dict:
             "n_candies": len(data.candies),
             "excluded": data.excluded,
         },
-        "main_model": _model_section(main, target="win_rate"),
+        "main_model": _model_section(main_model, target="win_rate"),
     }
-    coefficient_chart(main.table(), out_dir / FIGURES_DIR / "coefficients.png")
+    coefficient_chart(main_model.table(), out_dir / FIGURES_DIR / "coefficients.png")
 
     (out_dir / BUNDLE_NAME).write_text(json.dumps(bundle, indent=2) + "\n")
     return bundle
