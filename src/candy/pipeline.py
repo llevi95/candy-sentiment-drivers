@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
 from scipy import stats
 
-from candy.data import ATTRIBUTES, PREDICTORS, load_candies
+from candy.data import ATTRIBUTES, PREDICTORS, Interaction, load_candies
 from candy.estimators import (
     INTERCEPT,
     Bootstrap,
@@ -22,10 +21,13 @@ from candy.estimators import (
 from candy.profiles import (
     REALISM_RULES,
     SUPPORT_DISTANCE,
+    ProfileScorer,
     all_profiles,
-    benchmarks,
+    choose_levels,
     is_realistic,
     is_supported,
+    rank,
+    recommend,
 )
 from candy.figures import (
     attribute_comparison_chart,
@@ -42,18 +44,6 @@ BOOTSTRAP_DRAWS = 2000
 
 FIGURES_DIR = "figures"
 RANKED_FIGURE_TOP = 15
-
-
-@dataclass(frozen=True)
-class Interaction:
-    """Product of two attributes, added to the main model as one extra term."""
-
-    attribute: str
-    partner: str
-
-    @property
-    def term(self) -> str:
-        return f"{self.attribute}_x_{self.partner}"
 
 
 # Declared before any results were seen; tested one at a time on the main model.
@@ -97,12 +87,13 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     )
     final_model = _fit_model(candies, interactions=retained) if retained else main_model
     gummy_model = _fit_model(candies, extra_attributes=("gummy",))
-    levels, sugar_rule = _profile_levels(candies, final_model)
+    levels, sugar_rule = choose_levels(candies, final_model)
+    scorer = ProfileScorer(final_model, levels, retained)
     profiles = all_profiles()
     realistic = is_realistic(profiles)
     supported = realistic & is_supported(profiles, candies)
-    ranked = _rank_profiles(profiles[supported], levels, retained, final_model)
-    recommendation = _recommend(ranked, levels, retained, final_model, candies)
+    ranked = rank(profiles[supported], scorer)
+    recommendation = recommend(ranked, scorer, candies)
     holm_results = _holm_table(main_model, family=PREDICTORS)
     comparison = _attribute_comparison_table(candies)
 
@@ -131,10 +122,12 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
             **_model_section(final_model, target="win_rate"),
         },
         "profiles": {
-            "realism_rules": list(REALISM_RULES),
+            "realism_rules": [rule.label for rule in REALISM_RULES],
             "support_rule": f"within {SUPPORT_DISTANCE} attribute of at least one real candy",
             "levels": levels,
             "sugar_rule": sugar_rule,
+            "range_note": "CI and prediction interval bounds are capped to 0-100; "
+            "'capped' marks profiles where the linear model's range left that scale.",
             "n_enumerated": len(profiles),
             "n_realistic": int(realistic.sum()),
             "n_supported": int(supported.sum()),
@@ -198,86 +191,6 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     return bundle
 
 
-def _profile_levels(candies: pd.DataFrame, model: FitResult) -> tuple[dict, str]:
-    """Sugar and price level at which every profile is predicted.
-
-    Price is a control, fixed at the median. Sugar sits at the median unless
-    its CI excludes zero, in which case it moves to the favourable quartile.
-    """
-    sugar = candies["sugar_level"]
-    low, high = model.ci_low["sugar_level"], model.ci_high["sugar_level"]
-    if low > 0:
-        sugar_value, rule = sugar.quantile(0.75), "upper quartile (sugar CI above zero)"
-    elif high < 0:
-        sugar_value, rule = sugar.quantile(0.25), "lower quartile (sugar CI below zero)"
-    else:
-        sugar_value, rule = sugar.median(), "median (sugar CI includes zero)"
-    levels = {
-        "sugar_level": float(sugar_value),
-        "price_level": float(candies["price_level"].median()),
-    }
-    return levels, rule
-
-
-def _profile_row(
-    profile: pd.Series, levels: dict, interactions: tuple[Interaction, ...]
-) -> dict[str, float]:
-    row = {attribute: int(profile[attribute]) for attribute in ATTRIBUTES} | levels
-    for interaction in interactions:
-        row[interaction.term] = row[interaction.attribute] * row[interaction.partner]
-    return row
-
-
-def _rank_profiles(
-    profiles: pd.DataFrame,
-    levels: dict,
-    interactions: tuple[Interaction, ...],
-    model: FitResult,
-) -> list[dict]:
-    """Predict every profile with the final model, best first."""
-    rows = []
-    for _, profile in profiles.iterrows():
-        prediction = model.predict(_profile_row(profile, levels, interactions))
-        rows.append(
-            {
-                "attributes": {a: int(profile[a]) for a in ATTRIBUTES},
-                "estimate": prediction.estimate,
-                "ci_low": prediction.ci_low,
-                "ci_high": prediction.ci_high,
-                "pi_low": prediction.pi_low,
-                "pi_high": prediction.pi_high,
-            }
-        )
-    rows.sort(key=lambda row: row["estimate"], reverse=True)
-    return [{"rank": i + 1, **row} for i, row in enumerate(rows)]
-
-
-def _recommend(
-    ranked: list[dict],
-    levels: dict,
-    interactions: tuple[Interaction, ...],
-    model: FitResult,
-    candies: pd.DataFrame,
-) -> dict:
-    """Primary and fruit-flavoured profiles, their gap, and benchmark candies."""
-    primary = ranked[0]
-    fruit = next(row for row in ranked if row["attributes"]["fruity"] == 1)
-
-    def with_benchmarks(row: dict) -> dict:
-        profile = pd.Series(row["attributes"])
-        return {**row, "benchmarks": benchmarks(profile, levels, candies)}
-
-    def design(row: dict) -> dict[str, float]:
-        return _profile_row(pd.Series(row["attributes"]), levels, interactions)
-
-    gap = model.predict_difference(design(primary), design(fruit))
-    return {
-        "primary": with_benchmarks(primary),
-        "fruit_flavoured": with_benchmarks(fruit),
-        "gap": {"estimate": gap.estimate, "ci_low": gap.ci_low, "ci_high": gap.ci_high},
-    }
-
-
 def _fit_model(
     entries: pd.DataFrame,
     *,
@@ -291,7 +204,7 @@ def _fit_model(
     model, optionally extended with extra attributes and interaction terms."""
     design = entries[[*PREDICTORS, *extra_attributes]].copy()
     for interaction in interactions:
-        design[interaction.term] = entries[interaction.attribute] * entries[interaction.partner]
+        design[interaction.term] = interaction.values(entries)
     return fit(
         design.to_numpy(),
         entries["win_rate"].to_numpy(),

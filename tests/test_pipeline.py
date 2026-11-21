@@ -440,9 +440,74 @@ def test_recommendations_name_two_or_three_real_benchmark_candies(bundle):
         assert distances == sorted(distances)
 
 
-def test_prediction_intervals_contain_and_are_wider_than_mean_cis(bundle):
+def _profile_rows(bundle) -> list[dict]:
     rec = bundle["recommendation"]
-    rows = [*bundle["profiles"]["ranked"], rec["primary"], rec["fruit_flavoured"]]
+    return [*bundle["profiles"]["ranked"], rec["primary"], rec["fruit_flavoured"]]
 
-    for row in rows:
-        assert row["pi_low"] < row["ci_low"] < row["estimate"] < row["ci_high"] < row["pi_high"]
+
+def test_prediction_intervals_contain_and_are_wider_than_mean_cis(bundle):
+    # Ranges are capped at 100, so a capped upper bound may coincide.
+    for row in _profile_rows(bundle):
+        assert row["pi_low"] < row["ci_low"] < row["estimate"] < row["ci_high"] <= row["pi_high"]
+        if not row["capped"]:
+            assert row["ci_high"] < row["pi_high"]
+
+
+def test_reported_ranges_stay_on_the_win_rate_scale_and_flag_capping(bundle):
+    for row in _profile_rows(bundle):
+        for key in ("ci_low", "ci_high", "pi_low", "pi_high"):
+            assert 0 <= row[key] <= 100
+        assert row["capped"] == (row["pi_high"] == 100 or row["pi_low"] == 0)
+    # The primary profile's raw CI runs to about 103.
+    primary = bundle["recommendation"]["primary"]
+    assert primary["capped"] and primary["ci_high"] == 100
+
+
+def test_recommendations_report_how_far_they_extrapolate(bundle):
+    raw = pd.read_csv(RAW)
+    raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
+    raw_columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
+                   "crispedricewafer", "hard", "bar", "pluribus"]
+    most_on_a_real_candy = int(raw[raw_columns].sum(axis=1).max())
+
+    for key in ("primary", "fruit_flavoured"):
+        rec = bundle["recommendation"][key]
+        assert rec["n_attributes"] == sum(rec["attributes"].values())
+        assert rec["max_attributes_on_a_real_candy"] == most_on_a_real_candy
+        assert rec["nearest_candy_distance"] == rec["benchmarks"][0]["attributes_differing"]
+        assert rec["nearest_candy_distance"] <= 1
+
+
+def test_sugar_is_fixed_by_the_sign_of_its_confidence_interval(bundle):
+    # Spec: median unless the sugar CI excludes 0, then the favourable quartile.
+    raw = pd.read_csv(RAW)
+    sugar = raw.loc[~raw["competitorname"].isin(["One dime", "One quarter"]), "sugarpercent"]
+    price = raw.loc[~raw["competitorname"].isin(["One dime", "One quarter"]), "pricepercent"]
+    row = next(r for r in bundle["final_model"]["coefficients"] if r["term"] == "sugar_level")
+    if row["ci_low"] > 0:
+        expected = sugar.quantile(0.75)
+    elif row["ci_high"] < 0:
+        expected = sugar.quantile(0.25)
+    else:
+        expected = sugar.median()
+
+    levels = bundle["profiles"]["levels"]
+    assert levels["sugar_level"] == pytest.approx(expected)
+    assert levels["price_level"] == pytest.approx(price.median())
+
+
+def test_benchmarks_are_the_nearest_candies_with_sugar_and_price_breaking_ties(bundle):
+    raw = pd.read_csv(RAW)
+    raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
+    raw_columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
+                   "crispedricewafer", "hard", "bar", "pluribus"]
+    levels = bundle["profiles"]["levels"]
+
+    for key in ("primary", "fruit_flavoured"):
+        rec = bundle["recommendation"][key]
+        profile = np.array([rec["attributes"][a] for a in ATTRIBUTES])
+        attr = (raw[raw_columns].to_numpy() != profile).sum(axis=1)
+        level = np.hypot(raw["sugarpercent"] - levels["sugar_level"],
+                         raw["pricepercent"] - levels["price_level"])
+        ranking = sorted(zip(attr, level, raw["competitorname"]))
+        assert [m["candy"] for m in rec["benchmarks"]] == [name for *_, name in ranking[:3]]

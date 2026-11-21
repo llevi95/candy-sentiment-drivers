@@ -31,13 +31,14 @@ LABELS = {
     "price_level": "Price level (cheapest → priciest)",
 }
 
-SHORT_LABELS = {
+# Compact attribute names used to spell out a profile in one line.
+PROFILE_LABELS = {
     "chocolate": "Chocolate",
     "fruity": "Fruity",
     "caramel": "Caramel",
     "peanuty_almondy": "Peanut",
     "nougat": "Nougat",
-    "crisped_rice_wafer": "Crisped",
+    "crisped_rice_wafer": "Crisped/wafer",
     "hard": "Hard",
     "bar": "Bar",
     "pluribus": "Multi-pack",
@@ -166,7 +167,7 @@ def robustness_chart(
 
 def profile_label(attributes: dict[str, int]) -> str:
     """Short name for a profile, e.g. 'Chocolate + Peanut + Bar'."""
-    present = [SHORT_LABELS[a] for a, on in attributes.items() if on]
+    present = [PROFILE_LABELS[a] for a, on in attributes.items() if on]
     return " + ".join(present) if present else "No listed attribute"
 
 
@@ -178,21 +179,12 @@ def ranked_profiles_chart(ranked: list[dict], top: int, alpha: float, path: Path
     colors = [ACCENT_ORANGE if r["attributes"]["fruity"] else DRIVER for r in rows]
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
-    ax.hlines(y, [r["pi_low"] for r in rows], [r["pi_high"] for r in rows],
-              colors=colors, linewidth=1.5, alpha=0.5)
-    ax.hlines(y, [r["ci_low"] for r in rows], [r["ci_high"] for r in rows],
-              colors=colors, linewidth=5)
-    ax.scatter([r["estimate"] for r in rows], y, color="white", edgecolor="#333333",
-               s=50, zorder=3)
-    ax.axvline(100, color="#555555", linestyle="--", linewidth=1)
+    _prediction_intervals(ax, rows, y, colors, ci_width=5, pi_width=1.5, marker_size=50)
     ax.set_yticks(y, [f"{r['rank']}. {profile_label(r['attributes'])}" for r in rows], fontsize=12)
     ax.set_xlabel("Predicted win rate (%)")
     ax.set_title(f"Top {len(rows)} supported attribute profiles")
-    _footnote(
-        fig,
-        f"Thick: {1 - alpha:.0%} CI for the average. Thin: {1 - alpha:.0%} prediction "
-        "interval for one launch. Orange: fruit-flavoured. Dashed: 100% ceiling.",
-    )
+    any_fruit = any(r["attributes"]["fruity"] for r in rows)
+    _footnote(fig, _interval_legend(alpha, "Orange: fruit-flavoured." if any_fruit else ""))
     _save(fig, path)
 
 
@@ -203,13 +195,14 @@ def recommendation_gap_chart(
     rows = [("Fruit-flavoured", fruit, ACCENT_ORANGE), ("Primary", primary, DRIVER)]
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
-    for y, (name, row, color) in enumerate(rows):
-        ax.hlines(y, row["pi_low"], row["pi_high"], colors=color, linewidth=2, alpha=0.5)
-        ax.hlines(y, row["ci_low"], row["ci_high"], colors=color, linewidth=8)
-        ax.scatter(row["estimate"], y, color="white", edgecolor="#333333", s=120, zorder=3)
+    profiles = [row for _, row, _ in rows]
+    _prediction_intervals(
+        ax, profiles, [0, 1], [color for *_, color in rows],
+        ci_width=8, pi_width=2, marker_size=120,
+    )
+    for y, row in enumerate(profiles):
         ax.annotate(f"{row['estimate']:.0f}", (row["estimate"], y), xytext=(0, 14),
                     textcoords="offset points", ha="center", fontsize=14, fontweight="bold")
-    ax.axvline(100, color="#555555", linestyle="--", linewidth=1)
     ax.set_yticks(
         [0, 1],
         [f"{name}\n{profile_label(row['attributes'])}" for name, row, _ in rows],
@@ -222,12 +215,42 @@ def recommendation_gap_chart(
         fontsize=20,
         fontweight="bold",
     )
-    _footnote(
-        fig,
-        f"Thick: {1 - alpha:.0%} CI for the average. Thin: {1 - alpha:.0%} prediction "
-        "interval for one launch. Dashed: 100% ceiling.",
-    )
+    _footnote(fig, _interval_legend(alpha))
     _save(fig, path)
+
+
+def _prediction_intervals(
+    ax: plt.Axes,
+    rows: list[dict],
+    y,
+    colors: list[str],
+    *,
+    ci_width: float,
+    pi_width: float,
+    marker_size: float,
+) -> None:
+    """Thin prediction interval, thick mean CI and a hollow point per profile,
+    with a dashed line at the 100% ceiling the ranges are capped to."""
+    ax.hlines(y, [r["pi_low"] for r in rows], [r["pi_high"] for r in rows],
+              colors=colors, linewidth=pi_width, alpha=0.5)
+    ax.hlines(y, [r["ci_low"] for r in rows], [r["ci_high"] for r in rows],
+              colors=colors, linewidth=ci_width)
+    ax.scatter([r["estimate"] for r in rows], y, color="white", edgecolor="#333333",
+               s=marker_size, zorder=3)
+    ax.axvline(100, color="#555555", linestyle="--", linewidth=1)
+
+
+def _interval_legend(alpha: float, extra: str = "") -> str:
+    return " ".join(
+        part
+        for part in (
+            f"Thick: {1 - alpha:.0%} CI for the average. Thin: {1 - alpha:.0%} "
+            "prediction interval for one launch.",
+            extra,
+            "Ranges capped at the 100% ceiling (dashed).",
+        )
+        if part
+    )
 
 
 def _footnote(fig: plt.Figure, text: str) -> None:

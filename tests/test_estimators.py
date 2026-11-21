@@ -383,6 +383,8 @@ def test_prediction_rejects_rows_with_missing_or_unknown_predictors():
 def test_difference_between_two_rows_has_the_coefficient_ci_when_one_dummy_flips():
     # Rows that differ only in one predictor by one unit: the difference in
     # predictions is that predictor's coefficient, with that coefficient's CI.
+    # Expected values are b's statsmodels HC3 reference values from
+    # test_hc3_inference_matches_reference_values.
     result = fit(HC3_X, HC3_Y, names=["a", "b"], cov="hc3")
 
     diff = result.predict_difference({"a": 3.0, "b": 1.0}, {"a": 3.0, "b": 0.0})

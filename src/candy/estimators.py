@@ -101,9 +101,8 @@ class FitResult:
         freedom. For a logit target all values are back-transformed to 0-100.
         """
         x = self._design_row(row)
-        estimate = float(x @ self.coef.to_numpy())
-        mean_var = float(x @ self.vcov.to_numpy() @ x)
-        crit = stats.t.ppf(1 - self.alpha / 2, self.df_resid)
+        estimate, mean_var = self._linear_combination(x)
+        crit = self._t_critical()
         ci_half = crit * np.sqrt(mean_var)
         pi_half = crit * np.sqrt(mean_var + self.residual_variance)
         values = np.array(
@@ -119,12 +118,18 @@ class FitResult:
         gap in win-rate points is not linear in the coefficients."""
         if self.target != "identity":
             raise ValueError("prediction differences need an identity target")
-        d = self._design_row(row_a) - self._design_row(row_b)
-        estimate = float(d @ self.coef.to_numpy())
-        half = stats.t.ppf(1 - self.alpha / 2, self.df_resid) * np.sqrt(
-            float(d @ self.vcov.to_numpy() @ d)
+        estimate, variance = self._linear_combination(
+            self._design_row(row_a) - self._design_row(row_b)
         )
+        half = self._t_critical() * np.sqrt(variance)
         return Difference(estimate, estimate - half, estimate + half)
+
+    def _linear_combination(self, x: np.ndarray) -> tuple[float, float]:
+        """x'b and its variance x'Vx under the fit's coefficient covariance."""
+        return float(x @ self.coef.to_numpy()), float(x @ self.vcov.to_numpy() @ x)
+
+    def _t_critical(self) -> float:
+        return float(stats.t.ppf(1 - self.alpha / 2, self.df_resid))
 
     def _design_row(self, row: Mapping[str, float]) -> np.ndarray:
         names = list(self.coef.index.drop(INTERCEPT))

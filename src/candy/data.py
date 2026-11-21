@@ -44,6 +44,21 @@ PREDICTORS = ATTRIBUTES + LEVELS
 
 
 @dataclass(frozen=True)
+class Interaction:
+    """Product of two attributes, added to a model as one extra term."""
+
+    attribute: str
+    partner: str
+
+    @property
+    def term(self) -> str:
+        return f"{self.attribute}_x_{self.partner}"
+
+    def values(self, frame: pd.DataFrame) -> pd.Series:
+        return frame[self.attribute] * frame[self.partner]
+
+
+@dataclass(frozen=True)
 class CandyData:
     candies: pd.DataFrame
     excluded: list[str]
