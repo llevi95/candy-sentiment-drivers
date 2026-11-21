@@ -2882,51 +2882,60 @@
       "n_attributes": 1,
       "max_attributes_on_a_real_candy": 5,
       "nearest_candy_distance": 0
-    },
-    "fruit_flavoured": {
-      "rank": 32,
-      "attributes": {
-        "chocolate": 0,
-        "fruity": 1,
-        "caramel": 1,
-        "peanuty_almondy": 1,
-        "nougat": 0,
-        "crisped_rice_wafer": 0,
-        "hard": 0,
-        "bar": 0,
-        "pluribus": 0
+    }
+  },
+  "cookie_vs_gummy": {
+    "note": "Predicted with the model that includes the gummy attribute, at the same sugar and price level as the profiles. Every cookie candy in the data is chocolate, so a non-chocolate cookie cannot be assessed.",
+    "products": {
+      "chocolate": {
+        "attributes": {
+          "chocolate": 1
+        },
+        "estimate": 58.15185677291167,
+        "ci_low": 47.474126414060386,
+        "ci_high": 68.82958713176296,
+        "pi_low": 34.890168973770116,
+        "pi_high": 81.41354457205323,
+        "capped": false
       },
-      "estimate": 60.56604679494529,
-      "ci_low": 44.02677807427003,
-      "ci_high": 77.10531551562055,
-      "pi_low": 33.59361517939084,
-      "pi_high": 87.53847841049974,
-      "capped": false,
-      "benchmarks": [
-        {
-          "candy": "Caramel Apple Pops",
-          "attributes_differing": 1,
-          "win_rate": 34.517681
+      "chocolate_cookie": {
+        "attributes": {
+          "chocolate": 1,
+          "crisped_rice_wafer": 1
         },
-        {
-          "candy": "Air Heads",
-          "attributes_differing": 2,
-          "win_rate": 52.341465
+        "estimate": 67.11960897797535,
+        "ci_low": 49.23598335030526,
+        "ci_high": 85.00323460564543,
+        "pi_low": 39.78984024058836,
+        "pi_high": 94.44937771536233,
+        "capped": false
+      },
+      "gummy": {
+        "attributes": {
+          "fruity": 1,
+          "gummy": 1
         },
-        {
-          "candy": "Sugar Daddy",
-          "attributes_differing": 2,
-          "win_rate": 32.230995
-        }
-      ],
-      "n_attributes": 3,
-      "max_attributes_on_a_real_candy": 5,
-      "nearest_candy_distance": 1
+        "estimate": 53.94817752883242,
+        "ci_low": 45.55337813650927,
+        "ci_high": 62.34297692115557,
+        "pi_low": 31.642015813159635,
+        "pi_high": 76.2543392445052,
+        "capped": false
+      }
     },
-    "gap": {
-      "estimate": -3.2830688578205276,
-      "ci_low": -25.584859402090977,
-      "ci_high": 19.018721686449922
+    "differences": {
+      "chocolate_cookie_minus_gummy": {
+        "estimate": 13.171431449142924,
+        "ci_low": -3.9349053689190594,
+        "ci_high": 30.277768267204905,
+        "decided": false
+      },
+      "chocolate_minus_gummy": {
+        "estimate": 4.20367924407925,
+        "ci_low": -4.668293468556014,
+        "ci_high": 13.075651956714514,
+        "decided": false
+      }
     }
   },
   "robustness": {
@@ -3510,6 +3519,6 @@
     "Sugar level and price level are percentile ranks within the dataset (0 to 1), not grams of sugar or prices.",
     "The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source documentation) is analysed as the peanut/almond attribute.",
     "Only 7 candies have nougat and 7 have crisped rice/wafer/cookie, so those effects carry wide intervals.",
-    "Gummy is a hand-coded attribute (11 of 83 candies; 11 judgement calls flagged) used only as a supplementary check."
+    "Gummy is a hand-coded attribute (11 of 83 candies; 11 judgement calls flagged), used to test the gummy effect and to compare a gummy with chocolate products."
   ]
 }

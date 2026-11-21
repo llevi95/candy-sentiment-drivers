@@ -25,6 +25,7 @@ from candy.profiles import (
     ProfileScorer,
     all_profiles,
     choose_levels,
+    compare_cookie_and_gummy,
     evidence_tiers,
     is_realistic,
     is_supported,
@@ -35,8 +36,8 @@ from candy.profiles import (
 from candy.figures import (
     attribute_comparison_chart,
     coefficient_chart,
+    cookie_vs_gummy_chart,
     ranked_profiles_chart,
-    recommendation_gap_chart,
     robustness_chart,
     win_rate_distribution_chart,
 )
@@ -105,6 +106,8 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         ranked, scorer, candies, evidence_tiers(main_model, confirmed=survivors)
     )
     ranked = mark_ties(ranked, scorer, recommendation["primary"]["attributes"])
+    gummy_scorer = ProfileScorer(gummy_model, levels, (), extra_attributes=("gummy",))
+    cookie_vs_gummy = compare_cookie_and_gummy(gummy_scorer)
     comparison = _attribute_comparison_table(candies)
 
     bundle = {
@@ -147,6 +150,12 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
             "ranked": ranked,
         },
         "recommendation": recommendation,
+        "cookie_vs_gummy": {
+            "note": "Predicted with the model that includes the gummy attribute, at "
+            "the same sugar and price level as the profiles. Every cookie candy in "
+            "the data is chocolate, so a non-chocolate cookie cannot be assessed.",
+            **cookie_vs_gummy,
+        },
         "robustness": {
             "gummy": {
                 "n_gummy": int(candies["gummy"].sum()),
@@ -200,13 +209,7 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         ALPHA,
         figures / "ranked_profiles.png",
     )
-    recommendation_gap_chart(
-        recommendation["primary"],
-        recommendation["fruit_flavoured"],
-        recommendation["gap"],
-        ALPHA,
-        figures / "recommendation_gap.png",
-    )
+    cookie_vs_gummy_chart(cookie_vs_gummy, ALPHA, figures / "cookie_vs_gummy.png")
 
     _write_appendix(out_dir / APPENDIX_DIR, bundle, gummy_csv)
     (out_dir / BUNDLE_NAME).write_text(json.dumps(bundle, indent=2) + "\n")
@@ -237,8 +240,8 @@ def _data_notes(bundle: dict) -> list[str]:
         f"Only {counts['nougat']} candies have nougat and {counts['crisped_rice_wafer']} "
         "have crisped rice/wafer/cookie, so those effects carry wide intervals.",
         f"Gummy is a hand-coded attribute ({gummy['n_gummy']} of {sample['n_candies']} "
-        f"candies; {gummy['n_unclear']} judgement calls flagged) used only as a "
-        "supplementary check.",
+        f"candies; {gummy['n_unclear']} judgement calls flagged), used to test the "
+        "gummy effect and to compare a gummy with chocolate products.",
     ]
 
 

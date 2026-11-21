@@ -25,8 +25,8 @@ gives:
 
 `data/derived/gummy.csv` adds a hand-coded **gummy** attribute (soft, elastic
 gummy chew), reviewed and approved before use, with a note per candy and
-judgement calls flagged. It is used only as a supplementary check; see
-`data/derived/README.md` for the coding rule.
+judgement calls flagged. It is used to test the gummy effect and to answer the
+cookie-versus-gummy debate; see `data/derived/README.md` for the coding rule.
 
 ## Approach
 
@@ -68,9 +68,13 @@ judgement calls flagged. It is used only as a supplementary check; see
    to the primary profile has an interval that includes zero is flagged as
    tied with it, and the ties are counted.
 
-   The **fruit-flavoured profile** is the best one with fruity = 1; the gap
-   between it and the primary profile answers the cookie-versus-gummy debate.
-   Each comes with **benchmark candies**: the existing candies closest to it.
+   The primary profile comes with **benchmark candies**: the existing candies
+   closest to it.
+7. **Cookie versus gummy.** The debate is answered with direct differences
+   from the model that includes the gummy attribute: a chocolate product, and
+   a chocolate product with a cookie component, each minus a fruity gummy,
+   with a 95% interval. Every cookie candy in the data is chocolate, so a
+   non-chocolate cookie cannot be assessed.
 
 ### Modelling uses only NumPy and SciPy
 
@@ -132,7 +136,7 @@ read without running anything; `make all` rebuilds it:
 | `figures/attribute_comparison.png` | Average win rate of candies with vs without each attribute |
 | `figures/robustness.png` | HC3, bootstrap and logit intervals side by side |
 | `figures/ranked_profiles.png` | Top supported profiles against the recommended one, ties highlighted |
-| `figures/recommendation_gap.png` | Primary vs fruit-flavoured profile and the gap between them |
+| `figures/cookie_vs_gummy.png` | Chocolate, chocolate + cookie and fruity gummy, with each lead over the gummy |
 | `appendix/vif.csv` | Variance inflation factor per predictor |
 | `appendix/interaction_support.csv` | How many candies have both, or only one, of each interaction's attributes |
 | `appendix/gummy_coding.csv` | The approved gummy coding with notes |
@@ -170,6 +174,9 @@ tests/
   attributes, or sit an attribute away from any real candy, are extrapolations
   and are flagged as such in the bundle; this is why the top-ranked profile is
   not the recommendation.
+- Neither chocolate product clearly beats a gummy: both leads have intervals
+  that include zero. The data favours chocolate but does not settle the
+  debate.
 - The data confirms one driver (chocolate). Most supported profiles cannot be
   told apart from the recommended one, so the remaining attributes are design
   choices, not findings.

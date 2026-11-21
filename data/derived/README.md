@@ -4,8 +4,8 @@
 
 Hand-coded gummy attribute for the 83 candies (coins excluded), drafted
 from public product knowledge and reviewed before use. The source data
-has no texture attribute, so this supports a supplementary check of the
-gummy question alongside the fruity attribute.
+has no texture attribute, so this is what lets the analysis test the gummy
+effect and compare a gummy with chocolate products.
 
 | Column    | Meaning                                                         |
 |-----------|-----------------------------------------------------------------|

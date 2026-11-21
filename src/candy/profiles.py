@@ -40,6 +40,15 @@ SUPPORT_DISTANCE = 1  # max attributes a profile may differ from some real candy
 BENCHMARK_COUNT = 3
 WIN_RATE_SCALE = (0.0, 100.0)
 
+# The purchasing team's debate as model rows. Every cookie candy in the data
+# is chocolate, so the cookie side can only be a chocolate product.
+DEBATE_PRODUCTS = {
+    "chocolate": {"chocolate": 1},
+    "chocolate_cookie": {"chocolate": 1, "crisped_rice_wafer": 1},
+    "gummy": {"fruity": 1, "gummy": 1},
+}
+DEBATE_RIVAL = "gummy"
+
 DRIVER, TENTATIVE, OPEN = "driver", "tentative", "open"
 PRIMARY_RULE = (
     "The primary profile is the best supported profile made only of drivers: "
@@ -50,11 +59,16 @@ PRIMARY_RULE = (
 
 @dataclass(frozen=True)
 class ProfileScorer:
-    """Predicts profiles with one model at fixed sugar and price levels."""
+    """Predicts profiles with one model at fixed sugar and price levels.
+
+    ``extra_attributes`` names 0/1 predictors the model has beyond ATTRIBUTES
+    (the gummy attribute); a profile that does not mention one has it off.
+    """
 
     model: FitResult
     levels: dict[str, float]
     interactions: tuple[Interaction, ...]
+    extra_attributes: tuple[str, ...] = ()
 
     def predict(self, attributes: dict[str, int]) -> dict:
         """Point estimate with mean CI and prediction interval, bounds capped
@@ -74,6 +88,8 @@ class ProfileScorer:
 
     def _row(self, attributes: dict[str, int]) -> dict[str, float]:
         row = {attribute: attributes[attribute] for attribute in ATTRIBUTES} | self.levels
+        for extra in self.extra_attributes:
+            row[extra] = attributes.get(extra, 0)
         for interaction in self.interactions:
             row[interaction.term] = row[interaction.attribute] * row[interaction.partner]
         return row
@@ -161,8 +177,8 @@ def mark_ties(ranked: list[dict], scorer: ProfileScorer, primary: dict[str, int]
 def recommend(
     ranked: list[dict], scorer: ProfileScorer, candies: pd.DataFrame, tiers: dict[str, str]
 ) -> dict:
-    """Primary and fruit-flavoured profiles, the gap between them, benchmark
-    candies, and how far each recommendation extrapolates beyond real candies.
+    """The primary profile with its benchmark candies and how far it
+    extrapolates beyond real candies.
 
     The primary profile is the best supported profile that switches on nothing
     but drivers with a positive effect.
@@ -173,7 +189,6 @@ def recommend(
         for row in ranked
         if all(a in favourable for a, on in row["attributes"].items() if on)
     )
-    fruit = next(row for row in ranked if row["attributes"]["fruity"] == 1)
     most_on_a_real_candy = int(candies[ATTRIBUTES].sum(axis=1).max())
 
     def describe(row: dict) -> dict:
@@ -186,13 +201,35 @@ def recommend(
             "nearest_candy_distance": marks[0]["attributes_differing"],
         }
 
-    gap = scorer.gap(primary["attributes"], fruit["attributes"])
     return {
         "rule": PRIMARY_RULE,
         "attribute_evidence": tiers,
         "primary": describe(primary),
-        "fruit_flavoured": describe(fruit),
-        "gap": asdict(gap),
+    }
+
+
+def compare_cookie_and_gummy(scorer: ProfileScorer) -> dict:
+    """Answer the cookie-versus-gummy debate with direct differences.
+
+    ``scorer`` must hold a model with the gummy attribute. Each of
+    DEBATE_PRODUCTS is predicted, and each chocolate product is compared with
+    the gummy; ``decided`` says whether the difference's CI excludes zero.
+    """
+    blank = dict.fromkeys(ATTRIBUTES, 0)
+    products = {name: blank | switched_on for name, switched_on in DEBATE_PRODUCTS.items()}
+    differences = {}
+    for name in products.keys() - {DEBATE_RIVAL}:
+        gap = scorer.gap(products[name], products[DEBATE_RIVAL])
+        differences[f"{name}_minus_{DEBATE_RIVAL}"] = {
+            **asdict(gap),
+            "decided": bool(gap.ci_low > 0 or gap.ci_high < 0),
+        }
+    return {
+        "products": {
+            name: {"attributes": DEBATE_PRODUCTS[name], **scorer.predict(row)}
+            for name, row in products.items()
+        },
+        "differences": dict(sorted(differences.items())),
     }
 
 

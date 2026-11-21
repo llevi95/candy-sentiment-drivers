@@ -18,6 +18,13 @@ LABELS = {
     "price_level": "Price level (cheapest → priciest)",
 }
 
+# The three products behind the purchasing team's cookie-versus-gummy debate.
+DEBATE_LABELS = {
+    "chocolate": "Chocolate",
+    "chocolate_cookie": "Chocolate + cookie (crisped/wafer)",
+    "gummy": "Fruity gummy",
+}
+
 # Compact attribute names used to spell out a profile in one line.
 PROFILE_LABELS = {
     "chocolate": "Chocolate",

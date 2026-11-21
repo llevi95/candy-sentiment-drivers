@@ -101,7 +101,7 @@ def test_every_coefficient_lies_inside_its_confidence_interval(bundle):
         "attribute_comparison.png",
         "robustness.png",
         "ranked_profiles.png",
-        "recommendation_gap.png",
+        "cookie_vs_gummy.png",
         "win_rate_distribution.png",
     ],
 )
@@ -463,38 +463,64 @@ def test_ties_with_the_primary_profile_are_flagged_and_counted(bundle):
     assert 1 < bundle["profiles"]["n_tied_with_primary"] < len(ranked)
 
 
-def test_fruit_flavoured_profile_is_the_best_fruity_profile(bundle):
-    ranked = bundle["profiles"]["ranked"]
-    fruit = bundle["recommendation"]["fruit_flavoured"]
+def test_cookie_vs_gummy_compares_real_product_types(bundle):
+    products = bundle["cookie_vs_gummy"]["products"]
 
-    assert fruit["attributes"]["fruity"] == 1
-    assert fruit["estimate"] == max(r["estimate"] for r in ranked if r["attributes"]["fruity"])
+    assert {name: p["attributes"] for name, p in products.items()} == {
+        "chocolate": {"chocolate": 1},
+        "chocolate_cookie": {"chocolate": 1, "crisped_rice_wafer": 1},
+        "gummy": {"fruity": 1, "gummy": 1},
+    }
 
 
-def test_gap_is_the_difference_of_the_two_predictions(bundle):
-    rec = bundle["recommendation"]
-    gap = rec["gap"]
+def test_cookie_vs_gummy_differences_come_from_the_gummy_model(bundle):
+    # Oracle: with levels held equal, each difference is a sum of gummy-model
+    # coefficients, and equals the difference of the two predictions.
+    coef = {r["term"]: r["coef"] for r in bundle["robustness"]["gummy"]["coefficients"]}
+    debate = bundle["cookie_vs_gummy"]
+    products, differences = debate["products"], debate["differences"]
+    gummy = coef["fruity"] + coef["gummy"]
 
-    assert gap["estimate"] == pytest.approx(
-        rec["primary"]["estimate"] - rec["fruit_flavoured"]["estimate"]
+    assert set(differences) == {"chocolate_minus_gummy", "chocolate_cookie_minus_gummy"}
+    assert differences["chocolate_minus_gummy"]["estimate"] == pytest.approx(
+        coef["chocolate"] - gummy
     )
-    assert gap["ci_low"] < gap["estimate"] < gap["ci_high"]
+    assert differences["chocolate_cookie_minus_gummy"]["estimate"] == pytest.approx(
+        coef["chocolate"] + coef["crisped_rice_wafer"] - gummy
+    )
+    for name, gap in differences.items():
+        product = name.removesuffix("_minus_gummy")
+        assert gap["estimate"] == pytest.approx(
+            products[product]["estimate"] - products["gummy"]["estimate"]
+        )
+        assert gap["ci_low"] < gap["estimate"] < gap["ci_high"]
+        assert gap["decided"] == (gap["ci_low"] > 0 or gap["ci_high"] < 0)
+
+
+def test_neither_chocolate_product_clearly_beats_a_gummy_on_this_data(bundle):
+    # Chocolate leads a gummy by about 4 points, CI about [-5, 13].
+    differences = bundle["cookie_vs_gummy"]["differences"]
+
+    assert all(gap["estimate"] > 0 for gap in differences.values())
+    assert not any(gap["decided"] for gap in differences.values())
 
 
 def test_recommendations_name_two_or_three_real_benchmark_candies(bundle):
     real = set(pd.read_csv(RAW)["competitorname"]) - {"One dime", "One quarter"}
 
-    for key in ("primary", "fruit_flavoured"):
-        marks = bundle["recommendation"][key]["benchmarks"]
-        assert 2 <= len(marks) <= 3
-        assert {m["candy"] for m in marks} <= real
-        distances = [m["attributes_differing"] for m in marks]
-        assert distances == sorted(distances)
+    marks = bundle["recommendation"]["primary"]["benchmarks"]
+    assert 2 <= len(marks) <= 3
+    assert {m["candy"] for m in marks} <= real
+    distances = [m["attributes_differing"] for m in marks]
+    assert distances == sorted(distances)
 
 
 def _profile_rows(bundle) -> list[dict]:
-    rec = bundle["recommendation"]
-    return [*bundle["profiles"]["ranked"], rec["primary"], rec["fruit_flavoured"]]
+    return [
+        *bundle["profiles"]["ranked"],
+        bundle["recommendation"]["primary"],
+        *bundle["cookie_vs_gummy"]["products"].values(),
+    ]
 
 
 def test_prediction_intervals_contain_and_are_wider_than_mean_cis(bundle):
@@ -523,12 +549,11 @@ def test_recommendations_report_how_far_they_extrapolate(bundle):
                    "crispedricewafer", "hard", "bar", "pluribus"]
     most_on_a_real_candy = int(raw[raw_columns].sum(axis=1).max())
 
-    for key in ("primary", "fruit_flavoured"):
-        rec = bundle["recommendation"][key]
-        assert rec["n_attributes"] == sum(rec["attributes"].values())
-        assert rec["max_attributes_on_a_real_candy"] == most_on_a_real_candy
-        assert rec["nearest_candy_distance"] == rec["benchmarks"][0]["attributes_differing"]
-        assert rec["nearest_candy_distance"] <= 1
+    rec = bundle["recommendation"]["primary"]
+    assert rec["n_attributes"] == sum(rec["attributes"].values())
+    assert rec["max_attributes_on_a_real_candy"] == most_on_a_real_candy
+    assert rec["nearest_candy_distance"] == rec["benchmarks"][0]["attributes_differing"]
+    assert rec["nearest_candy_distance"] <= 1
 
 
 def test_sugar_is_fixed_by_the_sign_of_its_confidence_interval(bundle):
@@ -556,14 +581,13 @@ def test_benchmarks_are_the_nearest_candies_with_sugar_and_price_breaking_ties(b
                    "crispedricewafer", "hard", "bar", "pluribus"]
     levels = bundle["profiles"]["levels"]
 
-    for key in ("primary", "fruit_flavoured"):
-        rec = bundle["recommendation"][key]
-        profile = np.array([rec["attributes"][a] for a in ATTRIBUTES])
-        attr = (raw[raw_columns].to_numpy() != profile).sum(axis=1)
-        level = np.hypot(raw["sugarpercent"] - levels["sugar_level"],
-                         raw["pricepercent"] - levels["price_level"])
-        ranking = sorted(zip(attr, level, raw["competitorname"]))
-        assert [m["candy"] for m in rec["benchmarks"]] == [name for *_, name in ranking[:3]]
+    rec = bundle["recommendation"]["primary"]
+    profile = np.array([rec["attributes"][a] for a in ATTRIBUTES])
+    attr = (raw[raw_columns].to_numpy() != profile).sum(axis=1)
+    level = np.hypot(raw["sugarpercent"] - levels["sugar_level"],
+                     raw["pricepercent"] - levels["price_level"])
+    ranking = sorted(zip(attr, level, raw["competitorname"]))
+    assert [m["candy"] for m in rec["benchmarks"]] == [name for *_, name in ranking[:3]]
 
 
 def test_appendix_vif_table_lists_every_predictor(out_dir, bundle):

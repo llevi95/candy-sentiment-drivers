@@ -13,7 +13,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from candy.estimators import INTERCEPT  # noqa: E402
-from candy.labels import LABELS, PROFILE_LABELS, WIN_RATE_MEANING  # noqa: E402
+from candy.labels import DEBATE_LABELS, LABELS, PROFILE_LABELS, WIN_RATE_MEANING  # noqa: E402
 
 FIGSIZE = (12.8, 7.2)  # inches; 16:9
 DPI = 150  # 1920 x 1080 px
@@ -224,33 +224,36 @@ def ranked_profiles_chart(
     _save(fig, path)
 
 
-def recommendation_gap_chart(
-    primary: dict, fruit: dict, gap: dict, alpha: float, path: Path
-) -> None:
-    """Primary vs fruit-flavoured profile, with intervals and the gap between them."""
-    rows = [("Fruit-flavoured", fruit, ACCENT_ORANGE), ("Primary", primary, DRIVER)]
+def cookie_vs_gummy_chart(comparison: dict, alpha: float, path: Path) -> None:
+    """The debate's products with intervals, and each chocolate product's
+    lead over the gummy written next to it.
+
+    ``comparison`` has ``products`` (name -> prediction) and ``differences``
+    (``<name>_minus_gummy`` -> estimate, CI and ``decided``).
+    """
+    names = list(comparison["products"])[::-1]  # first product at the top
+    rows = [comparison["products"][name] for name in names]
+    colors = [ACCENT_ORANGE if name == "gummy" else DRIVER for name in names]
+    y = list(range(len(rows)))
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
-    profiles = [row for _, row, _ in rows]
-    _prediction_intervals(
-        ax, profiles, [0, 1], [color for *_, color in rows],
-        ci_width=8, pi_width=2, marker_size=120,
-    )
-    for y, row in enumerate(profiles):
-        ax.annotate(f"{row['estimate']:.0f}", (row["estimate"], y), xytext=(0, 14),
+    _prediction_intervals(ax, rows, y, colors, ci_width=8, pi_width=2, marker_size=120)
+    for position, name, row in zip(y, names, rows):
+        ax.annotate(f"{row['estimate']:.0f}", (row["estimate"], position), xytext=(0, 14),
                     textcoords="offset points", ha="center", fontsize=14, fontweight="bold")
-    ax.set_yticks(
-        [0, 1],
-        [f"{name}\n{profile_label(row['attributes'])}" for name, row, _ in rows],
-    )
-    ax.set_ylim(-0.6, 1.6)
+        gap = comparison["differences"].get(f"{name}_minus_gummy")
+        if gap:
+            verdict = "clear lead" if gap["decided"] else "not a clear lead"
+            ax.annotate(
+                f"{gap['estimate']:+.0f} vs gummy ({1 - alpha:.0%} CI "
+                f"{gap['ci_low']:.0f} to {gap['ci_high']:.0f}): {verdict}",
+                (row["estimate"], position), xytext=(0, -26),
+                textcoords="offset points", ha="center", fontsize=12, color="#333333",
+            )
+    ax.set_yticks(y, [DEBATE_LABELS[name] for name in names])
+    ax.set_ylim(-0.6, len(rows) - 0.4)
     ax.set_xlabel("Predicted win rate (%)")
-    fig.suptitle(
-        f"Primary vs fruit-flavoured: gap of {gap['estimate']:.0f} points "
-        f"({1 - alpha:.0%} CI {gap['ci_low']:.0f} to {gap['ci_high']:.0f})",
-        fontsize=20,
-        fontweight="bold",
-    )
+    fig.suptitle("Cookie versus gummy", fontsize=20, fontweight="bold")
     _footnote(fig, _interval_legend(alpha))
     _save(fig, path)
 
