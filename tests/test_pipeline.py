@@ -401,15 +401,66 @@ def test_ranked_profiles_are_exactly_the_realistic_supported_profiles(bundle):
     assert bundle["profiles"]["n_enumerated"] == 2 ** len(ATTRIBUTES)
 
 
-def test_primary_profile_is_the_top_ranked_and_has_the_highest_prediction(bundle):
+def test_profiles_are_ranked_by_predicted_win_rate(bundle):
     ranked = bundle["profiles"]["ranked"]
-    primary = bundle["recommendation"]["primary"]
 
-    assert primary["attributes"] == ranked[0]["attributes"]
-    assert primary["estimate"] == max(row["estimate"] for row in ranked)
     assert [row["estimate"] for row in ranked] == sorted(
         (row["estimate"] for row in ranked), reverse=True
     )
+
+
+def test_attribute_evidence_follows_holm_and_the_confidence_intervals(bundle):
+    # Oracle: recompute the tiers from the published tables.
+    holm = {row["term"]: row["survives"] for row in bundle["holm"]["results"]}
+    coefs = {row["term"]: row for row in bundle["main_model"]["coefficients"]}
+
+    expected = {}
+    for attribute in ATTRIBUTES:
+        row = coefs[attribute]
+        excludes_zero = row["ci_low"] > 0 or row["ci_high"] < 0
+        expected[attribute] = (
+            "driver" if holm[attribute] else "tentative" if excludes_zero else "open"
+        )
+
+    assert bundle["recommendation"]["attribute_evidence"] == expected
+    assert expected["chocolate"] == "driver"
+    assert expected["nougat"] == "open"
+
+
+def test_primary_profile_is_the_best_profile_made_only_of_drivers(bundle):
+    ranked = bundle["profiles"]["ranked"]
+    rec = bundle["recommendation"]
+    drivers = {a for a, tier in rec["attribute_evidence"].items() if tier == "driver"}
+
+    def only_drivers(row):
+        return all(a in drivers for a, on in row["attributes"].items() if on)
+
+    assert only_drivers(rec["primary"])
+    assert rec["primary"]["estimate"] == max(r["estimate"] for r in ranked if only_drivers(r))
+    # On this data chocolate is the only driver, so the brief is "chocolate".
+    assert [a for a, on in rec["primary"]["attributes"].items() if on] == ["chocolate"]
+
+
+def test_top_ranked_profile_is_not_recommended_and_is_tied_with_the_primary(bundle):
+    # The top profile stacks six attributes, most of them without evidence;
+    # its predicted lead over the primary profile has a CI that includes zero.
+    ranked = bundle["profiles"]["ranked"]
+    primary = bundle["recommendation"]["primary"]
+
+    assert ranked[0]["attributes"] != primary["attributes"]
+    assert ranked[0]["tied_with_primary"]
+
+
+def test_ties_with_the_primary_profile_are_flagged_and_counted(bundle):
+    ranked = bundle["profiles"]["ranked"]
+    primary = bundle["recommendation"]["primary"]
+    by_attributes = {tuple(r["attributes"].values()): r for r in ranked}
+
+    assert by_attributes[tuple(primary["attributes"].values())]["tied_with_primary"]
+    assert bundle["profiles"]["n_tied_with_primary"] == sum(
+        r["tied_with_primary"] for r in ranked
+    )
+    assert 1 < bundle["profiles"]["n_tied_with_primary"] < len(ranked)
 
 
 def test_fruit_flavoured_profile_is_the_best_fruity_profile(bundle):
@@ -459,9 +510,10 @@ def test_reported_ranges_stay_on_the_win_rate_scale_and_flag_capping(bundle):
         for key in ("ci_low", "ci_high", "pi_low", "pi_high"):
             assert 0 <= row[key] <= 100
         assert row["capped"] == (row["pi_high"] == 100 or row["pi_low"] == 0)
-    # The primary profile's raw CI runs to about 103.
-    primary = bundle["recommendation"]["primary"]
-    assert primary["capped"] and primary["ci_high"] == 100
+    # The top-ranked profile's raw CI runs to about 103.
+    top = bundle["profiles"]["ranked"][0]
+    assert top["capped"] and top["ci_high"] == 100
+    assert not bundle["recommendation"]["primary"]["capped"]
 
 
 def test_recommendations_report_how_far_they_extrapolate(bundle):

@@ -179,20 +179,48 @@ def profile_label(attributes: dict[str, int]) -> str:
     return " + ".join(present) if present else "No listed attribute"
 
 
-def ranked_profiles_chart(ranked: list[dict], top: int, alpha: float, path: Path) -> None:
+def ranked_profiles_chart(
+    ranked: list[dict], primary: dict, top: int, alpha: float, path: Path
+) -> None:
     """Top ``top`` supported profiles with mean CI (thick) and prediction
-    interval (thin); fruit-flavoured profiles highlighted."""
-    rows = ranked[:top][::-1]  # best at the top of the chart
+    interval (thin), and the recommended (primary) profile on the bottom row.
+
+    Profiles the data cannot tell apart from the primary one
+    (``tied_with_primary``) are drawn in blue, the others in grey, and the
+    title counts the ties across the whole ranking.
+    """
+    best = ranked[:top]
+    recommended = next(r for r in ranked if r["attributes"] == primary["attributes"])
+    rows = [recommended, *best[::-1]]  # best at the top of the chart
     y = np.arange(len(rows))
-    colors = [ACCENT_ORANGE if r["attributes"]["fruity"] else DRIVER for r in rows]
+    colors = [
+        ACCENT_ORANGE, *(DRIVER if r["tied_with_primary"] else NOT_CLEAR for r in best[::-1])
+    ]
+    n_tied = sum(r["tied_with_primary"] for r in ranked)
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
     _prediction_intervals(ax, rows, y, colors, ci_width=5, pi_width=1.5, marker_size=50)
-    ax.set_yticks(y, [f"{r['rank']}. {profile_label(r['attributes'])}" for r in rows], fontsize=12)
+    ax.set_yticks(
+        y,
+        [
+            f"Recommended (rank {recommended['rank']}): {profile_label(primary['attributes'])}",
+            *(f"{r['rank']}. {profile_label(r['attributes'])}" for r in best[::-1]),
+        ],
+        fontsize=12,
+    )
     ax.set_xlabel("Predicted win rate (%)")
-    ax.set_title(f"Top {len(rows)} supported attribute profiles")
-    any_fruit = any(r["attributes"]["fruity"] for r in rows)
-    _footnote(fig, _interval_legend(alpha, "Orange: fruit-flavoured." if any_fruit else ""))
+    fig.suptitle(
+        f"{n_tied} of {len(ranked)} supported profiles are statistically tied "
+        "with the recommended one",
+        fontsize=20,
+        fontweight="bold",
+    )
+    _footnote(
+        fig,
+        f"Thick: {1 - alpha:.0%} CI for the average. Thin: range for one launch. "
+        "Blue: tied with the recommended profile (orange), grey: not tied. "
+        "Dashed: 100% ceiling.",
+    )
     _save(fig, path)
 
 

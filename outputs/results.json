@@ -536,6 +536,8 @@
     "n_enumerated": 512,
     "n_realistic": 240,
     "n_supported": 109,
+    "n_tied_with_primary": 89,
+    "tie_note": "A profile is tied with the primary profile when the 95% CI of the predicted gap between the two includes zero.",
     "ranked": [
       {
         "rank": 1,
@@ -555,7 +557,8 @@
         "ci_high": 100.0,
         "pi_low": 51.716883039568046,
         "pi_high": 100.0,
-        "capped": true
+        "capped": true,
+        "tied_with_primary": true
       },
       {
         "rank": 2,
@@ -575,7 +578,8 @@
         "ci_high": 100.0,
         "pi_low": 50.946088857808235,
         "pi_high": 100.0,
-        "capped": true
+        "capped": true,
+        "tied_with_primary": true
       },
       {
         "rank": 3,
@@ -595,7 +599,8 @@
         "ci_high": 100.0,
         "pi_low": 48.73385279657546,
         "pi_high": 100.0,
-        "capped": true
+        "capped": true,
+        "tied_with_primary": true
       },
       {
         "rank": 4,
@@ -615,7 +620,8 @@
         "ci_high": 96.67151206135115,
         "pi_low": 50.59029158611169,
         "pi_high": 100.0,
-        "capped": true
+        "capped": true,
+        "tied_with_primary": true
       },
       {
         "rank": 5,
@@ -635,7 +641,8 @@
         "ci_high": 97.16761052317328,
         "pi_low": 47.7720538703533,
         "pi_high": 100.0,
-        "capped": true
+        "capped": true,
+        "tied_with_primary": true
       },
       {
         "rank": 6,
@@ -655,7 +662,8 @@
         "ci_high": 97.46160331032861,
         "pi_low": 47.22896329733362,
         "pi_high": 100.0,
-        "capped": true
+        "capped": true,
+        "tied_with_primary": true
       },
       {
         "rank": 7,
@@ -675,7 +683,8 @@
         "ci_high": 85.89785810142422,
         "pi_low": 47.90871883744461,
         "pi_high": 97.84771182899979,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 8,
@@ -695,7 +704,8 @@
         "ci_high": 89.11285620952921,
         "pi_low": 45.425546759154344,
         "pi_high": 99.50408110189116,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 9,
@@ -715,7 +725,8 @@
         "ci_high": 87.72572628393235,
         "pi_low": 44.21250994556254,
         "pi_high": 98.15852568701277,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 10,
@@ -735,7 +746,8 @@
         "ci_high": 89.8761984994793,
         "pi_low": 42.64505517026922,
         "pi_high": 99.48775192465968,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 11,
@@ -755,7 +767,8 @@
         "ci_high": 84.29309577199385,
         "pi_low": 45.84590043708654,
         "pi_high": 96.10058012778732,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 12,
@@ -775,7 +788,8 @@
         "ci_high": 84.87564389059406,
         "pi_low": 45.22071440243208,
         "pi_high": 96.32351842474434,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 13,
@@ -795,7 +809,8 @@
         "ci_high": 86.46363992176585,
         "pi_low": 44.12111709381958,
         "pi_high": 97.18488719571042,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 14,
@@ -815,7 +830,8 @@
         "ci_high": 82.8120749273584,
         "pi_low": 45.267474759475405,
         "pi_high": 94.90341843377804,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 15,
@@ -835,7 +851,8 @@
         "ci_high": 81.77326753671025,
         "pi_low": 45.168897648550086,
         "pi_high": 94.17519273930446,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 16,
@@ -855,7 +872,8 @@
         "ci_high": 86.69760005140193,
         "pi_low": 41.5664657274033,
         "pi_high": 96.75639126595506,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 17,
@@ -875,7 +893,8 @@
         "ci_high": 87.03609574589996,
         "pi_low": 41.01931534711359,
         "pi_high": 96.90129390854732,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 18,
@@ -895,7 +914,8 @@
         "ci_high": 85.17244751387699,
         "pi_low": 41.59732146396305,
         "pi_high": 95.59042443311876,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 19,
@@ -915,7 +935,8 @@
         "ci_high": 86.56658787745204,
         "pi_low": 40.38823026418642,
         "pi_high": 96.39726789519794,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 20,
@@ -935,7 +956,8 @@
         "ci_high": 88.64595606645165,
         "pi_low": 38.794894492094826,
         "pi_high": 97.75237512964311,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 21,
@@ -955,7 +977,8 @@
         "ci_high": 77.9279612925566,
         "pi_low": 44.750187428840846,
         "pi_high": 91.61075566284207,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 22,
@@ -975,7 +998,8 @@
         "ci_high": 79.48785354862403,
         "pi_low": 43.763436278938215,
         "pi_high": 92.19525907504725,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 23,
@@ -995,7 +1019,8 @@
         "ci_high": 81.57247807227337,
         "pi_low": 42.52270568407421,
         "pi_high": 93.19776113226483,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 24,
@@ -1015,7 +1040,8 @@
         "ci_high": 92.95825925632877,
         "pi_low": 33.030646317274886,
         "pi_high": 100.0,
-        "capped": true
+        "capped": true,
+        "tied_with_primary": true
       },
       {
         "rank": 25,
@@ -1035,7 +1061,8 @@
         "ci_high": 83.51157185934912,
         "pi_low": 39.02192151428564,
         "pi_high": 93.71539800588177,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 26,
@@ -1055,7 +1082,8 @@
         "ci_high": 84.30692841120731,
         "pi_low": 38.185359091802766,
         "pi_high": 94.14971269066719,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 27,
@@ -1075,7 +1103,8 @@
         "ci_high": 73.84400925133903,
         "pi_low": 38.09209653964708,
         "pi_high": 86.54164199344947,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 28,
@@ -1095,7 +1124,8 @@
         "ci_high": 74.4832874234267,
         "pi_low": 37.57920084650412,
         "pi_high": 86.78449034020434,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 29,
@@ -1115,7 +1145,8 @@
         "ci_high": 74.61575637414686,
         "pi_low": 37.41321654228969,
         "pi_high": 86.81827425310942,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 30,
@@ -1135,7 +1166,8 @@
         "ci_high": 73.32419893713606,
         "pi_low": 37.53004232085573,
         "pi_high": 86.00684606045385,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 31,
@@ -1155,7 +1187,8 @@
         "ci_high": 76.36779547649252,
         "pi_low": 34.237495124807005,
         "pi_high": 87.14304876572982,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 32,
@@ -1175,7 +1208,8 @@
         "ci_high": 77.10531551562055,
         "pi_low": 33.59361517939084,
         "pi_high": 87.53847841049974,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 33,
@@ -1195,7 +1229,8 @@
         "ci_high": 78.51433271305069,
         "pi_low": 32.60705303903244,
         "pi_high": 88.40306192254862,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 34,
@@ -1215,7 +1250,8 @@
         "ci_high": 77.81801278125428,
         "pi_low": 33.025459150867164,
         "pi_high": 87.95283700197221,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 35,
@@ -1235,7 +1271,8 @@
         "ci_high": 68.25726207164033,
         "pi_low": 37.52491883731238,
         "pi_high": 83.02882224782556,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 36,
@@ -1255,7 +1292,8 @@
         "ci_high": 83.91090135379702,
         "pi_low": 28.209681179584702,
         "pi_high": 92.06089620168768,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 37,
@@ -1275,7 +1313,8 @@
         "ci_high": 70.08495872313514,
         "pi_low": 36.535377447830726,
         "pi_high": 83.61611589960977,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 38,
@@ -1295,7 +1334,8 @@
         "ci_high": 73.57479275576192,
         "pi_low": 34.55095281130362,
         "pi_high": 85.20780114466397,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 39,
@@ -1315,7 +1355,8 @@
         "ci_high": 74.35824066770243,
         "pi_low": 33.3498656044969,
         "pi_high": 85.4282881090206,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 40,
@@ -1335,7 +1376,8 @@
         "ci_high": 68.09226261537849,
         "pi_low": 35.80075757047267,
         "pi_high": 82.15059333764594,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 41,
@@ -1355,7 +1397,8 @@
         "ci_high": 77.15339822747382,
         "pi_low": 30.602967460919068,
         "pi_high": 86.905502557456,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 42,
@@ -1375,7 +1418,8 @@
         "ci_high": 69.12655997416141,
         "pi_low": 33.92579933691289,
         "pi_high": 82.02300451748417,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 43,
@@ -1395,7 +1439,8 @@
         "ci_high": 77.05077639646122,
         "pi_low": 29.24767718394629,
         "pi_high": 86.54732923339957,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 44,
@@ -1415,7 +1460,8 @@
         "ci_high": 69.30920267860472,
         "pi_low": 33.544324009830554,
         "pi_high": 82.00223210686906,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 45,
@@ -1435,7 +1481,8 @@
         "ci_high": 78.90897469717122,
         "pi_low": 27.73232525193993,
         "pi_high": 87.7795174615404,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 46,
@@ -1455,7 +1502,8 @@
         "ci_high": 78.60795258756195,
         "pi_low": 27.842425612779017,
         "pi_high": 87.5503330668694,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 47,
@@ -1475,7 +1523,8 @@
         "ci_high": 65.33114445273753,
         "pi_low": 34.778579663966084,
         "pi_high": 80.18962394798088,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 48,
@@ -1495,7 +1544,8 @@
         "ci_high": 67.96075716297915,
         "pi_low": 33.45065478898954,
         "pi_high": 81.11530108525999,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 49,
@@ -1515,7 +1565,8 @@
         "ci_high": 72.29930505043862,
         "pi_low": 29.435109424109264,
         "pi_high": 82.89007085877228,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 50,
@@ -1535,7 +1586,8 @@
         "ci_high": 72.2962901317425,
         "pi_low": 29.113912790933345,
         "pi_high": 82.80901975425077,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 51,
@@ -1555,7 +1607,8 @@
         "ci_high": 76.66119785085105,
         "pi_low": 26.06787684018446,
         "pi_high": 85.63401577172533,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 52,
@@ -1575,7 +1628,8 @@
         "ci_high": 65.08082737110698,
         "pi_low": 30.585522361488806,
         "pi_high": 78.24101416506278,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 53,
@@ -1595,7 +1649,8 @@
         "ci_high": 65.88423338308873,
         "pi_low": 29.918064481816863,
         "pi_high": 78.50622430703729,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 54,
@@ -1615,7 +1670,8 @@
         "ci_high": 63.54256191218133,
         "pi_low": 27.931266031477225,
         "pi_high": 76.2903332643335,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 55,
@@ -1635,7 +1691,8 @@
         "ci_high": 63.10499995274514,
         "pi_low": 27.841025197957816,
         "pi_high": 75.97832636015545,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 56,
@@ -1655,7 +1712,8 @@
         "ci_high": 66.4150030505841,
         "pi_low": 25.749795372010603,
         "pi_high": 77.57846890644024,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 57,
@@ -1675,7 +1733,8 @@
         "ci_high": 61.383673157844214,
         "pi_low": 28.183686245150156,
         "pi_high": 75.05731280821047,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 58,
@@ -1695,7 +1754,8 @@
         "ci_high": 67.29182702934494,
         "pi_low": 25.07878848461509,
         "pi_high": 78.04596065940864,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 59,
@@ -1715,7 +1775,8 @@
         "ci_high": 62.98231721244881,
         "pi_low": 27.177546625422586,
         "pi_high": 75.6612046902406,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 60,
@@ -1735,7 +1796,8 @@
         "ci_high": 66.40182260321953,
         "pi_low": 23.59194863764114,
         "pi_high": 77.00602708665407,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 61,
@@ -1755,7 +1817,8 @@
         "ci_high": 65.54176863819136,
         "pi_low": 24.07635635326826,
         "pi_high": 76.48980056228527,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 62,
@@ -1775,7 +1838,8 @@
         "ci_high": 65.9622062835029,
         "pi_low": 23.533940831578025,
         "pi_high": 76.66178715501974,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 63,
@@ -1795,7 +1859,8 @@
         "ci_high": 60.22650203720286,
         "pi_low": 26.467773098173133,
         "pi_high": 73.67382874967896,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 64,
@@ -1815,7 +1880,8 @@
         "ci_high": 60.40109285257575,
         "pi_low": 26.102570034220662,
         "pi_high": 73.63678407593397,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 65,
@@ -1835,7 +1901,8 @@
         "ci_high": 65.14474490101466,
         "pi_low": 23.478347173608846,
         "pi_high": 76.03996700327147,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 66,
@@ -1855,7 +1922,8 @@
         "ci_high": 65.18436508583231,
         "pi_low": 23.13556351982737,
         "pi_high": 75.98050291935549,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 67,
@@ -1875,7 +1943,8 @@
         "ci_high": 67.0266203586373,
         "pi_low": 21.81118110900104,
         "pi_high": 77.0666567925354,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 68,
@@ -1895,7 +1964,8 @@
         "ci_high": 62.578173284706935,
         "pi_low": 23.536776479128346,
         "pi_high": 74.20595032613153,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 69,
@@ -1915,7 +1985,8 @@
         "ci_high": 59.859524466470006,
         "pi_low": 24.749802491416162,
         "pi_high": 72.78940917941661,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 70,
@@ -1935,7 +2006,8 @@
         "ci_high": 63.53557063408617,
         "pi_low": 22.356258232440148,
         "pi_high": 74.55966576742085,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 71,
@@ -1955,7 +2027,8 @@
         "ci_high": 65.92243424479382,
         "pi_low": 20.071397248528786,
         "pi_high": 75.82329335683602,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 72,
@@ -1975,7 +2048,8 @@
         "ci_high": 65.86515441697877,
         "pi_low": 19.777303151412436,
         "pi_high": 75.71513971625491,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 73,
@@ -1995,7 +2069,8 @@
         "ci_high": 63.63210791991777,
         "pi_low": 21.081853444289326,
         "pi_high": 74.3010137357707,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 74,
@@ -2015,7 +2090,8 @@
         "ci_high": 64.68989973622824,
         "pi_low": 20.10800605390819,
         "pi_high": 74.87261338845437,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 75,
@@ -2035,7 +2111,8 @@
         "ci_high": 63.41082961091482,
         "pi_low": 20.715977267999737,
         "pi_high": 74.04360224108851,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 76,
@@ -2055,7 +2132,8 @@
         "ci_high": 52.47626471116551,
         "pi_low": 25.346632806239775,
         "pi_high": 69.20943156842137,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 77,
@@ -2075,7 +2153,8 @@
         "ci_high": 64.4531707737833,
         "pi_low": 19.749244153372512,
         "pi_high": 74.60808761801827,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 78,
@@ -2095,7 +2174,8 @@
         "ci_high": 54.19977915631951,
         "pi_low": 24.61138036088484,
         "pi_high": 69.54243627607885,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 79,
@@ -2115,7 +2195,8 @@
         "ci_high": 58.46176968875247,
         "pi_low": 22.756711577422788,
         "pi_high": 71.17606512626655,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 80,
@@ -2135,7 +2216,8 @@
         "ci_high": 59.23727079070192,
         "pi_low": 22.0768947761783,
         "pi_high": 71.45363418981361,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 81,
@@ -2155,7 +2237,8 @@
         "ci_high": 61.653118637806045,
         "pi_low": 20.585187862237593,
         "pi_high": 72.7071125661079,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 82,
@@ -2175,7 +2258,8 @@
         "ci_high": 62.10445616938022,
         "pi_low": 17.928429647964393,
         "pi_high": 72.38072348420944,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 83,
@@ -2195,7 +2279,8 @@
         "ci_high": 55.2390431395417,
         "pi_low": 20.214152768777414,
         "pi_high": 68.20024452048833,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 84,
@@ -2215,7 +2300,8 @@
         "ci_high": 54.74931514844284,
         "pi_low": 20.144350798967672,
         "pi_high": 67.8677987526006,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 85,
@@ -2235,7 +2321,8 @@
         "ci_high": 60.377222245741,
         "pi_low": 16.633754984550034,
         "pi_high": 70.75510689604648,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 86,
@@ -2255,7 +2342,8 @@
         "ci_high": 60.72465115420228,
         "pi_low": 13.439925412257018,
         "pi_high": 70.32531289682399,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 87,
@@ -2275,7 +2363,8 @@
         "ci_high": 57.49073653581238,
         "pi_low": 15.383715565816317,
         "pi_high": 68.27194705565735,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 88,
@@ -2295,7 +2384,8 @@
         "ci_high": 58.149133590342984,
         "pi_low": 14.664600267703833,
         "pi_high": 68.5888146160724,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 89,
@@ -2315,7 +2405,8 @@
         "ci_high": 46.819821838306254,
         "pi_low": 19.433007766581895,
         "pi_high": 63.39585204949289,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 90,
@@ -2335,7 +2426,8 @@
         "ci_high": 47.448295747902264,
         "pi_low": 19.013311577279026,
         "pi_high": 63.413300501098306,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 91,
@@ -2355,7 +2447,8 @@
         "ci_high": 53.907754474348714,
         "pi_low": 16.24455055166066,
         "pi_high": 65.96102159344235,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 92,
@@ -2375,7 +2468,8 @@
         "ci_high": 53.768885150388485,
         "pi_low": 16.11150763062734,
         "pi_high": 65.82401716808756,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 93,
@@ -2395,7 +2489,8 @@
         "ci_high": 54.73406028153729,
         "pi_low": 14.960835853554713,
         "pi_high": 66.1478861397613,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 94,
@@ -2415,7 +2510,8 @@
         "ci_high": 54.12417675112023,
         "pi_low": 13.620276276853659,
         "pi_high": 65.3321012256896,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 95,
@@ -2435,7 +2531,8 @@
         "ci_high": 56.94642674595632,
         "pi_low": 11.62005708156175,
         "pi_high": 66.96189149202574,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": true
       },
       {
         "rank": 96,
@@ -2455,7 +2552,8 @@
         "ci_high": 55.24514185636261,
         "pi_low": 12.647860447961282,
         "pi_high": 65.90226931688454,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 97,
@@ -2475,7 +2573,8 @@
         "ci_high": 48.4142893022356,
         "pi_low": 15.794455946633956,
         "pi_high": 62.33111875051041,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 98,
@@ -2495,7 +2594,8 @@
         "ci_high": 49.346093073445914,
         "pi_low": 15.115339104216893,
         "pi_high": 62.60798785523003,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 99,
@@ -2515,7 +2615,8 @@
         "ci_high": 52.81916012692177,
         "pi_low": 12.32124598721062,
         "pi_high": 64.02874133831332,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 100,
@@ -2535,7 +2636,8 @@
         "ci_high": 49.096187054829585,
         "pi_low": 13.627846247422575,
         "pi_high": 61.89533827270248,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 101,
@@ -2555,7 +2657,8 @@
         "ci_high": 54.388197782852785,
         "pi_low": 8.981004718143325,
         "pi_high": 64.38583531120898,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 102,
@@ -2575,7 +2678,8 @@
         "ci_high": 44.21813107815885,
         "pi_low": 13.529368902345848,
         "pi_high": 59.01066832160757,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 103,
@@ -2595,7 +2699,8 @@
         "ci_high": 46.147901683025765,
         "pi_low": 12.498764528477878,
         "pi_high": 59.63902495777809,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 104,
@@ -2615,7 +2720,8 @@
         "ci_high": 49.96693237406318,
         "pi_low": 6.429093604516119,
         "pi_high": 60.39383160174335,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 105,
@@ -2635,7 +2741,8 @@
         "ci_high": 44.667523265138996,
         "pi_low": 9.002337373439058,
         "pi_high": 57.39603276511896,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 106,
@@ -2655,7 +2762,8 @@
         "ci_high": 44.82762684073422,
         "pi_low": 8.627930288198531,
         "pi_high": 57.368192112662044,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 107,
@@ -2675,7 +2783,8 @@
         "ci_high": 48.99093553661607,
         "pi_low": 2.8170646638125945,
         "pi_high": 58.82257080695336,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 108,
@@ -2695,7 +2804,8 @@
         "ci_high": 39.93941148901569,
         "pi_low": 7.064551495192369,
         "pi_high": 53.7482811701747,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       },
       {
         "rank": 109,
@@ -2715,50 +2825,63 @@
         "ci_high": 40.94005156301192,
         "pi_low": 6.34738580045757,
         "pi_high": 54.063199127212044,
-        "capped": false
+        "capped": false,
+        "tied_with_primary": false
       }
     ]
   },
   "recommendation": {
+    "rule": "The primary profile is the best supported profile made only of drivers: attributes whose positive effect survives the multiple-testing correction. Every other attribute is a design choice the data does not decide.",
+    "attribute_evidence": {
+      "chocolate": "driver",
+      "fruity": "tentative",
+      "caramel": "open",
+      "peanuty_almondy": "tentative",
+      "nougat": "open",
+      "crisped_rice_wafer": "open",
+      "hard": "open",
+      "bar": "open",
+      "pluribus": "open"
+    },
     "primary": {
-      "rank": 1,
+      "rank": 48,
       "attributes": {
         "chocolate": 1,
         "fruity": 0,
-        "caramel": 1,
-        "peanuty_almondy": 1,
-        "nougat": 1,
-        "crisped_rice_wafer": 1,
+        "caramel": 0,
+        "peanuty_almondy": 0,
+        "nougat": 0,
+        "crisped_rice_wafer": 0,
         "hard": 0,
-        "bar": 1,
+        "bar": 0,
         "pluribus": 0
       },
-      "estimate": 81.76277328733242,
-      "ci_low": 60.57808864630819,
-      "ci_high": 100.0,
-      "pi_low": 51.716883039568046,
-      "pi_high": 100.0,
-      "capped": true,
+      "estimate": 57.28297793712476,
+      "ci_low": 46.605198711270376,
+      "ci_high": 67.96075716297915,
+      "pi_low": 33.45065478898954,
+      "pi_high": 81.11530108525999,
+      "capped": false,
       "benchmarks": [
         {
-          "candy": "Snickers Crisper",
-          "attributes_differing": 1,
-          "win_rate": 59.529251
+          "candy": "Tootsie Roll Juniors",
+          "attributes_differing": 0,
+          "win_rate": 43.068897
         },
         {
-          "candy": "Snickers",
+          "candy": "Reese's Peanut Butter cup",
           "attributes_differing": 1,
-          "win_rate": 76.673782
+          "win_rate": 84.18029
         },
         {
-          "candy": "Baby Ruth",
+          "candy": "M&M's",
           "attributes_differing": 1,
-          "win_rate": 56.914547
+          "win_rate": 66.574585
         }
       ],
-      "n_attributes": 6,
+      "n_attributes": 1,
       "max_attributes_on_a_real_candy": 5,
-      "nearest_candy_distance": 1
+      "nearest_candy_distance": 0
     },
     "fruit_flavoured": {
       "rank": 32,
@@ -2801,9 +2924,9 @@
       "nearest_candy_distance": 1
     },
     "gap": {
-      "estimate": 21.19672649238713,
-      "ci_low": 0.25923434644316856,
-      "ci_high": 42.13421863833109
+      "estimate": -3.2830688578205276,
+      "ci_low": -25.584859402090977,
+      "ci_high": 19.018721686449922
     }
   },
   "robustness": {

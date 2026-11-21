@@ -56,10 +56,21 @@ judgement calls flagged. It is used only as a supplementary check; see
    model at a fixed sugar level (the median, or the favourable quartile if
    sugar's interval excludes zero) and the median price level, with a 95%
    interval for the average and a 95% prediction interval for a single launch,
-   capped to the 0 to 100 scale. The **primary profile** is the best supported
-   profile; the **fruit-flavoured profile** is the best one with fruity = 1; the
-   gap between them answers the cookie-versus-gummy debate. Each comes with
-   **benchmark candies**: the existing candies closest to it.
+   capped to the 0 to 100 scale.
+
+   The profile with the highest prediction is *not* recommended. It switches
+   on every attribute with a positive coefficient, however weak the evidence,
+   so it is largely picked by noise. Instead each attribute gets an evidence
+   tier: **driver** (survives the Holm correction), **tentative** (its own 95%
+   interval excludes zero, but it does not survive) or **open** (the data does
+   not decide; a free design choice). The **primary profile** is the best
+   supported profile made only of drivers. Every profile whose predicted gap
+   to the primary profile has an interval that includes zero is flagged as
+   tied with it, and the ties are counted.
+
+   The **fruit-flavoured profile** is the best one with fruity = 1; the gap
+   between it and the primary profile answers the cookie-versus-gummy debate.
+   Each comes with **benchmark candies**: the existing candies closest to it.
 
 ### Modelling uses only NumPy and SciPy
 
@@ -120,7 +131,7 @@ read without running anything; `make all` rebuilds it:
 | `figures/coefficients.png` | Effect of each attribute and level on win rate, Holm survivors highlighted |
 | `figures/attribute_comparison.png` | Average win rate of candies with vs without each attribute |
 | `figures/robustness.png` | HC3, bootstrap and logit intervals side by side |
-| `figures/ranked_profiles.png` | Top supported profiles with intervals |
+| `figures/ranked_profiles.png` | Top supported profiles against the recommended one, ties highlighted |
 | `figures/recommendation_gap.png` | Primary vs fruit-flavoured profile and the gap between them |
 | `appendix/vif.csv` | Variance inflation factor per predictor |
 | `appendix/interaction_support.csv` | How many candies have both, or only one, of each interaction's attributes |
@@ -155,6 +166,10 @@ tests/
 - Win rate is relative: a candy's score depends on what it was matched
   against, and it says nothing about sales, price willingness or repeat
   purchase.
-- The recommended profiles are predictions from an additive model; profiles
-  that stack many attributes, or sit an attribute away from any real candy,
-  are extrapolations and are flagged as such in the bundle.
+- Predictions come from an additive model. Profiles that stack many
+  attributes, or sit an attribute away from any real candy, are extrapolations
+  and are flagged as such in the bundle; this is why the top-ranked profile is
+  not the recommendation.
+- The data confirms one driver (chocolate). Most supported profiles cannot be
+  told apart from the recommended one, so the remaining attributes are design
+  choices, not findings.

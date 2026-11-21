@@ -3,6 +3,11 @@
 A profile is a 0/1 value for every attribute. Only realistic profiles that sit
 within one attribute of an existing candy (supported profiles) are considered,
 so the recommendation never strays far from products consumers have rated.
+
+The recommended (primary) profile switches on only confirmed drivers. The
+profile with the highest prediction is not recommended: it collects every
+attribute with a positive coefficient, however weak the evidence, so it is
+largely picked by noise.
 """
 
 from __future__ import annotations
@@ -34,6 +39,13 @@ REALISM_RULES = (
 SUPPORT_DISTANCE = 1  # max attributes a profile may differ from some real candy
 BENCHMARK_COUNT = 3
 WIN_RATE_SCALE = (0.0, 100.0)
+
+DRIVER, TENTATIVE, OPEN = "driver", "tentative", "open"
+PRIMARY_RULE = (
+    "The primary profile is the best supported profile made only of drivers: "
+    "attributes whose positive effect survives the multiple-testing correction. "
+    "Every other attribute is a design choice the data does not decide."
+)
 
 
 @dataclass(frozen=True)
@@ -119,10 +131,48 @@ def rank(profiles: pd.DataFrame, scorer: ProfileScorer) -> list[dict]:
     return [{"rank": i + 1, **row} for i, row in enumerate(rows)]
 
 
-def recommend(ranked: list[dict], scorer: ProfileScorer, candies: pd.DataFrame) -> dict:
+def evidence_tiers(model: FitResult, confirmed: set[str]) -> dict[str, str]:
+    """How well the data supports each attribute's effect.
+
+    ``driver``: in ``confirmed`` (significant after multiple-testing
+    correction). ``tentative``: its own CI excludes zero, but it is not
+    confirmed. ``open``: the data does not decide, so it is a free design choice.
+    """
+    tiers = {}
+    for attribute in ATTRIBUTES:
+        excludes_zero = model.ci_low[attribute] > 0 or model.ci_high[attribute] < 0
+        tiers[attribute] = (
+            DRIVER if attribute in confirmed else TENTATIVE if excludes_zero else OPEN
+        )
+    return tiers
+
+
+def mark_ties(ranked: list[dict], scorer: ProfileScorer, primary: dict[str, int]) -> list[dict]:
+    """Flag each ranked profile whose predicted gap to the primary profile has
+    a CI that includes zero: the data cannot tell the two apart."""
+
+    def tied(attributes: dict[str, int]) -> bool:
+        gap = scorer.gap(attributes, primary)
+        return bool(gap.ci_low <= 0 <= gap.ci_high)
+
+    return [{**row, "tied_with_primary": tied(row["attributes"])} for row in ranked]
+
+
+def recommend(
+    ranked: list[dict], scorer: ProfileScorer, candies: pd.DataFrame, tiers: dict[str, str]
+) -> dict:
     """Primary and fruit-flavoured profiles, the gap between them, benchmark
-    candies, and how far each recommendation extrapolates beyond real candies."""
-    primary = ranked[0]
+    candies, and how far each recommendation extrapolates beyond real candies.
+
+    The primary profile is the best supported profile that switches on nothing
+    but drivers with a positive effect.
+    """
+    favourable = {a for a in ATTRIBUTES if tiers[a] == DRIVER and scorer.model.coef[a] > 0}
+    primary = next(
+        row
+        for row in ranked
+        if all(a in favourable for a, on in row["attributes"].items() if on)
+    )
     fruit = next(row for row in ranked if row["attributes"]["fruity"] == 1)
     most_on_a_real_candy = int(candies[ATTRIBUTES].sum(axis=1).max())
 
@@ -138,6 +188,8 @@ def recommend(ranked: list[dict], scorer: ProfileScorer, candies: pd.DataFrame) 
 
     gap = scorer.gap(primary["attributes"], fruit["attributes"])
     return {
+        "rule": PRIMARY_RULE,
+        "attribute_evidence": tiers,
         "primary": describe(primary),
         "fruit_flavoured": describe(fruit),
         "gap": asdict(gap),

@@ -25,8 +25,10 @@ from candy.profiles import (
     ProfileScorer,
     all_profiles,
     choose_levels,
+    evidence_tiers,
     is_realistic,
     is_supported,
+    mark_ties,
     rank,
     recommend,
 )
@@ -96,9 +98,13 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     profiles = all_profiles()
     realistic = is_realistic(profiles)
     supported = realistic & is_supported(profiles, candies)
-    ranked = rank(profiles[supported], scorer)
-    recommendation = recommend(ranked, scorer, candies)
     holm_results = _holm_table(main_model, family=PREDICTORS)
+    survivors = set(holm_results.index[holm_results["survives"]])
+    ranked = rank(profiles[supported], scorer)
+    recommendation = recommend(
+        ranked, scorer, candies, evidence_tiers(main_model, confirmed=survivors)
+    )
+    ranked = mark_ties(ranked, scorer, recommendation["primary"]["attributes"])
     comparison = _attribute_comparison_table(candies)
 
     bundle = {
@@ -135,6 +141,9 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
             "n_enumerated": len(profiles),
             "n_realistic": int(realistic.sum()),
             "n_supported": int(supported.sum()),
+            "n_tied_with_primary": sum(row["tied_with_primary"] for row in ranked),
+            "tie_note": "A profile is tied with the primary profile when the 95% CI "
+            "of the predicted gap between the two includes zero.",
             "ranked": ranked,
         },
         "recommendation": recommendation,
@@ -169,7 +178,6 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
 
     figures = out_dir / FIGURES_DIR
     win_rate_distribution_chart(candies, figures / "win_rate_distribution.png")
-    survivors = set(holm_results.index[holm_results["survives"]])
     coefficient_chart(main_model.table(), survivors, ALPHA, figures / "coefficients.png")
     attribute_comparison_chart(comparison, ALPHA, figures / "attribute_comparison.png")
     hc3 = main_model.effects_in_points()
@@ -185,7 +193,13 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
         figures / "robustness.png",
     )
 
-    ranked_profiles_chart(ranked, RANKED_FIGURE_TOP, ALPHA, figures / "ranked_profiles.png")
+    ranked_profiles_chart(
+        ranked,
+        recommendation["primary"],
+        RANKED_FIGURE_TOP,
+        ALPHA,
+        figures / "ranked_profiles.png",
+    )
     recommendation_gap_chart(
         recommendation["primary"],
         recommendation["fruit_flavoured"],
