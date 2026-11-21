@@ -69,7 +69,9 @@ cookie-versus-gummy debate; see `data/derived/README.md` for the coding rule.
    tied with it, and the ties are counted.
 
    The primary profile comes with **benchmark candies**: the existing candies
-   closest to it.
+   closest to it. Because many candies can tie for closest, the bundle also
+   gives the count, mean and range of win rate of every candy within one
+   attribute of it, as a market check on the prediction.
 7. **Cookie versus gummy.** The debate is answered with direct differences
    from the model that includes the gummy attribute: a chocolate product, and
    a chocolate product with a cookie component, each minus a fruity gummy,

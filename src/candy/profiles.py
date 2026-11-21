@@ -196,6 +196,7 @@ def recommend(
         return {
             **row,
             "benchmarks": marks,
+            "nearby_candies": nearby_candies(row["attributes"], candies),
             "n_attributes": sum(row["attributes"].values()),
             "max_attributes_on_a_real_candy": most_on_a_real_candy,
             "nearest_candy_distance": marks[0]["attributes_differing"],
@@ -230,6 +231,20 @@ def compare_cookie_and_gummy(scorer: ProfileScorer) -> dict:
             for name, row in products.items()
         },
         "differences": dict(sorted(differences.items())),
+    }
+
+
+def nearby_candies(attributes: dict[str, int], candies: pd.DataFrame) -> dict:
+    """Win rates of every real candy within SUPPORT_DISTANCE attributes of the
+    profile: the market evidence a prediction can be checked against."""
+    distance = _attribute_distances(pd.DataFrame([attributes]), candies)[0]
+    win_rates = candies.loc[distance <= SUPPORT_DISTANCE, "win_rate"]
+    return {
+        "max_attributes_differing": SUPPORT_DISTANCE,
+        "n": int(len(win_rates)),
+        "mean_win_rate": float(win_rates.mean()),
+        "min_win_rate": float(win_rates.min()),
+        "max_win_rate": float(win_rates.max()),
     }
 
 

@@ -525,6 +525,28 @@ def test_recommendations_name_two_or_three_real_benchmark_candies(bundle):
     assert distances == sorted(distances)
 
 
+def test_primary_profile_summarises_every_candy_within_one_attribute(bundle):
+    # Oracle: recompute from the raw CSV. On this data 14 candies sit within
+    # one attribute of "chocolate only", averaging about 56.6.
+    raw = pd.read_csv(RAW)
+    raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
+    raw_columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
+                   "crispedricewafer", "hard", "bar", "pluribus"]
+    rec = bundle["recommendation"]["primary"]
+    profile = np.array([rec["attributes"][a] for a in ATTRIBUTES])
+    near = raw.loc[(raw[raw_columns].to_numpy() != profile).sum(axis=1) <= 1, "winpercent"]
+
+    nearby = rec["nearby_candies"]
+    assert nearby["max_attributes_differing"] == 1
+    assert nearby["n"] == len(near) == 14
+    assert nearby["mean_win_rate"] == pytest.approx(near.mean())
+    assert nearby["min_win_rate"] == pytest.approx(near.min())
+    assert nearby["max_win_rate"] == pytest.approx(near.max())
+    assert {m["candy"] for m in rec["benchmarks"]} <= set(
+        raw.loc[near.index, "competitorname"]
+    )
+
+
 def _profile_rows(bundle) -> list[dict]:
     return [
         *bundle["profiles"]["ranked"],

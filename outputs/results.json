@@ -2879,6 +2879,13 @@
           "win_rate": 66.574585
         }
       ],
+      "nearby_candies": {
+        "max_attributes_differing": 1,
+        "n": 14,
+        "mean_win_rate": 56.62346071428572,
+        "min_win_rate": 34.722,
+        "max_win_rate": 84.18029
+      },
       "n_attributes": 1,
       "max_attributes_on_a_real_candy": 5,
       "nearest_candy_distance": 0
