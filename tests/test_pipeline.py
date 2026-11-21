@@ -308,7 +308,7 @@ def test_final_model_is_the_main_model_plus_every_retained_interaction(bundle):
 def test_gummy_check_adds_the_gummy_attribute_to_the_main_model(bundle):
     check = bundle["robustness"]["gummy"]
 
-    assert check["n_gummy"] == 12  # approved coding: 12 of 83 candies
+    assert check["n_gummy"] == 11  # approved coding: 11 of 83 candies
     assert check["n_obs"] == 83
     assert [row["term"] for row in check["coefficients"]] == [*MAIN_TERMS, "gummy"]
 
@@ -336,7 +336,7 @@ def test_gummy_coefficient_matches_an_independent_least_squares_fit(bundle):
 def test_gummy_check_lists_the_judgement_calls_for_the_appendix(bundle):
     check = bundle["robustness"]["gummy"]
 
-    assert check["n_unclear"] == 10
+    assert check["n_unclear"] == 11
     assert "Swedish Fish" in check["unclear_candies"]
     assert "Starburst" in check["unclear_candies"]
 

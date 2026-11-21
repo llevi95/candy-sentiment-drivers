@@ -4,4 +4,4 @@
 - Sugar level and price level are percentile ranks within the dataset (0 to 1), not grams of sugar or prices.
 - The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source documentation) is analysed as the peanut/almond attribute.
 - Only 7 candies have nougat and 7 have crisped rice/wafer/cookie, so those effects carry wide intervals.
-- Gummy is a hand-coded attribute (12 of 83 candies; 10 judgement calls flagged) used only as a supplementary check.
+- Gummy is a hand-coded attribute (11 of 83 candies; 11 judgement calls flagged) used only as a supplementary check.

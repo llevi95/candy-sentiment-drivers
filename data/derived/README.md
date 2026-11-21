@@ -16,5 +16,6 @@ gummy question alongside the fruity attribute.
 
 Coding rule: texture decides, not ingredient. Starch-based chews with a
 gummy texture (e.g. Sour Patch Kids, Swedish Fish) count as gummy;
-taffy, licorice, fruit chews, caramel and gum do not, even when the
-recipe contains gelatin (e.g. Starburst).
+taffy, licorice, fruit chews, shelled jelly candies (Mike & Ike, Chewey
+Lemonhead), caramel and gum do not, even when the recipe contains
+gelatin (e.g. Starburst).
