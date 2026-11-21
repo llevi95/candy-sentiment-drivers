@@ -9,7 +9,7 @@ import pandas as pd
 from scipy import stats
 
 from candy.data import ATTRIBUTES, PREDICTORS, load_candies
-from candy.estimators import Bootstrap, FitResult, fit, holm
+from candy.estimators import Bootstrap, FitResult, Target, fit, holm
 from candy.figures import attribute_comparison_chart, coefficient_chart, robustness_chart
 
 BUNDLE_NAME = "results.json"
@@ -33,6 +33,7 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
     main_model = _fit_main(candies, bootstrap_draws=BOOTSTRAP_DRAWS, seed=seed)
     coins_included = _fit_main(data.with_coins)
     logit_model = _fit_main(candies, target="logit")
+    coin_shift = coins_included.coef - main_model.coef
 
     holm_results = _holm_table(main_model, family=PREDICTORS)
     comparison = _attribute_comparison_table(candies)
@@ -53,10 +54,20 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
         },
         "robustness": {
             "bootstrap": _bootstrap_section(main_model.bootstrap),
-            "coins_included": _model_section(coins_included, target="win_rate"),
+            "coins_included": {
+                **_model_section(coins_included, target="win_rate"),
+                "shift_vs_main": coin_shift.to_dict(),
+                "max_abs_shift_predictors": float(coin_shift[PREDICTORS].abs().max()),
+            },
             "logit": {
                 **_model_section(logit_model, target="logit_win_rate"),
                 "effects_in_points": _records(logit_model.effects_in_points(), "term"),
+                "effects_note": (
+                    "Average marginal effects in win-rate points: discrete 0-to-1 "
+                    "change for attributes, mean derivative for sugar and price "
+                    "level. Intervals rescale the logit-scale intervals by a fixed "
+                    "factor, ignoring that factor's own uncertainty."
+                ),
             },
         },
     }
@@ -65,16 +76,16 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
     survivors = set(holm_results.index[holm_results["survives"]])
     coefficient_chart(main_model.table(), survivors, ALPHA, figures / "coefficients.png")
     attribute_comparison_chart(comparison, ALPHA, figures / "attribute_comparison.png")
-    boot = main_model.bootstrap
+    hc3 = main_model.effects_in_points()
     robustness_chart(
         {
-            "OLS, HC3 robust CI": main_model.effects_in_points(),
-            "OLS, bootstrap CI": main_model.effects_in_points().assign(
-                ci_low=boot.ci_low, ci_high=boot.ci_high
-            ),
+            "OLS, HC3 robust CI": hc3,
+            "OLS, bootstrap CI": hc3.assign(**main_model.bootstrap.table().loc[hc3.index]),
             "Logit win rate": logit_model.effects_in_points(),
         },
         ALPHA,
+        "Logit effects are average marginal effects in win-rate points; "
+        "their intervals ignore uncertainty in the conversion.",
         figures / "robustness.png",
     )
 
@@ -82,14 +93,22 @@ def run(raw_csv: Path, out_dir: Path, seed: int = SEED) -> dict:
     return bundle
 
 
-def _fit_main(entries: pd.DataFrame, **options) -> FitResult:
+def _fit_main(
+    entries: pd.DataFrame,
+    *,
+    target: Target = "identity",
+    bootstrap_draws: int | None = None,
+    seed: int | None = None,
+) -> FitResult:
     """Main model: win rate on the attributes plus sugar and price level, HC3."""
     return fit(
         entries[PREDICTORS].to_numpy(),
         entries["win_rate"].to_numpy(),
         PREDICTORS,
         cov="hc3",
-        **options,
+        target=target,
+        bootstrap_draws=bootstrap_draws,
+        seed=seed,
     )
 
 
@@ -108,14 +127,13 @@ def _model_section(result: FitResult, target: str) -> dict:
 
 
 def _bootstrap_section(boot: Bootstrap) -> dict:
-    intervals = pd.DataFrame({"ci_low": boot.ci_low, "ci_high": boot.ci_high})
     return {
         "method": "case resampling, percentile intervals",
         "seed": boot.seed,
         "draws": boot.draws,
         "discarded": boot.discarded,
         "alpha": ALPHA,
-        "results": _records(intervals, "term"),
+        "results": _records(boot.table(), "term"),
     }
 
 

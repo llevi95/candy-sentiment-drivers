@@ -209,3 +209,17 @@ def test_two_runs_with_the_same_seed_produce_identical_bundles(tmp_path):
     first = (tmp_path / "first" / "results.json").read_bytes()
     assert (tmp_path / "second" / "results.json").read_bytes() == first
     assert (tmp_path / "other" / "results.json").read_bytes() != first
+
+
+def test_coins_included_check_states_how_far_each_coefficient_moved(bundle):
+    coins = bundle["robustness"]["coins_included"]
+    main = {row["term"]: row["coef"] for row in bundle["main_model"]["coefficients"]}
+    with_coins = {row["term"]: row["coef"] for row in coins["coefficients"]}
+
+    shifts = coins["shift_vs_main"]
+    assert list(shifts) == MAIN_TERMS
+    for term in MAIN_TERMS:
+        assert shifts[term] == pytest.approx(with_coins[term] - main[term])
+    assert coins["max_abs_shift_predictors"] == pytest.approx(
+        max(abs(shifts[term]) for term in MAIN_TERMS[1:])
+    )

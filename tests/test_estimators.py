@@ -282,3 +282,27 @@ def test_bootstrap_redraws_resamples_that_lose_a_rare_attribute():
 
     assert boot.discarded > 0
     assert np.all(np.isfinite(boot.ci_low)) and np.all(np.isfinite(boot.ci_high))
+
+
+def test_logit_effects_in_points_use_the_discrete_change_for_binary_predictors():
+    # Oracle: switch the 0/1 predictor on, then off, for every observation and
+    # average the difference in back-transformed predicted win rate.
+    rng = np.random.default_rng(12)
+    x = rng.normal(size=120)
+    dummy = (rng.uniform(size=120) < 0.4).astype(float)
+    X = np.column_stack([x, dummy])
+    win_rate = 100 / (1 + np.exp(-(-0.5 + 0.3 * x + 1.5 * dummy))) + rng.normal(size=120)
+    names = ["x", "dummy"]
+    result = fit(X, win_rate, names=names, target="logit")
+
+    def predict(design: np.ndarray) -> np.ndarray:
+        z = result.coef["intercept"] + design @ result.coef[names].to_numpy()
+        return 100 / (1 + np.exp(-z))
+
+    on, off = X.copy(), X.copy()
+    on[:, 1], off[:, 1] = 1.0, 0.0
+    discrete = np.mean(predict(on) - predict(off))
+
+    effects = result.effects_in_points()
+    assert effects.loc["dummy", "coef"] == pytest.approx(discrete, rel=1e-10)
+    assert effects.loc["dummy", "ci_low"] < discrete < effects.loc["dummy", "ci_high"]

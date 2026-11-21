@@ -34,6 +34,10 @@ class Bootstrap:
     seed: int
     discarded: int
 
+    def table(self) -> pd.DataFrame:
+        """Percentile interval table with one row per term."""
+        return pd.DataFrame({"ci_low": self.ci_low, "ci_high": self.ci_high})
+
 
 @dataclass(frozen=True)
 class FitResult:
@@ -55,23 +59,38 @@ class FitResult:
     target: Target
     fitted: np.ndarray
     bootstrap: Bootstrap | None
+    predictors: np.ndarray
 
     def effects_in_points(self) -> pd.DataFrame:
         """Each predictor's effect, CI included, in points of win rate.
 
-        For a logit target this is the average marginal effect: the logit-scale
-        coefficient times the mean of 100 * p(1 - p) over the fitted win rates.
-        The scale factor is treated as fixed, so the intervals are the
-        logit-scale intervals rescaled. For an identity target the coefficients
-        are already in points.
+        For an identity target the coefficients are already in points. For a
+        logit target this is the average marginal effect over the sample: the
+        mean change in predicted win rate when a 0/1 predictor switches from 0
+        to 1 for every observation, or the mean derivative for a continuous
+        predictor. Each interval is the logit-scale interval rescaled by the
+        same factor, which is treated as fixed (its own uncertainty is ignored).
         """
-        if self.target == "logit":
-            share = self.fitted / 100
-            scale = 100 * float(np.mean(share * (1 - share)))
-        else:
-            scale = 1.0
-        table = self.table().drop(index=INTERCEPT)
-        return table[["coef", "ci_low", "ci_high"]] * scale
+        table = self.table().drop(index=INTERCEPT)[["coef", "ci_low", "ci_high"]]
+        if self.target == "identity":
+            return table
+        scale = pd.Series(
+            [self._points_per_logit_unit(j) for j in range(self.predictors.shape[1])],
+            index=table.index,
+        )
+        return table.mul(scale, axis=0)
+
+    def _points_per_logit_unit(self, j: int) -> float:
+        column = self.predictors[:, j]
+        beta = self.coef.iloc[j + 1]
+        if np.isin(column, (0, 1)).all() and beta != 0:
+            linear = special.logit(self.fitted / 100)
+            switched_on = linear + beta * (1 - column)
+            switched_off = linear - beta * column
+            change = 100 * (special.expit(switched_on) - special.expit(switched_off))
+            return float(np.mean(change)) / beta
+        share = self.fitted / 100
+        return 100 * float(np.mean(share * (1 - share)))
 
     def table(self) -> pd.DataFrame:
         """Coefficient table with one row per term."""
@@ -170,6 +189,7 @@ def fit(
         vif=pd.Series(_vifs(X), index=names),
         target=target,
         fitted=100 * special.expit(linear_fit) if target == "logit" else linear_fit,
+        predictors=X,
         bootstrap=(
             None
             if bootstrap_draws is None
