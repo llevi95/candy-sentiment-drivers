@@ -330,3 +330,62 @@ def test_an_observation_with_leverage_one_is_rejected_with_a_clear_error():
 
     with pytest.raises(EstimationError, match="leverage"):
         fit(X, rng.normal(size=20), names=["x", "lone"], cov="hc3")
+
+
+def test_prediction_matches_textbook_simple_regression_intervals():
+    # Textbook (classical OLS) formulas at a new point x0:
+    #   mean CI: yhat +/- t * s * sqrt(1/n + (x0 - xbar)^2 / Sxx)
+    #   PI:      yhat +/- t * s * sqrt(1 + 1/n + (x0 - xbar)^2 / Sxx)
+    rng = np.random.default_rng(15)
+    x = rng.uniform(0, 10, size=30)
+    y = 4.0 + 0.7 * x + rng.normal(scale=1.5, size=30)
+    ref = stats.linregress(x, y)
+    n, x0 = len(x), 8.5
+    s = np.sqrt(np.sum((y - ref.intercept - ref.slope * x) ** 2) / (n - 2))
+    leverage = 1 / n + (x0 - x.mean()) ** 2 / np.sum((x - x.mean()) ** 2)
+    t = stats.t.ppf(0.975, n - 2)
+    yhat = ref.intercept + ref.slope * x0
+
+    pred = fit(x[:, None], y, names=["x"], cov="classical").predict({"x": x0})
+
+    assert pred.estimate == pytest.approx(yhat)
+    assert (pred.ci_low, pred.ci_high) == pytest.approx(
+        (yhat - t * s * np.sqrt(leverage), yhat + t * s * np.sqrt(leverage))
+    )
+    assert (pred.pi_low, pred.pi_high) == pytest.approx(
+        (yhat - t * s * np.sqrt(1 + leverage), yhat + t * s * np.sqrt(1 + leverage))
+    )
+
+
+@pytest.mark.parametrize("target", ["identity", "logit"])
+def test_prediction_interval_contains_and_is_strictly_wider_than_mean_ci(target):
+    rng = np.random.default_rng(16)
+    X = rng.normal(size=(50, 2))
+    win_rate = np.clip(50 + 10 * X[:, 0] - 5 * X[:, 1] + rng.normal(scale=8, size=50), 1, 99)
+
+    result = fit(X, win_rate, names=["a", "b"], cov="hc3", target=target)
+    pred = result.predict({"a": 0.5, "b": -1.0})
+
+    assert pred.pi_low < pred.ci_low < pred.estimate < pred.ci_high < pred.pi_high
+    if target == "logit":
+        assert 0 < pred.pi_low and pred.pi_high < 100
+
+
+def test_prediction_rejects_rows_with_missing_or_unknown_predictors():
+    result = fit(HC3_X, HC3_Y, names=["a", "b"])
+
+    with pytest.raises(ValueError, match="exactly the predictors"):
+        result.predict({"a": 1.0})
+    with pytest.raises(ValueError, match="exactly the predictors"):
+        result.predict({"a": 1.0, "b": 0.0, "c": 2.0})
+
+
+def test_difference_between_two_rows_has_the_coefficient_ci_when_one_dummy_flips():
+    # Rows that differ only in one predictor by one unit: the difference in
+    # predictions is that predictor's coefficient, with that coefficient's CI.
+    result = fit(HC3_X, HC3_Y, names=["a", "b"], cov="hc3")
+
+    diff = result.predict_difference({"a": 3.0, "b": 1.0}, {"a": 3.0, "b": 0.0})
+
+    assert diff.estimate == pytest.approx(0.2025)
+    assert (diff.ci_low, diff.ci_high) == pytest.approx((-0.42771794246, 0.83271794246))

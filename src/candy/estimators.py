@@ -7,6 +7,7 @@ statistics library.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Literal
 
@@ -46,6 +47,27 @@ class Bootstrap:
 
 
 @dataclass(frozen=True)
+class Prediction:
+    """Predicted value for one new row, on the reporting scale (win rate for a
+    logit target), with a CI for the mean and a prediction interval."""
+
+    estimate: float
+    ci_low: float
+    ci_high: float
+    pi_low: float
+    pi_high: float
+
+
+@dataclass(frozen=True)
+class Difference:
+    """Difference between the predicted means of two rows, with its CI."""
+
+    estimate: float
+    ci_low: float
+    ci_high: float
+
+
+@dataclass(frozen=True)
 class FitResult:
     """Coefficients and inference of a fitted linear model, indexed by term name."""
 
@@ -66,6 +88,49 @@ class FitResult:
     fitted: np.ndarray
     bootstrap: Bootstrap | None
     predictors: np.ndarray
+    vcov: pd.DataFrame
+    residual_variance: float
+    alpha: float
+
+    def predict(self, row: Mapping[str, float]) -> Prediction:
+        """Predict one new row given as {predictor name: value}.
+
+        The mean CI uses the fit's coefficient covariance (HC3 or classical);
+        the prediction interval adds the residual variance for a single new
+        observation. Both use the t distribution on the residual degrees of
+        freedom. For a logit target all values are back-transformed to 0-100.
+        """
+        x = self._design_row(row)
+        estimate = float(x @ self.coef.to_numpy())
+        mean_var = float(x @ self.vcov.to_numpy() @ x)
+        crit = stats.t.ppf(1 - self.alpha / 2, self.df_resid)
+        ci_half = crit * np.sqrt(mean_var)
+        pi_half = crit * np.sqrt(mean_var + self.residual_variance)
+        values = np.array(
+            [estimate, estimate - ci_half, estimate + ci_half, estimate - pi_half, estimate + pi_half]
+        )
+        if self.target == "logit":
+            values = 100 * special.expit(values)
+        return Prediction(*(float(v) for v in values))
+
+    def predict_difference(self, row_a: Mapping[str, float], row_b: Mapping[str, float]) -> Difference:
+        """Predicted mean of ``row_a`` minus that of ``row_b``, with a CI from
+        the coefficient covariance. Identity target only: on a logit target the
+        gap in win-rate points is not linear in the coefficients."""
+        if self.target != "identity":
+            raise ValueError("prediction differences need an identity target")
+        d = self._design_row(row_a) - self._design_row(row_b)
+        estimate = float(d @ self.coef.to_numpy())
+        half = stats.t.ppf(1 - self.alpha / 2, self.df_resid) * np.sqrt(
+            float(d @ self.vcov.to_numpy() @ d)
+        )
+        return Difference(estimate, estimate - half, estimate + half)
+
+    def _design_row(self, row: Mapping[str, float]) -> np.ndarray:
+        names = list(self.coef.index.drop(INTERCEPT))
+        if set(row) != set(names):
+            raise ValueError(f"row must give exactly the predictors {names}")
+        return np.array([1.0, *(float(row[name]) for name in names)])
 
     def effects_in_points(self) -> pd.DataFrame:
         """Each predictor's effect, CI included, in points of win rate.
@@ -208,6 +273,9 @@ def fit(
         target=target,
         fitted=100 * special.expit(linear_fit) if target == "logit" else linear_fit,
         predictors=X,
+        vcov=pd.DataFrame(vcov, index=terms, columns=terms),
+        residual_variance=float(resid @ resid / df_resid),
+        alpha=alpha,
         bootstrap=(
             None
             if bootstrap_draws is None
