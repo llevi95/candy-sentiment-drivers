@@ -30,6 +30,10 @@ cookie-versus-gummy debate; see `data/derived/README.md` for the coding rule.
 
 ## Approach
 
+This is the summary; [PROCESS_CODE.ipynb](PROCESS_CODE.ipynb) runs each step
+as a notebook, with the current results and how to read them
+(`uv run --with jupyter jupyter lab PROCESS_CODE.ipynb`).
+
 1. **Clean.** Drop the two coins, normalise column names, join the gummy
    coding, and validate that attributes are 0/1 and levels lie in 0 to 1.
 2. **Main model.** Ordinary least squares of win rate on the nine attributes
