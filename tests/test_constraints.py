@@ -32,8 +32,7 @@ def test_modelling_uses_only_numpy_and_scipy():
 
 def test_package_imports_only_approved_libraries():
     offenders = {
-        path.name: sorted(third_party_imports(path) - PACKAGE_ALLOWED)
-        for path in SRC.rglob("*.py")
+        path.name: sorted(third_party_imports(path) - PACKAGE_ALLOWED) for path in SRC.rglob("*.py")
     }
 
     assert {k: v for k, v in offenders.items() if v} == {}

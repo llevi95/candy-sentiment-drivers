@@ -302,9 +302,7 @@ def _reference_group_note(contrast: dict) -> str:
 def _data_notes(bundle: dict) -> list[str]:
     """Plain-language notes on the data for the deck appendix."""
     sample = bundle["sample"]
-    counts = {
-        row["attribute"]: row["n_with"] for row in bundle["attribute_comparison"]["results"]
-    }
+    counts = {row["attribute"]: row["n_with"] for row in bundle["attribute_comparison"]["results"]}
     gummy = bundle["robustness"]["gummy"]
     coins = bundle["robustness"]["coins_included"]
     return [
@@ -365,13 +363,14 @@ def _gummy_sensitivity_note(gummy: dict) -> str:
     clear = gummy["clear_cases_only"]
 
     def effect(row: dict) -> str:
-        return f"{row['coef']:+.1f} points ({_level()} CI {row['ci_low']:.1f} to {row['ci_high']:.1f})"
+        return (
+            f"{row['coef']:+.1f} points ({_level()} CI {row['ci_low']:.1f} to {row['ci_high']:.1f})"
+        )
 
     verdict = (
         "its interval still excludes zero"
         if clear["ci_low"] > 0 or clear["ci_high"] < 0
-        else "its interval then includes zero, so the gummy effect depends on "
-        "the judgement calls"
+        else "its interval then includes zero, so the gummy effect depends on the judgement calls"
     )
     return (
         f"Gummy effect with all {gummy['n_gummy']} gummies: {effect(full)}; with "

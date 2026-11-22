@@ -92,12 +92,22 @@ def attribute_comparison_chart(rows: pd.DataFrame, path: Path) -> None:
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
     ax.hlines(y, rows["mean_without"], rows["mean_with"], colors=colors, linewidth=3)
     ax.scatter(
-        rows["mean_without"], y, color="white", edgecolor="#333333",
-        s=90, zorder=3, label="Without attribute",
+        rows["mean_without"],
+        y,
+        color="white",
+        edgecolor="#333333",
+        s=90,
+        zorder=3,
+        label="Without attribute",
     )
     ax.scatter(
-        rows["mean_with"], y, color=colors, edgecolor="#333333",
-        s=90, zorder=3, label="With attribute",
+        rows["mean_with"],
+        y,
+        color=colors,
+        edgecolor="#333333",
+        s=90,
+        zorder=3,
+        label="With attribute",
     )
     ax.set_yticks(
         y,
@@ -171,8 +181,14 @@ def win_rate_distribution_chart(candies: pd.DataFrame, path: Path) -> None:
         edgecolor="white",
     )
     ax.axvline(50, color="black", linewidth=1, linestyle="--")
-    ax.annotate("wins half its matchups", (50, ax.get_ylim()[1] * 0.95), xytext=(6, 0),
-                textcoords="offset points", fontsize=12, color="#333333")
+    ax.annotate(
+        "wins half its matchups",
+        (50, ax.get_ylim()[1] * 0.95),
+        xytext=(6, 0),
+        textcoords="offset points",
+        fontsize=12,
+        color="#333333",
+    )
     ax.set_xlabel("Win rate (% of head-to-head matchups won)")
     ax.set_ylabel("Number of candies")
     ax.set_title(f"How the {len(candies)} candies score")
@@ -201,9 +217,7 @@ def ranked_profiles_chart(
     recommended = next(r for r in ranked if r["attributes"] == primary["attributes"])
     rows = [recommended, *best[::-1]]  # best at the top of the chart
     y = np.arange(len(rows))
-    colors = [
-        ACCENT_ORANGE, *(DRIVER if r["tied_with_primary"] else NOT_CLEAR for r in best[::-1])
-    ]
+    colors = [ACCENT_ORANGE, *(DRIVER if r["tied_with_primary"] else NOT_CLEAR for r in best[::-1])]
     n_tied = sum(r["tied_with_primary"] for r in ranked)
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
@@ -247,16 +261,27 @@ def cookie_vs_gummy_chart(comparison: dict, alpha: float, path: Path) -> None:
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
     _prediction_intervals(ax, rows, y, colors, ci_width=8, pi_width=2, marker_size=120)
     for position, name, row in zip(y, names, rows):
-        ax.annotate(f"{row['estimate']:.0f}", (row["estimate"], position), xytext=(0, 14),
-                    textcoords="offset points", ha="center", fontsize=14, fontweight="bold")
+        ax.annotate(
+            f"{row['estimate']:.0f}",
+            (row["estimate"], position),
+            xytext=(0, 14),
+            textcoords="offset points",
+            ha="center",
+            fontsize=14,
+            fontweight="bold",
+        )
         gap = comparison["differences"].get(f"{name}_minus_gummy")
         if gap:
             verdict = "clear lead" if gap["decided"] else "not a clear lead"
             ax.annotate(
                 f"{gap['estimate']:+.0f} vs gummy ({1 - alpha:.0%} CI "
                 f"{gap['ci_low']:.0f} to {gap['ci_high']:.0f}): {verdict}",
-                (row["estimate"], position), xytext=(0, -26),
-                textcoords="offset points", ha="center", fontsize=12, color="#333333",
+                (row["estimate"], position),
+                xytext=(0, -26),
+                textcoords="offset points",
+                ha="center",
+                fontsize=12,
+                color="#333333",
             )
     ax.set_yticks(y, [DEBATE_LABELS[name] for name in names])
     ax.set_ylim(-0.6, len(rows) - 0.4)
@@ -278,12 +303,29 @@ def _prediction_intervals(
 ) -> None:
     """Thin prediction interval, thick mean CI and a hollow point per profile,
     with a dashed line at the 100% ceiling the ranges are capped to."""
-    ax.hlines(y, [r["pi_low"] for r in rows], [r["pi_high"] for r in rows],
-              colors=colors, linewidth=pi_width, alpha=0.5)
-    ax.hlines(y, [r["ci_low"] for r in rows], [r["ci_high"] for r in rows],
-              colors=colors, linewidth=ci_width)
-    ax.scatter([r["estimate"] for r in rows], y, color="white", edgecolor="#333333",
-               s=marker_size, zorder=3)
+    ax.hlines(
+        y,
+        [r["pi_low"] for r in rows],
+        [r["pi_high"] for r in rows],
+        colors=colors,
+        linewidth=pi_width,
+        alpha=0.5,
+    )
+    ax.hlines(
+        y,
+        [r["ci_low"] for r in rows],
+        [r["ci_high"] for r in rows],
+        colors=colors,
+        linewidth=ci_width,
+    )
+    ax.scatter(
+        [r["estimate"] for r in rows],
+        y,
+        color="white",
+        edgecolor="#333333",
+        s=marker_size,
+        zorder=3,
+    )
     ax.axvline(100, color="#555555", linestyle="--", linewidth=1)
 
 

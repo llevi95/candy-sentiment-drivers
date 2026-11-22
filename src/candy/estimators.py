@@ -106,13 +106,21 @@ class FitResult:
         ci_half = crit * np.sqrt(mean_var)
         pi_half = crit * np.sqrt(mean_var + self.residual_variance)
         values = np.array(
-            [estimate, estimate - ci_half, estimate + ci_half, estimate - pi_half, estimate + pi_half]
+            [
+                estimate,
+                estimate - ci_half,
+                estimate + ci_half,
+                estimate - pi_half,
+                estimate + pi_half,
+            ]
         )
         if self.target == "logit":
             values = 100 * special.expit(values)
         return Prediction(*(float(v) for v in values))
 
-    def predict_difference(self, row_a: Mapping[str, float], row_b: Mapping[str, float]) -> Difference:
+    def predict_difference(
+        self, row_a: Mapping[str, float], row_b: Mapping[str, float]
+    ) -> Difference:
         """Predicted mean of ``row_a`` minus that of ``row_b``, with a CI from
         the coefficient covariance. Identity target only: on a logit target the
         gap in win-rate points is not linear in the coefficients."""

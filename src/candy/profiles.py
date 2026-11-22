@@ -97,9 +97,7 @@ class ProfileScorer:
 
 def all_profiles() -> pd.DataFrame:
     """Every 0/1 combination of the attributes, one row each."""
-    return pd.DataFrame(
-        list(itertools.product([0, 1], repeat=len(ATTRIBUTES))), columns=ATTRIBUTES
-    )
+    return pd.DataFrame(list(itertools.product([0, 1], repeat=len(ATTRIBUTES))), columns=ATTRIBUTES)
 
 
 def is_realistic(profiles: pd.DataFrame) -> pd.Series:

@@ -215,7 +215,9 @@ def test_logit_effects_in_points_match_numerical_average_marginal_effects():
         nudged[:, j] += step
         numerical = np.mean((predict(nudged) - predict(X)) / step)
         assert effects.loc[name, "coef"] == pytest.approx(numerical, rel=1e-5)
-        assert effects.loc[name, "ci_low"] < effects.loc[name, "coef"] < effects.loc[name, "ci_high"]
+        assert (
+            effects.loc[name, "ci_low"] < effects.loc[name, "coef"] < effects.loc[name, "ci_high"]
+        )
     assert list(effects.index) == names
 
 

@@ -13,7 +13,9 @@ DEFAULT_GUMMY = REPO_ROOT / "data" / "derived" / "gummy.csv"
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Rebuild the results bundle, figures and appendix.")
+    parser = argparse.ArgumentParser(
+        description="Rebuild the results bundle, figures and appendix."
+    )
     parser.add_argument("--raw", type=Path, default=DEFAULT_RAW, help="raw candy CSV")
     parser.add_argument(
         "--gummy", type=Path, default=DEFAULT_GUMMY, help="approved gummy coding CSV"

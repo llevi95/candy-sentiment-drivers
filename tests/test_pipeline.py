@@ -348,8 +348,11 @@ def test_profiles_are_scored_with_a_retained_interaction():
     interaction = Interaction("chocolate", "peanuty_almondy")
     frame[interaction.term] = interaction.values(frame)
     win_rate = (
-        40 + 10 * frame["chocolate"] + 5 * frame["peanuty_almondy"]
-        + 8 * frame[interaction.term] + rng.normal(0, 1, size=len(frame))
+        40
+        + 10 * frame["chocolate"]
+        + 5 * frame["peanuty_almondy"]
+        + 8 * frame[interaction.term]
+        + rng.normal(0, 1, size=len(frame))
     )
     model = fit(frame.to_numpy(), win_rate.to_numpy(), list(frame.columns), cov="hc3")
     levels = {level: 0.5 for level in LEVELS}
@@ -361,8 +364,11 @@ def test_profiles_are_scored_with_a_retained_interaction():
     coef = model.coef
 
     assert scorer.predict(both)["estimate"] == pytest.approx(
-        coef["intercept"] + coef["chocolate"] + coef["peanuty_almondy"]
-        + coef[interaction.term] + 0.5 * (coef["sugar_level"] + coef["price_level"])
+        coef["intercept"]
+        + coef["chocolate"]
+        + coef["peanuty_almondy"]
+        + coef[interaction.term]
+        + 0.5 * (coef["sugar_level"] + coef["price_level"])
     )
     # Adding peanut to chocolate earns the peanut effect plus the interaction.
     assert scorer.gap(both, chocolate).estimate == pytest.approx(
@@ -385,13 +391,26 @@ def test_gummy_coefficient_matches_an_independent_least_squares_fit(bundle):
     raw = pd.read_csv(RAW)
     raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
     gummy = pd.read_csv(GUMMY).set_index("candy")["gummy"]
-    columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
-               "crispedricewafer", "hard", "bar", "pluribus", "sugarpercent", "pricepercent"]
-    design = np.column_stack([
-        np.ones(len(raw)),
-        raw[columns].to_numpy(),
-        raw["competitorname"].map(gummy).to_numpy(),
-    ])
+    columns = [
+        "chocolate",
+        "fruity",
+        "caramel",
+        "peanutyalmondy",
+        "nougat",
+        "crispedricewafer",
+        "hard",
+        "bar",
+        "pluribus",
+        "sugarpercent",
+        "pricepercent",
+    ]
+    design = np.column_stack(
+        [
+            np.ones(len(raw)),
+            raw[columns].to_numpy(),
+            raw["competitorname"].map(gummy).to_numpy(),
+        ]
+    )
     beta, *_ = np.linalg.lstsq(design, raw["winpercent"].to_numpy(), rcond=None)
 
     rows = {row["term"]: row for row in bundle["robustness"]["gummy"]["coefficients"]}
@@ -415,14 +434,27 @@ def test_gummy_check_reports_the_effect_on_clear_cases_only(bundle):
     raw = pd.read_csv(RAW)
     raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
     coding = pd.read_csv(GUMMY).set_index("candy")
-    clear = (coding["gummy"] * (1 - coding["unclear"]))
-    columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
-               "crispedricewafer", "hard", "bar", "pluribus", "sugarpercent", "pricepercent"]
-    design = np.column_stack([
-        np.ones(len(raw)),
-        raw[columns].to_numpy(),
-        raw["competitorname"].map(clear).to_numpy(),
-    ])
+    clear = coding["gummy"] * (1 - coding["unclear"])
+    columns = [
+        "chocolate",
+        "fruity",
+        "caramel",
+        "peanutyalmondy",
+        "nougat",
+        "crispedricewafer",
+        "hard",
+        "bar",
+        "pluribus",
+        "sugarpercent",
+        "pricepercent",
+    ]
+    design = np.column_stack(
+        [
+            np.ones(len(raw)),
+            raw[columns].to_numpy(),
+            raw["competitorname"].map(clear).to_numpy(),
+        ]
+    )
     beta, *_ = np.linalg.lstsq(design, raw["winpercent"].to_numpy(), rcond=None)
 
     check = bundle["robustness"]["gummy"]["clear_cases_only"]
@@ -440,8 +472,19 @@ def test_brand_check_refits_the_main_model_without_reeses(bundle):
     raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
     reeses = raw["competitorname"].str.startswith("Reese's")
     kept = raw.loc[~reeses]
-    columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
-               "crispedricewafer", "hard", "bar", "pluribus", "sugarpercent", "pricepercent"]
+    columns = [
+        "chocolate",
+        "fruity",
+        "caramel",
+        "peanutyalmondy",
+        "nougat",
+        "crispedricewafer",
+        "hard",
+        "bar",
+        "pluribus",
+        "sugarpercent",
+        "pricepercent",
+    ]
     design = np.column_stack([np.ones(len(kept)), kept[columns].to_numpy()])
     beta, *_ = np.linalg.lstsq(design, kept["winpercent"].to_numpy(), rcond=None)
 
@@ -476,10 +519,20 @@ def _corrupt_gummy(tmp_path: Path, edit) -> Path:
         (lambda lines: [row.replace("Twix,0,", "Twix,,") for row in lines], "missing value.*Twix"),
         (lambda lines: [*lines, "Twix,0,0,again"], "more than once.*Twix"),
         (lambda lines: [row.replace("Twix,0,0,", "Twix,0,2,") for row in lines], "0/1.*Twix"),
-        (lambda lines: [row.replace("Twix,0,0,", "Twix,0,,") for row in lines], "missing value.*Twix"),
+        (
+            lambda lines: [row.replace("Twix,0,0,", "Twix,0,,") for row in lines],
+            "missing value.*Twix",
+        ),
     ],
-    ids=["missing candy", "unknown candy", "non-binary value", "blank value", "duplicate row",
-         "non-binary unclear flag", "blank unclear flag"],
+    ids=[
+        "missing candy",
+        "unknown candy",
+        "non-binary value",
+        "blank value",
+        "duplicate row",
+        "non-binary unclear flag",
+        "blank unclear flag",
+    ],
 )
 def test_gummy_table_problems_fail_loudly_naming_the_candy(tmp_path, edit, message):
     gummy = _corrupt_gummy(tmp_path, edit)
@@ -491,8 +544,17 @@ def test_gummy_table_problems_fail_loudly_naming_the_candy(tmp_path, edit, messa
 def _real_attribute_vectors() -> set[tuple[int, ...]]:
     raw = pd.read_csv(RAW)
     raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
-    raw_columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
-                   "crispedricewafer", "hard", "bar", "pluribus"]
+    raw_columns = [
+        "chocolate",
+        "fruity",
+        "caramel",
+        "peanutyalmondy",
+        "nougat",
+        "crispedricewafer",
+        "hard",
+        "bar",
+        "pluribus",
+    ]
     return {tuple(int(v) for v in row) for row in raw[raw_columns].to_numpy()}
 
 
@@ -594,9 +656,7 @@ def test_ties_with_the_primary_profile_are_flagged_and_counted(bundle):
 
     # The primary profile's gap to itself is zero; it must not count as a tie.
     assert not by_attributes[tuple(primary["attributes"].values())]["tied_with_primary"]
-    assert bundle["profiles"]["n_tied_with_primary"] == sum(
-        r["tied_with_primary"] for r in ranked
-    )
+    assert bundle["profiles"]["n_tied_with_primary"] == sum(r["tied_with_primary"] for r in ranked)
     assert 1 < bundle["profiles"]["n_tied_with_primary"] < len(ranked) - 1
 
 
@@ -691,8 +751,17 @@ def test_primary_profile_summarises_every_candy_within_one_attribute(bundle):
     # one attribute of "chocolate only", averaging about 56.6.
     raw = pd.read_csv(RAW)
     raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
-    raw_columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
-                   "crispedricewafer", "hard", "bar", "pluribus"]
+    raw_columns = [
+        "chocolate",
+        "fruity",
+        "caramel",
+        "peanutyalmondy",
+        "nougat",
+        "crispedricewafer",
+        "hard",
+        "bar",
+        "pluribus",
+    ]
     rec = bundle["recommendation"]["primary"]
     profile = np.array([rec["attributes"][a] for a in ATTRIBUTES])
     near = raw.loc[(raw[raw_columns].to_numpy() != profile).sum(axis=1) <= 1, "winpercent"]
@@ -703,9 +772,7 @@ def test_primary_profile_summarises_every_candy_within_one_attribute(bundle):
     assert nearby["mean_win_rate"] == pytest.approx(near.mean())
     assert nearby["min_win_rate"] == pytest.approx(near.min())
     assert nearby["max_win_rate"] == pytest.approx(near.max())
-    assert {m["candy"] for m in rec["benchmarks"]} <= set(
-        raw.loc[near.index, "competitorname"]
-    )
+    assert {m["candy"] for m in rec["benchmarks"]} <= set(raw.loc[near.index, "competitorname"])
 
 
 def _profile_rows(bundle) -> list[dict]:
@@ -738,8 +805,17 @@ def test_reported_ranges_stay_on_the_win_rate_scale_and_flag_capping(bundle):
 def test_recommendations_report_how_far_they_extrapolate(bundle):
     raw = pd.read_csv(RAW)
     raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
-    raw_columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
-                   "crispedricewafer", "hard", "bar", "pluribus"]
+    raw_columns = [
+        "chocolate",
+        "fruity",
+        "caramel",
+        "peanutyalmondy",
+        "nougat",
+        "crispedricewafer",
+        "hard",
+        "bar",
+        "pluribus",
+    ]
     most_on_a_real_candy = int(raw[raw_columns].sum(axis=1).max())
 
     rec = bundle["recommendation"]["primary"]
@@ -766,8 +842,17 @@ def test_benchmarks_span_the_nearby_candies_lowest_median_and_highest(bundle):
     # and price level picked two below-50 candies out of a group averaging 56.6.
     raw = pd.read_csv(RAW)
     raw = raw[~raw["competitorname"].isin(["One dime", "One quarter"])]
-    raw_columns = ["chocolate", "fruity", "caramel", "peanutyalmondy", "nougat",
-                   "crispedricewafer", "hard", "bar", "pluribus"]
+    raw_columns = [
+        "chocolate",
+        "fruity",
+        "caramel",
+        "peanutyalmondy",
+        "nougat",
+        "crispedricewafer",
+        "hard",
+        "bar",
+        "pluribus",
+    ]
 
     rec = bundle["recommendation"]["primary"]
     profile = np.array([rec["attributes"][a] for a in ATTRIBUTES])
@@ -787,9 +872,7 @@ def test_appendix_vif_table_lists_every_predictor(out_dir, bundle):
 
     assert list(vif.columns) == ["predictor", "label", "vif"]
     assert list(vif["predictor"]) == MAIN_TERMS[1:]
-    assert vif.set_index("predictor")["vif"].to_dict() == pytest.approx(
-        bundle["main_model"]["vif"]
-    )
+    assert vif.set_index("predictor")["vif"].to_dict() == pytest.approx(bundle["main_model"]["vif"])
 
 
 def test_appendix_interaction_support_counts_the_candies_behind_each_term(out_dir):
@@ -798,12 +881,27 @@ def test_appendix_interaction_support_counts_the_candies_behind_each_term(out_di
     support = pd.read_csv(out_dir / "appendix" / "interaction_support.csv")
 
     assert support.to_dict(orient="records") == [
-        {"interaction": "Chocolate x Peanut / almond", "n_both": 12,
-         "n_partner_only": 2, "n_attribute_only": 25, "status": "estimated"},
-        {"interaction": "Chocolate x Crisped rice / wafer / cookie", "n_both": 7,
-         "n_partner_only": 0, "n_attribute_only": 30, "status": "not_estimable"},
-        {"interaction": "Chocolate x Bar format", "n_both": 20,
-         "n_partner_only": 1, "n_attribute_only": 17, "status": "not_estimable"},
+        {
+            "interaction": "Chocolate x Peanut / almond",
+            "n_both": 12,
+            "n_partner_only": 2,
+            "n_attribute_only": 25,
+            "status": "estimated",
+        },
+        {
+            "interaction": "Chocolate x Crisped rice / wafer / cookie",
+            "n_both": 7,
+            "n_partner_only": 0,
+            "n_attribute_only": 30,
+            "status": "not_estimable",
+        },
+        {
+            "interaction": "Chocolate x Bar format",
+            "n_both": 20,
+            "n_partner_only": 1,
+            "n_attribute_only": 17,
+            "status": "not_estimable",
+        },
     ]
 
 
