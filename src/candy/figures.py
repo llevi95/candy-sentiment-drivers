@@ -50,11 +50,14 @@ def coefficient_chart(
     the title, to say what the effects are measured against.
     """
     rows = table.drop(index=INTERCEPT).sort_values("coef")
-    excludes_zero = (rows["ci_low"] > 0) | (rows["ci_high"] < 0)
-    colors = [
-        DRIVER if term in survivors else TENTATIVE if clear else NOT_CLEAR
-        for term, clear in excludes_zero.items()
-    ]
+    colors = []
+    for term, row in rows.iterrows():
+        if term in survivors:
+            colors.append(DRIVER)
+        elif row["ci_low"] > 0 or row["ci_high"] < 0:
+            colors.append(TENTATIVE)
+        else:
+            colors.append(NOT_CLEAR)
     y = range(len(rows))
 
     fig, ax = plt.subplots(figsize=FIGSIZE, dpi=DPI)
@@ -284,16 +287,10 @@ def _prediction_intervals(
     ax.axvline(100, color="#555555", linestyle="--", linewidth=1)
 
 
-def _interval_legend(alpha: float, extra: str = "") -> str:
-    return " ".join(
-        part
-        for part in (
-            f"Thick: {1 - alpha:.0%} CI for the average. Thin: {1 - alpha:.0%} "
-            "prediction interval for one launch.",
-            extra,
-            "Ranges capped at the 100% ceiling (dashed).",
-        )
-        if part
+def _interval_legend(alpha: float) -> str:
+    return (
+        f"Thick: {1 - alpha:.0%} CI for the average. Thin: {1 - alpha:.0%} "
+        "prediction interval for one launch. Ranges capped at the 100% ceiling (dashed)."
     )
 
 

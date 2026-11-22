@@ -143,8 +143,14 @@ def evidence_tiers(model: FitResult, confirmed: set[str]) -> dict[str, dict[str,
     evidence = {}
     for attribute in ATTRIBUTES:
         excludes_zero = model.ci_low[attribute] > 0 or model.ci_high[attribute] < 0
+        if attribute in confirmed:
+            tier = DRIVER
+        elif excludes_zero:
+            tier = TENTATIVE
+        else:
+            tier = OPEN
         evidence[attribute] = {
-            "tier": DRIVER if attribute in confirmed else TENTATIVE if excludes_zero else OPEN,
+            "tier": tier,
             "direction": "positive" if model.coef[attribute] > 0 else "negative",
         }
     return evidence
@@ -162,10 +168,17 @@ def mark_ties(ranked: list[dict], scorer: ProfileScorer, primary: dict[str, int]
         if attributes == primary:
             return None
         gap = scorer.gap(attributes, primary)
-        return ABOVE if gap.ci_low > 0 else BELOW if gap.ci_high < 0 else TIED
+        if gap.ci_low > 0:
+            return ABOVE
+        if gap.ci_high < 0:
+            return BELOW
+        return TIED
 
-    placed = [{**row, "vs_primary": versus(row["attributes"])} for row in ranked]
-    return [{**row, "tied_with_primary": row["vs_primary"] == TIED} for row in placed]
+    marked = []
+    for row in ranked:
+        place = versus(row["attributes"])
+        marked.append({**row, "vs_primary": place, "tied_with_primary": place == TIED})
+    return marked
 
 
 def recommend(
@@ -182,11 +195,12 @@ def recommend(
     favourable = {
         a for a, e in evidence.items() if e["tier"] == DRIVER and e["direction"] == "positive"
     }
-    primary = next(
-        row
-        for row in ranked
-        if all(a in favourable for a, on in row["attributes"].items() if on)
-    )
+    # ``ranked`` is best first, so the first match is the best such profile.
+    for row in ranked:
+        switched_on = {a for a, on in row["attributes"].items() if on}
+        if switched_on <= favourable:
+            primary = row
+            break
     most_on_a_real_candy = int(candies[ATTRIBUTES].sum(axis=1).max())
 
     def describe(row: dict) -> dict:
@@ -254,22 +268,27 @@ def benchmarks(attributes: dict[str, int], candies: pd.DataFrame) -> list[dict]:
     Many candies tie for nearest, and picking among them by sugar or price
     level, neither a driver, named an unrepresentative few."""
     distance = _attribute_distances(pd.DataFrame([attributes]), candies)[0]
-    near = np.flatnonzero(distance <= SUPPORT_DISTANCE)
-    by_win_rate = near[np.argsort(candies["win_rate"].to_numpy()[near], kind="stable")]
-    last = len(by_win_rate) - 1
-    picks = dict.fromkeys(by_win_rate[[0, last // 2, last]])  # fewer when under 3 nearby
+    near = candies.assign(attributes_differing=distance)
+    near = near[near["attributes_differing"] <= SUPPORT_DISTANCE]
+    near = near.sort_values("win_rate", kind="stable").reset_index(drop=True)
+    last = len(near) - 1
+    positions = sorted({0, last // 2, last})  # fewer than 3 when few candies are near
     return [
         {
-            "candy": candies["candy"].iloc[i],
-            "attributes_differing": int(distance[i]),
-            "win_rate": float(candies["win_rate"].iloc[i]),
+            "candy": near.loc[p, "candy"],
+            "attributes_differing": int(near.loc[p, "attributes_differing"]),
+            "win_rate": float(near.loc[p, "win_rate"]),
         }
-        for i in picks
+        for p in positions
     ]
 
 
 def _attribute_distances(profiles: pd.DataFrame, candies: pd.DataFrame) -> np.ndarray:
-    """Hamming distance from each profile (rows) to each candy (columns)."""
-    a = profiles[ATTRIBUTES].to_numpy()
-    b = candies[ATTRIBUTES].to_numpy()
-    return (a[:, None, :] != b[None, :, :]).sum(axis=2)
+    """Number of attributes in which each profile (rows) differs from each
+    candy (columns)."""
+    candy_attributes = candies[ATTRIBUTES].to_numpy()
+    rows = []
+    for profile in profiles[ATTRIBUTES].to_numpy():
+        differs = candy_attributes != profile  # one row per candy
+        rows.append(differs.sum(axis=1))
+    return np.array(rows)

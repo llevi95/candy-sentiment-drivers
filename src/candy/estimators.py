@@ -157,14 +157,21 @@ class FitResult:
         return table.mul(scale, axis=0)
 
     def _points_per_logit_unit(self, j: int) -> float:
+        """How many win-rate points one logit unit of predictor ``j`` is worth,
+        averaged over the candies."""
         column = self.predictors[:, j]
         beta = self.coef.iloc[j + 1]
-        if np.isin(column, (0, 1)).all() and beta != 0:
-            linear = special.logit(self.fitted / 100)
-            switched_on = linear + beta * (1 - column)
-            switched_off = linear - beta * column
-            change = 100 * (special.expit(switched_on) - special.expit(switched_off))
-            return float(np.mean(change)) / beta
+        is_yes_no = set(np.unique(column)) <= {0, 1}
+        if is_yes_no and beta != 0:
+            # Predict every candy twice, once with the attribute off and once
+            # with it on, and average the change in win rate.
+            logit_without = special.logit(self.fitted / 100) - beta * column
+            win_rate_off = 100 * special.expit(logit_without)
+            win_rate_on = 100 * special.expit(logit_without + beta)
+            average_change = float(np.mean(win_rate_on - win_rate_off))
+            return average_change / beta
+        # Continuous predictor: the slope of the logistic curve, p(1 - p),
+        # averaged over the candies.
         share = self.fitted / 100
         return 100 * float(np.mean(share * (1 - share)))
 
@@ -229,7 +236,8 @@ def fit(
     linear_fit = design @ beta
     resid = y - linear_fit
     xtx_inv = np.linalg.inv(design.T @ design)
-    leverage = np.einsum("ij,jk,ik->i", design, xtx_inv, design)
+    # Leverage h_i: the i-th diagonal entry of the hat matrix X (X'X)^-1 X'.
+    leverage = np.sum((design @ xtx_inv) * design, axis=1)
     if np.any(leverage > LEVERAGE_LIMIT):
         raise EstimationError(
             "an observation has leverage 1 (it alone identifies a term), so "
@@ -324,24 +332,35 @@ def _bootstrap(
 
 
 def _vifs(X: np.ndarray) -> np.ndarray:
-    """Variance inflation factor of each predictor: 1 / (1 - R²) from regressing
-    it on the others, read off the diagonal of the inverse correlation matrix."""
-    corr = np.atleast_2d(np.corrcoef(X, rowvar=False))
-    return np.diag(np.linalg.inv(corr))
+    """Variance inflation factor of each predictor: regress it on the other
+    predictors and take 1 / (1 - R²). A VIF near 1 means the predictor is not
+    explained by the others."""
+    n, k = X.shape
+    vifs = np.empty(k)
+    for j in range(k):
+        target = X[:, j]
+        others = np.column_stack([np.ones(n), np.delete(X, j, axis=1)])
+        beta, *_ = np.linalg.lstsq(others, target, rcond=None)
+        resid = target - others @ beta
+        r_squared = 1 - resid @ resid / np.sum((target - target.mean()) ** 2)
+        vifs[j] = 1 / (1 - r_squared)
+    return vifs
 
 
 def holm(p: pd.Series) -> pd.Series:
     """Holm (1979) step-down adjusted p-values for one family of tests.
 
-    The smallest of m p-values is multiplied by m, the next by m - 1, and so on;
-    a running maximum keeps the adjusted values monotone, and each is capped at 1.
-    Rejecting where the adjusted p-value is below alpha controls the family-wise
-    error rate at alpha. The result keeps the input's labels and order.
+    Sort the m p-values from smallest to largest. Multiply the smallest by m,
+    the next by m - 1, and so on. An adjusted value may never be smaller than
+    the one before it, and none exceeds 1. Rejecting where the adjusted p-value
+    is below alpha controls the family-wise error rate at alpha. The result
+    keeps the input's labels and order.
     """
-    order = np.argsort(p.to_numpy(), kind="stable")
     m = len(p)
-    stepped = p.to_numpy()[order] * (m - np.arange(m))
-    adjusted = np.minimum(np.maximum.accumulate(stepped), 1.0)
-    out = np.empty(m)
-    out[order] = adjusted
-    return pd.Series(out, index=p.index)
+    adjusted = {}
+    previous = 0.0
+    for position, (term, value) in enumerate(p.sort_values(kind="stable").items()):
+        current = min(1.0, max(previous, value * (m - position)))
+        adjusted[term] = current
+        previous = current
+    return pd.Series(adjusted)[p.index]

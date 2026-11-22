@@ -107,7 +107,9 @@ def run(raw_csv: Path, gummy_csv: Path, out_dir: Path, seed: int = SEED) -> dict
     gummy_model = _fit_model(candies, extra_attributes=("gummy",))
     brand = candies["candy"].str.startswith(BRAND_CHECK)
     without_brand = _fit_model(candies.loc[~brand])
-    clear_gummies = candies.assign(gummy=candies["gummy"] * (1 - candies["gummy_unclear"]))
+    # Gummies flagged as judgement calls are counted as not gummy.
+    is_clear_gummy = (candies["gummy"] == 1) & (candies["gummy_unclear"] == 0)
+    clear_gummies = candies.assign(gummy=is_clear_gummy.astype(int))
     clear_gummy_model = _fit_model(clear_gummies, extra_attributes=("gummy",))
     levels = choose_levels(candies)
     scorer = ProfileScorer(final_model, levels, retained)
