@@ -1,12 +1,12 @@
 predictor,label,vif
-chocolate,Chocolate,3.047437433387553
-fruity,Fruit-flavoured,2.986602325115842
+chocolate,Chocolate,3.0474374333875502
+fruity,Fruit-flavoured,2.9866023251158413
 caramel,Caramel,1.3863806185577507
-peanuty_almondy,Peanut / almond,1.3565782587814132
-nougat,Nougat,1.8324662030411307
-crisped_rice_wafer,Crisped rice / wafer / cookie,1.5531479859584996
+peanuty_almondy,Peanut / almond,1.3565782587814135
+nougat,Nougat,1.8324662030411318
+crisped_rice_wafer,Crisped rice / wafer / cookie,1.5531479859585007
 hard,Hard candy,1.2929827141484673
-bar,Bar format,3.6455167252519574
-pluribus,Many per pack,1.8431144166938418
+bar,Bar format,3.6455167252519485
+pluribus,Many per pack,1.8431144166938378
 sugar_level,Sugar level (lowest → highest),1.2271977695316552
 price_level,Price level (cheapest → priciest),1.8368580087117825
