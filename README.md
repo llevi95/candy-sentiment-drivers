@@ -96,7 +96,7 @@ as a notebook, with the current results and how to read them
 
 The brief allows only NumPy and SciPy for modelling. All estimators (OLS, HC3
 standard errors, VIFs, leave-one-out R², the logit variant, the bootstrap,
-predictions and the Holm adjustment) are written by hand in
+predictions and the Holm adjustment) are implemented with NumPy in
 `src/candy/estimators.py`, with distributions and t-tests from SciPy. pandas
 and matplotlib are used only for data handling and plotting. A test fails if
 any other library is imported, and the estimators are tested against known
@@ -167,7 +167,7 @@ data/raw/            source data and its documentation
 data/derived/        hand-coded gummy attribute
 src/candy/
   data.py            loading, cleaning, validation, gummy join
-  estimators.py      hand-written OLS and inference (NumPy/SciPy only)
+  estimators.py      OLS and inference (NumPy/SciPy only)
   profiles.py        profile enumeration, support, ranking, benchmarks
   figures.py         slide-ready figures
   labels.py          business-facing names and wording

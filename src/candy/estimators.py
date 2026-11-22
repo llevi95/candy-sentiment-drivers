@@ -1,4 +1,4 @@
-"""Hand-written linear-model estimators (NumPy for algebra, SciPy for distributions).
+"""Linear-model estimators built on NumPy (algebra) and SciPy (distributions).
 
 The project brief permits only NumPy and SciPy for modelling, so ordinary least
 squares and its inference are implemented here rather than imported from a
