@@ -8,12 +8,12 @@ import matplotlib
 
 matplotlib.use("Agg")
 
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-from candy.estimators import INTERCEPT  # noqa: E402
-from candy.labels import DEBATE_LABELS, LABELS, PROFILE_LABELS, WIN_RATE_MEANING  # noqa: E402
+from candy.estimators import INTERCEPT
+from candy.labels import DEBATE_LABELS, LABELS, PROFILE_LABELS, WIN_RATE_MEANING
 
 FIGSIZE = (12.8, 7.2)  # inches; 16:9
 DPI = 150  # 1920 x 1080 px

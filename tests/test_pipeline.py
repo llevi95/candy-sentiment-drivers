@@ -226,8 +226,9 @@ def test_bootstrap_check_records_its_seed_and_draws(bundle):
 def test_one_alpha_drives_model_intervals_and_labels(tmp_path, monkeypatch):
     # Changing the pipeline's ALPHA must change the model CIs too, or charts
     # labelled "90% CI" would show 95% intervals.
-    import candy.pipeline as pipeline
     from scipy import stats
+
+    from candy import pipeline
 
     monkeypatch.setattr(pipeline, "ALPHA", 0.10)
     monkeypatch.setattr(pipeline, "BOOTSTRAP_DRAWS", 50)

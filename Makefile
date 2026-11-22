@@ -6,6 +6,7 @@ all:
 	python -m candy --out $(OUT)
 
 test:
+	python -m ruff check src tests
 	python -m pytest
 
 clean:

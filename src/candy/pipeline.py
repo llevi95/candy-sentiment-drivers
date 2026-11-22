@@ -9,7 +9,6 @@ import pandas as pd
 from scipy import stats
 
 from candy.data import ATTRIBUTES, MATCHUPS, PREDICTORS, Interaction, load_candies
-from candy.labels import LABELS, WIN_RATE_MEANING
 from candy.estimators import (
     INTERCEPT,
     Bootstrap,
@@ -19,6 +18,15 @@ from candy.estimators import (
     fit,
     holm,
 )
+from candy.figures import (
+    attribute_comparison_chart,
+    coefficient_chart,
+    cookie_vs_gummy_chart,
+    ranked_profiles_chart,
+    robustness_chart,
+    win_rate_distribution_chart,
+)
+from candy.labels import LABELS, WIN_RATE_MEANING
 from candy.profiles import (
     ABOVE,
     BELOW,
@@ -34,14 +42,6 @@ from candy.profiles import (
     mark_ties,
     rank,
     recommend,
-)
-from candy.figures import (
-    attribute_comparison_chart,
-    coefficient_chart,
-    cookie_vs_gummy_chart,
-    ranked_profiles_chart,
-    robustness_chart,
-    win_rate_distribution_chart,
 )
 
 BUNDLE_NAME = "results.json"
@@ -306,25 +306,39 @@ def _data_notes(bundle: dict) -> list[str]:
     gummy = bundle["robustness"]["gummy"]
     coins = bundle["robustness"]["coins_included"]
     return [
-        f"{sample['n_raw']} market entries in the source data; the "
-        f"{len(sample['excluded'])} coins "
-        f"({' and '.join(sample['excluded'])}) are survey decoys, not candies, and are "
-        f"excluded, leaving {sample['n_candies']} candies.",
-        "Including the coins moves no attribute or level coefficient by more than "
-        f"{coins['max_abs_shift_predictors']:.1f} points of win rate.",
-        f"Win rate is the share of {MATCHUPS} head-to-head matchups a candy won. "
-        f"{WIN_RATE_MEANING}",
-        "Sugar level and price level are percentile ranks within the dataset (0 to 1), "
-        "not grams of sugar or prices.",
-        "The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source "
-        "documentation) is analysed as the peanut/almond attribute.",
-        f"Only {counts['nougat']} candies have nougat and {counts['crisped_rice_wafer']} "
-        "have crisped rice/wafer/cookie, so those effects carry wide intervals.",
-        f"Gummy is a hand-coded attribute ({gummy['n_gummy']} of {sample['n_candies']} "
-        "candies), used to test the gummy effect and to compare a gummy with "
-        f"chocolate products. Judgement calls are flagged: {gummy['n_unclear_gummy']} "
-        f"of the {gummy['n_gummy']} gummies and "
-        f"{gummy['n_unclear'] - gummy['n_unclear_gummy']} of the other candies.",
+        (
+            f"{sample['n_raw']} market entries in the source data; the "
+            f"{len(sample['excluded'])} coins "
+            f"({' and '.join(sample['excluded'])}) are survey decoys, not candies, and are "
+            f"excluded, leaving {sample['n_candies']} candies."
+        ),
+        (
+            "Including the coins moves no attribute or level coefficient by more than "
+            f"{coins['max_abs_shift_predictors']:.1f} points of win rate."
+        ),
+        (
+            f"Win rate is the share of {MATCHUPS} head-to-head matchups a candy won. "
+            f"{WIN_RATE_MEANING}"
+        ),
+        (
+            "Sugar level and price level are percentile ranks within the dataset (0 to 1), "
+            "not grams of sugar or prices."
+        ),
+        (
+            "The source column 'peanutyalmondy' (spelled 'peanutalmondy' in the source "
+            "documentation) is analysed as the peanut/almond attribute."
+        ),
+        (
+            f"Only {counts['nougat']} candies have nougat and {counts['crisped_rice_wafer']} "
+            "have crisped rice/wafer/cookie, so those effects carry wide intervals."
+        ),
+        (
+            f"Gummy is a hand-coded attribute ({gummy['n_gummy']} of {sample['n_candies']} "
+            "candies), used to test the gummy effect and to compare a gummy with "
+            f"chocolate products. Judgement calls are flagged: {gummy['n_unclear_gummy']} "
+            f"of the {gummy['n_gummy']} gummies and "
+            f"{gummy['n_unclear'] - gummy['n_unclear_gummy']} of the other candies."
+        ),
         _gummy_sensitivity_note(gummy),
         _brand_note(bundle["main_model"], bundle["robustness"]["without_brand"]),
     ]

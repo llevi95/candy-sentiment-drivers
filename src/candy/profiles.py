@@ -251,7 +251,7 @@ def nearby_candies(attributes: dict[str, int], candies: pd.DataFrame) -> dict:
     win_rates = candies.loc[distance <= SUPPORT_DISTANCE, "win_rate"]
     return {
         "max_attributes_differing": SUPPORT_DISTANCE,
-        "n": int(len(win_rates)),
+        "n": len(win_rates),
         "mean_win_rate": float(win_rates.mean()),
         "min_win_rate": float(win_rates.min()),
         "max_win_rate": float(win_rates.max()),

@@ -129,11 +129,11 @@ checks that the two agree.
 
 ```sh
 uv run make all     # rebuild the results bundle, figures and appendix
-uv run make test    # run the test suite
+uv run make test    # lint with ruff, then run the test suite
 ```
 
 With pip, activate the virtual environment and drop `uv run`. Without `make`,
-run `python -m candy --out outputs` and `python -m pytest`.
+run `python -m candy --out outputs`, `python -m ruff check src tests` and `python -m pytest`.
 
 `python -m candy --help` lists the options: input paths (`--raw`, `--gummy`),
 the output folder (`--out`, default `outputs`) and the bootstrap seed
